@@ -7,8 +7,8 @@ Document de reference pour le developpement progressif du module local GRR
 - Environnement de recette : Synology DSM 7, Apache 2.4, PHP 8.4,
   MariaDB 10 et phpMyAdmin
 - Creation du document : 25 juin 2026
-- Derniere mise a jour : 30 juin 2026
-- Etat global : version 1.3.5 implementee, alignement des fins de prets sur la date de depart en attente de recette NAS
+- Derniere mise a jour : 16 juillet 2026
+- Etat global : version 1.3.8 implementee, version BDD 9, evolutions post-MVP de 1.0.0 a 1.3.8 en attente de recette NAS
 
 ## Regles de developpement
 
@@ -433,7 +433,14 @@ deploiement.
 | 17. Alertes conflits et actions fiches | A tester sur NAS | 1.2.6 | - | Bandeau conflits, couleurs alertes et actions de suppression sur fiches |
 | 18. Harmonisation popups | A tester sur NAS | 1.2.7 | - | Administration harmonisee et confirmation import en popup |
 | 19. Prets multiples generiques | A tester sur NAS | 1.3.0 | - | Materiels generiques pretables simultanement et statut `pret_multiple` |
-| 20. Transferts de prets | A tester sur NAS | 1.3.2 | - | Transfert individuel et transfert global depuis une fiche personne |
+| 20. Navigation utilisateur | A tester sur NAS | 1.3.1 | - | Suppression du bouton haut `Mon materiel`, acces direct conserve |
+| 21. Transferts de prets | A tester sur NAS | 1.3.2 | - | Transfert individuel et transfert global depuis une fiche personne |
+| 22. Transfert depuis fiche pret | A tester sur NAS | 1.3.3 | - | Bouton `Transferer` disponible directement dans la fiche pret |
+| 23. Date de depart au transfert | A tester sur NAS | 1.3.4 | - | Date de fin prevue alignee sur le depart de la personne destinataire |
+| 24. Alignement sur depart personne | A tester sur NAS | 1.3.5 | - | Action administrateur pour aligner les fins de prets ouverts sur la date de depart |
+| 25. Colonnes alertes prets | A tester sur NAS | 1.3.6 | - | Numero du pret et commentaire visibles dans les tableaux d'alertes |
+| 26. Libelle numero de pret | A tester sur NAS | 1.3.7 | - | En-tete commun des prets renomme `Numero du pret` |
+| 27. Commentaire liste prets | A tester sur NAS | 1.3.8 | - | Colonne commentaire ajoutee dans `Prets et restitutions` |
 
 ## Journal des decisions
 
@@ -464,6 +471,7 @@ deploiement.
 | 26/06/2026 | Ajouter une version 1.2.5 sans migration SQL pour les actions et tableaux dynamiques | Ameliorer l'exploitation quotidienne sans modifier le schema BDD |
 | 29/06/2026 | Ajouter une version 1.2.6 sans migration SQL pour le bandeau conflits et les couleurs d alertes | Rendre les conflits visibles partout et clarifier les actions de resolution |
 | 29/06/2026 | Ajouter une version 1.2.7 sans migration SQL pour harmoniser les popups | Rendre l'administration et l'import plus coherents avec les autres modules |
+| 16/07/2026 | Aligner la roadmap sur les versions 1.3.1 a 1.3.8 deja documentees dans le README | Retablir la coherence entre etat global, suivi d'avancement et version applicative |
 
 ## Historique du document
 
@@ -513,3 +521,10 @@ deploiement.
 - Passage de l'etape 15 a l'etat "A tester sur NAS".
 - Ajout des prets multiples generiques et du statut `pret_multiple` en version 1.3.0 / BDD 9.
 - Ajout des transferts de prets individuel et global en version 1.3.2 / BDD 9.
+
+### 16 juillet 2026
+
+- Mise a jour de l'etat global sur la version applicative 1.3.8 / BDD 9.
+- Ajout des lignes de suivi pour les versions 1.3.1 a 1.3.8.
+- Ajout d'une decision documentaire pour aligner la roadmap avec `README.md` et `infos.php`.
+- Aucun changement de code.
