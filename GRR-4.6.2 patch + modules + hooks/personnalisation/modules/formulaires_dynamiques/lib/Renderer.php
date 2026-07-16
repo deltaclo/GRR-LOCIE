@@ -1176,6 +1176,7 @@ class FormulairesDynamiquesRenderer
             );
         }
 
+        self::loadExportEngine();
         if (!class_exists('FormulairesDynamiquesExport')) {
             return self::displayShell(
                 '<h2>Export</h2>'
@@ -1211,6 +1212,18 @@ class FormulairesDynamiquesRenderer
         FormulairesDynamiquesExport::download($form, $fields, $responses, $format, $scope);
 
         return '';
+    }
+
+    private static function loadExportEngine()
+    {
+        if (class_exists('FormulairesDynamiquesExport')) {
+            return;
+        }
+
+        $path = __DIR__.'/Export.php';
+        if (is_file($path)) {
+            require_once $path;
+        }
     }
 
     private static function renderResultsDisplay($mode, $token, $login)
