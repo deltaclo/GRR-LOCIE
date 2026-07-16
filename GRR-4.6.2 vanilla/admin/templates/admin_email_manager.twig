@@ -1,0 +1,171 @@
+{% extends 'layout.twig' %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+	<div class="row">
+		<div class="col col-md-12">
+
+			{% if trad.dMessage %}
+				{{ msgSyst.messageInfo(trad.admin_email_manager, trad.dMessage) }}
+			{% endif %}
+
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ trad.admin_email_manager }}</h3>
+				</div>
+
+				{% if settings.grr_mail_method != 'mail' and  settings.grr_mail_method != 'smtp' %}
+					<div class="callout callout-danger">{{ trad.attention_mail_desactive|raw }}</div>
+				{% endif %}
+
+				{% if settings.automatic_mail != 'yes' %}
+					<div class="callout callout-danger">{{ trad.attention_mail_automatique_desactive|raw }}</div>
+				{% endif %}
+
+				<!-- /.box-header -->
+				<div class="box-body no-padding">
+			
+					<p>{{ trad.explain_automatic_mail3 |raw}}</p>
+
+					<hr>
+
+					<form action="?p=admin_email_manager" method="post">
+						<label><input type="checkbox" name="send_always_mail_to_creator" value="y"  {% if settings.send_always_mail_to_creator == '1' %} checked {% endif %} /> {{ trad.explain_automatic_mail1 }}</label>
+						<br>
+						<div style="text-align:center;">
+							<input type="submit" name="mail1" class="btn btn-primary" value="{{ trad.save }}" />
+						</div>
+					</form>
+
+					<hr>
+
+					<p>{{ trad.explain_automatic_mail2 |raw }}</p>
+
+					<form id="area" action="?p=admin_email_manager" method="post">
+
+						<div class="form-group">
+							<label class="col col-sm-3" for="area">{{ trad.areas }}</label>
+							<div class="col col-sm-9">
+								<select name="area" class="form-control" onchange="area_go()">
+									<option value="-1">{{ trad.select }}</option>
+									{% for domaine in domaines %}
+										<option value="{{ domaine.id }}" {% if domaine.id == trad.dIdDomaine %} selected {% endif %}>{{ domaine.nom }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+
+					</form>
+
+					<form id="room" action="?p=admin_email_manager" method="post">
+
+						<div class="form-group">
+							<label class="col col-sm-3" for="room">{{ trad.rooms }}</label>
+							<div class="col col-sm-9">
+								<select name="room" class="form-control" onchange="room_go()">
+									<option value="-1">{{ trad.select }}</option>
+									{% for ressource in ressources %}
+										<option value="{{ ressource.id }}" {% if ressource.id == trad.dIdRessource %} selected {% endif %}>{{ ressource.nom }} - {{ ressource.description }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+
+					</form>
+
+					<hr>
+
+					<h3>{{ trad.mail_user_list }}</h3>
+
+					{% if trad.dIdDomaine > 0 and trad.dIdRessource > 0 %}
+
+						<form action="?p=admin_email_manager" method="get">
+							<input type="hidden" name="p" value="admin_email_manager" />
+							<input type="hidden" name="action" value="add_admin" />
+							<input type="hidden" name="id_area" value="{{ trad.dIdDomaine }}" />
+							<input type="hidden" name="room" value="{{ trad.dIdRessource }}" />
+
+							<div class="form-group">
+								<label class="col col-sm-3" for="reg_admin_login">{{ trad.add_user_to_list }}</label>
+								<div class="col col-sm-9">
+									<select name="reg_admin_login" class="form-control">
+										<option value="">{{ trad.nobody }}</option>
+										{% for utilisateur in utilisateurs %}
+											<option value="{{ utilisateur.login }}">{{ utilisateur.nom }} {{ utilisateur.prenom }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+
+							<div style="text-align:center;">
+								<input class="btn btn-primary" type="submit" value="{{ trad.add }}" />
+							</div>
+						</form>
+						
+						<table class="table table-striped">
+							<tr>
+								<th>{{ trad.login }}</th>
+								<th>{{ trad.last_name }}</th>
+								<th>{{ trad.first_name }}</th>
+								<th>Mail à chaque réservation</th>
+								<th>Mail hebdomadaire</th>
+								<th>{{ trad.action }}</th>
+							</tr>
+							{% for usernotif in utilisateursnotifier %}
+								<tr>
+									<td>{{ usernotif.login }}</td>
+									<td>{{ usernotif.nom }}</td>
+									<td>{{ usernotif.prenom }}</td>
+									<td>
+										<div class="form-group">
+											<div class="custom-control custom-switch">
+											  <input type="checkbox" class="custom-control-input" id="mailresa{{usernotif.login}}" onclick='window.location.assign("?p=admin_email_manager&amp;reg_admin_login={{ usernotif.login }}&amp;room={{ trad.dIdRessource }}&amp;id_area={{ trad.dIdDomaine }}&amp;action=mailresa&amp;valeur={{usernotif.mailresa}}")' {% if usernotif.mailresa == 1 %} checked {% endif %} > 
+											  <label class="custom-control-label" for="mailresa{{usernotif.login}}"></label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="custom-control custom-switch">
+											  <input type="checkbox" class="custom-control-input" id="mailhebdo{{usernotif.login}}" onclick='window.location.assign("?p=admin_email_manager&amp;reg_admin_login={{ usernotif.login }}&amp;room={{ trad.dIdRessource }}&amp;id_area={{ trad.dIdDomaine }}&amp;action=mailhebdo&amp;valeur={{usernotif.mailhebdo}}")' {% if usernotif.mailhebdo == 1 %} checked {% endif %} > 
+											  <label class="custom-control-label" for="mailhebdo{{usernotif.login}}"></label>
+											</div>
+										</div>
+									</td>
+									<td><a href="?p=admin_email_manager&amp;action=del_admin&amp;reg_admin_login={{ usernotif.login }}&amp;room={{ trad.dIdRessource }}&amp;id_area={{ trad.dIdDomaine }}"><i class="fa fa-trash"></i></a></td>
+								</tr>
+							{% endfor %}
+						</table>
+
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascript %}
+	<script>
+		<!--
+		function area_go()
+		{
+			box = document.getElementById("area").area;
+			destination = box.options[box.selectedIndex].value;
+			if (destination) location.href = "?p=admin_email_manager&id_area="+destination;
+		}
+		// -->
+
+		<!--
+		function room_go()
+		{
+			boxDomaine = document.getElementById("area").area;
+			destinationDomaine = boxDomaine.options[boxDomaine.selectedIndex].value;
+			
+			box = document.getElementById("room").room;
+			destination = box.options[box.selectedIndex].value;
+			if (destination) location.href = "?p=admin_email_manager&id_area="+destinationDomaine+"&room="+destination;
+		}
+		// -->
+	</script>
+{% endblock %}

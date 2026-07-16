@@ -1,0 +1,126 @@
+{% extends 'layout.twig' %}
+
+{% block css %}
+	<link rel="stylesheet" href="../jslib/datatables-bs5/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="../jslib/datatables-buttons/css/buttons.bootstrap5.min.css">
+{% endblock %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+
+	{% if visuMail %}
+	<div class="col-md-12">
+		<div class="card {% if visuMail.erreur %}card-danger{% else %}card-success{% endif %} card-outline">
+			<div class="card-body p-0">
+				<div class="mailbox-read-info">
+					<h5>{{ visuMail.sujet }}</h5>
+					<h6>From: {{ visuMail.de }}
+						<span class="mailbox-read-time float-right">{{ visuMail.date }}</span></h6>
+					<h6>To: {{ visuMail.a }}</h6>
+				</div>
+				{% if visuMail.erreur %}
+				<div class="mailbox-controls with-border text-center">
+					<span class="mailbox-read-time text-danger">{{ trad.error }}: {{ visuMail.erreur }}</span>
+				</div>
+				{% endif %}
+				<div class="mailbox-read-message">
+					<p>{{ visuMail.message|raw }}</p>
+				</div>
+				<div class="mailbox-controls with-border text-center">
+				    <hr>
+					<span class="mailbox-read-time text-info">
+						<i>template: {{ visuMail.template }} | type: {{ visuMail.type }} | idresa: {{ visuMail.idresa }}</i>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+	<div class="row">
+		<div class="col col-md-12">
+
+			<div class="box box-success">
+				<div class="box-header">
+					<h3 class="box-title">{{d.TitreDateLog}}</h3>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body">
+				  <table id="tablelog" class="table display table-bordered table-striped">
+						<thead>
+							<tr>
+							  <th>{{trad.date2}}</th>
+							  <th>{{trad.mail_de}}</th>
+							  <th>{{trad.mail_a}}</th>
+							  <th>{{trad.mail_sujet}}</th>
+							  <th>{{trad.mail_message}}</th>
+							  <th>{{trad.entryid}}</th>
+							  <th>{{trad.error}}</th>
+							  <td></td>
+							</tr>
+						</thead>
+						<tbody>
+							{% for log in logsmail %}
+								<tr {% if log.erreur %} class="table-danger" {% endif %}>
+									<td  data-order="{{log.datets}}">{{ log.date }}</td>
+									<td>{{ log.de }}</td>
+									<td>{{ log.a }}</td>
+									<td>{{ log.sujet }}</td>
+									<td>{{ log.message |striptags }}</td>
+									<td>{{ log.idresa }}</td>
+									<td>{{ log.erreur|slice(0, 8) }}</td>
+									<td><a href="?p=admin_view_emails&amp;idlogmail={{ log.idlogmail }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"></i></a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+				  </table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascript %}
+	<!-- DataTables -->
+	<script src="../jslib/datatables/dataTables.min.js"></script>
+	<script src="../jslib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+
+	<!-- Buttons -->
+	<script src="../jslib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="../jslib/datatables-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.html5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.print.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+	<!-- Excel / PDF -->
+	<script src="../jslib/jszip/jszip.min.js"></script>
+	<script src="../jslib/pdfmake/pdfmake.min.js"></script>
+	<script src="../jslib/pdfmake/vfs_fonts.js"></script>
+
+	<script>
+		$(function() {
+
+			var table = $('#tablelog').DataTable({
+				lengthChange: true,
+				lengthMenu: [[10, 25, 50, 100, -1],[10, 25, 50, 100, 'All']],
+				dom:
+					"<'row mb-2'<'col-md-6 d-flex align-items-center flex-nowrap gap-2'lB><'col-md-6 d-flex justify-content-end'f>>" +
+					"<'row'<'col-12'tr>>" +
+					"<'row mt-2'<'col-md-5'i><'col-md-7 d-flex justify-content-end'p>>",
+
+				pagingType: 'full_numbers',
+
+				buttons: [
+					'copy',
+					'excel',
+					'csv',
+					'pdfHtml5',
+					'colvis'
+				]
+			});
+
+		});
+	</script>
+{% endblock %}

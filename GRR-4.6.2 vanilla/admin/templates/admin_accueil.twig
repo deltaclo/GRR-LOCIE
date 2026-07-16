@@ -1,0 +1,196 @@
+{% extends 'layout.twig' %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col col-xs12">
+		<div class="row">
+
+			<!-- Nombre d'utilisateur connecté -->
+			<div class="col col-md-4 col-sm-12 col-xs-12">
+				<div class="info-box">
+					<span class="info-box-icon bg-green"><i class="fas fa-users"></i></span>
+
+					<div class="info-box-content">
+						<span class="info-box-text">{{ trad.users_connected }}</span>
+						<span class="info-box-number"><a href="?p=admin_view_connexions">{{ d.nombreConnecte }} / {{ d.nombreUtilisateur }}</a></span>
+					</div>
+					<!-- /.info-box-content -->
+				</div>
+				<!-- /.info-box -->
+			</div>
+
+			<!-- Actions rapide -->
+			<div class="col col-md-2 col-sm-2 col-xs-12">
+				{% if d.level >=6 %}
+					<a  href="admin_save_mysql.php?flag_connect=yes" class="btn btn-app">
+						<i class="fa fa-save"></i> Backup
+					</a>
+				{% endif %}
+			</div>
+
+		</div>
+		<div class="row">
+			<!-- Anomalies -->
+			<div class="col col-md12">
+
+				{% for alerte in d.alerteTDB %}
+					<div class="info-box bg-{{ alerte.type }}">
+						<span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+
+						<div class="info-box-content">
+							<p>{{ alerte.MessageWarning }}</p>
+
+							<div class="progress">
+								<div class="progress-bar" style="width: 100%"></div>
+							</div>
+							<span class="progress-description">
+								<a href="{{ alerte.lien }}">{{ alerte.NomLien }}</a>
+							</span>
+						</div>
+					</div>
+				{% endfor %}
+
+				{% if d.alerteTDB == "" %}
+					<div class="info-box bg-aqua">
+						<span class="info-box-icon"><i class="fas fa-info"></i></span>
+
+						<div class="info-box-content">
+							<p>Aucune anomalie</p>
+						</div>
+					</div>
+				{% endif %}
+
+			</div>
+		</div>
+
+		{% if d.gRecherche_MAJ == 1 %}
+		<div class ="row">
+			<div class="col-lg-3 col-3">
+				<!-- small card -->
+				<div class="small-box {% if d.maj_SiteGRR_Num == 2 %}bg-success{% elseif d.maj_SiteGRR_Num == 3 %}bg-warning{% else %}bg-disabled{% endif %}">
+					<div class="inner">
+						<h3>{{ d.maj_SiteGRR_Version }}</h3>
+
+						<p>{{ d.version }}</p>
+					</div>
+					<div class="icon">
+						<i class="fa-solid fa-arrow-rotate-right"></i>
+					</div>
+					<a href="?p=admin_infos" class="small-box-footer">
+						{{ trad.num_version_title }} <i class="fas fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="row">
+
+			
+			<div class="col col-md-6 col-sm-12 col-xs-12">
+					<!-- Nombre d'utilisateur connecté -->
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title">
+							<i class="fas fa-newspaper mr-1"></i>
+							Actualités DEVOME
+							</h3>
+						</div><!-- /.card-header -->
+						<div class="card-body">
+							<div class="tab-content p-0">
+								{{d.newsDevome|raw}}
+							</div>
+						</div><!-- /.card-body -->
+					</div>
+
+					<!-- Nombre d'utilisateur connecté -->
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title">
+							<i class="fas fa-columns mr-1"></i>
+							Dernières connexions
+							</h3>
+						</div><!-- /.card-header -->
+						<div class="card-body">
+							<div class="tab-content p-0">
+								<table class="table table-condensed">
+									<tbody>
+										<tr>
+											<th style="width: 10px">#</th>
+											<th>{{ trad.login_name }}</th>
+											<th>{{ trad.begining_of_session }}</th>
+										</tr>
+										{% for log in d.dernieresConnexions %}
+											<tr {% if log.clos == 0 %}class="success"{% endif %}>
+												{% if log.clos == 0 %}
+													<td><span class="badge bg-green">O</span></td>
+												{% else %}
+													<td><span class="badge bg-red">O</span></td>
+												{% endif %}
+												<td>{{ log.login }}</td>
+												<td>{{ log.debut }}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div><!-- /.card-body -->
+					</div>
+			</div>
+
+			<!-- Réservations à modérer -->
+			<div class="col col-md-6 col-sm-12 col-xs-12">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">
+						<i class="fas fa-th mr-1"></i>
+						{{ d.nombreModeration }} réservation(s) à modérer
+						</h3>
+					</div><!-- /.card-header -->
+					<div class="card-body">
+						<div class="tab-content p-0">
+								<table class="table table-condensed">
+									<thead>
+										<tr>
+											<th>{{ trad.room }}</th>
+											<th>{{ trad.start_date }}</th>
+											<th>{{ trad.created_by }}</th>
+											<th>{{ trad.nom_beneficiaire }}</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for resaMode in d.listeModeration %}
+											<tr>
+												<td>{{ resaMode.ressource }}</td>
+												<td>{{ resaMode.debut }}</td>
+												<td>{{ resaMode.createur }}</td>
+												<td>{{ resaMode.beneficiaire }}</td>
+												<td><a href='{{ resaMode.lien }}'><span class='fa fa-eye'></span></a></td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+						</div>
+					</div><!-- /.card-body -->
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'layout.twig' %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+{% import 'champs.twig' as form %}
+
+{% block css %}
+	<link rel="stylesheet" href="../jslib/toastr/toastr.min.css">
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+        <div class="col col-xs-12">
+			<div class="nav-tabs-custom">
+
+            <div class="tab-content">
+              <!-- Font Awesome Icons -->
+              <div class="tab-pane active" id="fa-icons">
+				<form action="?p=admin_cgu" id="nom_formulaire" method="post">
+					<section id="message">
+						<h4 class="page-header">{{ trad.cgu_titre }}</h4>
+						<p>{{ trad.cgu_grr }}</p>
+						{{ form.input('titre', 'Titre', pages.cgu[0], {classGroup: 'col-sm-12', classLabel: 'col-sm-2', classInput: 'col-sm-10 control-label'}) }}
+						{{ form.summernote('summernote', '', pages.cgu[1], {classGroup: 'col-sm-12', classInput: 'col-sm-12', name: 'CGU'}) }}
+					</section>
+
+					<div style="text-align:center;">
+						<input class="btn btn-primary" type="submit" name="ok" value="{{ trad.save }}" />
+					</div>
+				</form>
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+      </div>
+
+{% endblock %}
+
+{% block javascript %}
+	<script src="../jslib/toastr/toastr.min.js"></script>
+	<script>
+		$(function () {
+			{%if d.enregistrement%}
+				{%if d.enregistrement == 1 %}
+					toastr.success("{{trad.message_records}}")
+				{% else %}
+					toastr.warning("{{d.enregistrement|raw}}")
+				{%endif%}
+			{%endif%}
+		}); 
+	</script>
+{% endblock %}

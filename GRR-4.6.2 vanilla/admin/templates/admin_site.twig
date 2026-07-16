@@ -1,0 +1,114 @@
+{% extends 'layout.twig' %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+	<div class="row">
+		<div class="col col-md-12">
+
+			{% if trad.dMesgSysteme %}
+				{{ msgSyst.messageAlerte('', trad.dMesgSysteme) }}
+			{% endif %}
+
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">{{ trad.admin_site }}</h3> <a class="btn pull-right bg-green"href="?p=admin_site&action=create&id=0">{{ trad.display_add_site }}</a>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body no-padding">
+					<p>{{ trad.admin_site_explications }}</p>
+
+					<table class="table table-striped">
+						<tr>
+						  
+						  <th>{{ trad.site_code }}</th>
+						  {# <th>TEST</th> #}
+						  {# <th>{{ trad.site_access }}</th> #}
+						  <th>{{ trad.site_name }}</th>
+						  <th>{{ trad.site_cp }}</th>
+						  <th>{{ trad.site_ville }}</th>
+						  <th colspan="2">{{ trad.action }}</th>
+						</tr>
+						{% for site in sites %}
+							<tr>
+								<td>{{ site.code }}</td>
+								{# <td>{{ site.access }}</td> #}
+								<td>{{ site.nomsite }}</td>
+								<td>{{ site.cp }}</td>
+								<td>{{ site.ville }}</td>
+								<td>
+									<a href="?p=admin_site&action=update&id={{site.idsite}}" class="btn btn-info btn-md"><i class="icon fa fa-edit"></i></a>
+								</td>
+									
+								<form method="post" id="supSite{{site.idsite}}" action="?p=admin_site">
+									<input type="hidden" name="p" value="admin_site" />
+									<input type="hidden" name="id" value="{{site.idsite}}" />
+									<input type="hidden" name="action" value="delete" />
+									<td><button type="button" class="btn btn-danger btn-md" data-bs-toggle="modal" data-bs-target="#modal-warning" data-texte="{{trad.confirm_del}} : {{site.nomsite}}" data-idsup="{{ site.idsite }}"><i class="icon fa fa-trash"></i></button></td>
+								</form>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- popup modal -->
+	<div class="modal fade" id="modal-warning" style="display: none;" aria-hidden="true">
+		<form action="?p=admin_site" id="formmodal">
+			<div class="modal-dialog">
+			<div class="modal-content bg-warning">
+				<div class="modal-header">
+				<h4 class="modal-title">{{trad.confirm_del}}</h4>
+				<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				</div>
+				<div class="modal-body">
+				<span class="modaltexte" id="modaltexte"></span><span class="modalidsup" id="modalidsup" hidden></span>
+				</div>
+				<div class="modal-footer justify-content-between">
+					<button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">{{trad.NO}}</button>
+					<button type="submit" id="liensup" class="btn btn-outline-dark">{{trad.YES}}</button>
+				</div>
+			</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</form>
+	</div><!-- /.modal -->
+
+{% endblock %}
+
+{% block javascript %}
+	<script>
+		// Modal
+		$('#modal-warning').on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget) // Button that triggered the modal
+			var idasup = button.data('idsup')// Extract info from data-* attributes
+			var texte = button.data('texte')
+		    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+		    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+		    var modal = $(this)
+		    modal.find('.modalidsup').text(idasup)
+			modal.find('.modaltexte').text(texte)
+		})
+
+		$(function(){
+			$('#formmodal').submit(function(e) {
+			  e.preventDefault()
+			  var $form = $(this)
+			  var v=document.getElementById('modalidsup').innerHTML
+			  $.post($form.attr('action'), $form.serialize())
+			  .done(function(data) {
+				$('#html').html(data);
+				$('#modal-warning').modal('hide');
+				document.getElementById("supSite"+v).submit(); 
+			  })
+			  .fail(function() {
+				alert('Une erreur est survenue : GRRJS')
+			  })
+			})
+		})
+	</script>
+{% endblock %}
