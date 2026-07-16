@@ -1,0 +1,3 @@
+identifiant personnel;identifiant materiel;localisation;date debut;date fin prevue;date fin effective;commentaire
+Bor_N_1;MATERIEL_INCONNU;Bureau test;2024-01-01;2024-12-31;;Ligne volontairement en erreur pour tester le journal
+PERSONNE_INCONNUE;Ec_1;Bureau test;2024-01-01;2024-12-31;;Ligne volontairement en erreur pour tester le journal

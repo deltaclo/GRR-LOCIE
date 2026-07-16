@@ -1,0 +1,187 @@
+<?php
+/**
+ * AdminFonctions.php
+ * Fonctions Général de l'administration
+ * Dernière modification : $Date: 2026-02-28 12:20$
+ * @author    JeromeB & Yan Naessens
+ * @copyright Since 2003 Team DEVOME - JeromeB
+ * @link      http://www.gnu.org/licenses/licenses.html
+ *
+ * This file is part of GRR.
+ *
+ * GRR is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+class AdminFonctions
+{
+    // Nombre d'utilisateur enregisté et actif
+	public static function NombreUtilisateurs()	{
+		$sql = "SELECT count(login) FROM ".TABLE_PREFIX."_utilisateurs WHERE etat = 'actif'";
+		$res = grr_sql_query($sql);
+        	$tmpsql = mysqli_fetch_array($res);
+		$nb_utilisateur = $tmpsql[0];
+		grr_sql_free($res);
+
+		return $nb_utilisateur;
+	}
+
+    // Nombre d'utilisateur actuellement connecté
+	public static function NombreDeConnecter() {
+		$sql = "SELECT count(login) FROM ".TABLE_PREFIX."_log WHERE end > now()";
+		$res = grr_sql_query($sql);
+        	$tmpsql = mysqli_fetch_array($res);
+		$nb_connect = $tmpsql[0];
+		grr_sql_free($res);
+
+		return $nb_connect;
+	}
+
+	public static function Warning() // Alerte
+	{
+        global $versionReposite, $version_grr, $gWarningBackup, $gWarningDossierInstall, $gWarningVersionTest, $gWarningSSL;
+
+        $alerteTDB = array();
+
+        if ($gWarningVersionTest == 1 && (stristr($version_grr, 'a') || stristr($version_grr, 'b') || stristr($version_grr, 'RC') || stristr($versionReposite, 'github') || stristr($versionReposite, 'alpha')|| stristr($versionReposite, 'beta') || stristr($versionReposite, 'RC') )){
+            $alerteTDB[] = array('type' =>"danger", 'MessageWarning' => "Version de développement, ne pas utiliser en production !", 'NomLien' => "Trouver une autre version", 'lien' => "https://github.com/JeromeDevome/GRR/releases");
+		}
+
+		if ( time() < Settings::get("begin_bookings") || time() > Settings::get("end_bookings"))
+		{
+            $alerteTDB[] = array('type' =>"danger", 'MessageWarning' => "Les dates d'ouverture des réservations sont actuellements fermées !", 'NomLien' => "Configurer les dates", 'lien' => "?p=admin_config");
+		} elseif( (time() + 2592000) < Settings::get("begin_bookings") || (time() + 2592000) > Settings::get("end_bookings"))
+		{
+            $alerteTDB[] = array('type' =>"warning", 'MessageWarning' => "Les dates d'ouverture des réservations seront prochainement fermées.", 'NomLien' => "Configurer les dates", 'lien' => "?p=admin_config");
+		}
+
+		if ($gWarningBackup == 1  && (time() - 2592000) > Settings::get("backup_date") ){
+            $alerteTDB[] = array('type' =>"warning", 'MessageWarning' => "La dernière sauvegarde de la BDD date de plus d'un mois !", 'NomLien' => "Faire une sauvegarde", 'lien' => "admin_save_mysql.php?flag_connect=yes");
+		}
+
+        if ($gWarningSSL == 1 && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off')) {
+            $alerteTDB[] = array('type' =>"warning", 'MessageWarning' => "La connexion n'est pas sécurisée !", 'NomLien' => "Configurer le HTTPS", 'lien' => "?p=admin_config4");
+        }
+
+       if($gWarningDossierInstall == 1 && file_exists('../installation/')){
+            $alerteTDB[] = array('type' =>"warning", 'MessageWarning' => "Le dossier d'installation doit être supprimé pour une installation sécurisée !", 'NomLien' => "", 'lien' => "");
+        }
+
+       if(Settings::get("ActiveModeDemo") == "y"){
+            $alerteTDB[] = array('type' =>"info", 'MessageWarning' => "Ceci est une version de démonstration ! Certaines options sont désactivées.", 'NomLien' => "", 'lien' => "");
+        }
+
+		return $alerteTDB;
+	}
+
+
+	// Liste des dernières connexions
+    public static function DernieresConnexion($nbAretouner) {
+        // les X utilisateurs sui ce sont connectés en derniers
+        $sql = "SELECT u.login, l.START, l.END FROM ".TABLE_PREFIX."_log l LEFT JOIN ".TABLE_PREFIX."_utilisateurs u ON l.LOGIN = u.login ORDER BY START desc LIMIT ".$nbAretouner;
+        $res = grr_sql_query($sql);
+        while ($row = mysqli_fetch_assoc($res)) {
+            if (strtotime($row["END"]) > time())
+                $clos = 0;
+            else
+                $clos = 1;
+            $logsConnexion[] = array('login' => $row["login"], 'debut' => $row["START"], 'clos' => $clos );
+        }
+        return $logsConnexion;
+    }
+
+    /**
+     * Fonction : ReservationsAModerer($user) 
+     * Description : si c'est un admin ou un gestionnaire de ressource qui est connecté, retourne un tableau contenant le nombre de réservations à modérer et un sous-tableau contenant, pour chaque réservation à modérer, [id,room_id,start_time,create_by,beneficiaire]
+    */
+    public static function ReservationsAModerer($user)
+    {   
+        global $dformat;
+        $listeModeration = array();
+        $sql = "";
+        if (SecuAccess::UserLevel($user,-1) > 5) // admin général
+        {
+            $sql = "SELECT e.id,r.room_name,e.start_time,create_by,beneficiaire FROM ".TABLE_PREFIX."_entry e JOIN ".TABLE_PREFIX."_room r ON e.room_id = r.id WHERE e.moderate = 1 AND e.supprimer = 0";
+        }
+        elseif (isset($_GET['id_site']) && (SecuAccess::UserLevel($user,intval($_GET['id_site']),'site') > 4)) // admin du site
+        {
+            $sql = "SELECT e.id,r.room_name,e.start_time,create_by,beneficiaire FROM ".TABLE_PREFIX."_entry e JOIN ".TABLE_PREFIX."_room r ON e.room_id = r.id JOIN ".TABLE_PREFIX."_j_site_area j ON r.area_id = j.id_area WHERE (j.id_site = ".SecuChaine::ProtectDataSql($_GET['id_site'])." AND e.moderate = 1 AND e.supprimer = 0)";
+        }
+        elseif (isset($_GET['area']) && (SecuAccess::UserLevel($user,intval($_GET['area']),'area') > 3)) // admin du domaine
+        {
+            $sql = "SELECT e.id,r.room_name,e.start_time,create_by,beneficiaire FROM ".TABLE_PREFIX."_entry e JOIN ".TABLE_PREFIX."_room r ON e.room_id = r.id JOIN ".TABLE_PREFIX."_area a ON r.area_id = a.id WHERE (a.id = ".SecuChaine::ProtectDataSql($_GET['area'])." AND e.moderate = 1 AND e.supprimer = 0)";
+        }
+        elseif (isset($_GET['room']) && (SecuAccess::UserLevel($user,intval($_GET['room']),'room') > 2)) // gestionnaire de la ressource
+        {
+            $sql = "SELECT e.id,r.room_name,e.start_time,create_by,beneficiaire FROM ".TABLE_PREFIX."_entry e JOIN ".TABLE_PREFIX."_room r ON e.room_id = r.id WHERE (e.room_id = ".SecuChaine::ProtectDataSql($_GET['room'])." AND e.moderate = 1  AND e.supprimer = 0 ) ";
+        }
+        if ($sql != ""){
+            $res = grr_sql_query($sql);
+            if ($res)
+            {
+                foreach($res as $row) 
+                {
+                    $link = "../app.php?p=vuereservation&id=".$row['id']."&mode=page";
+                    $listeModeration[] = array('ressource' => $row['room_name'], 'debut' => time_date_string($row['start_time'], $dformat), 'createur' => $row['create_by'], 'beneficiaire' => $row['beneficiaire'], 'lien' => $link );
+                }
+            }
+        }
+        $nbAModerer = count($listeModeration);
+        return array($nbAModerer, $listeModeration);
+    }
+
+    // Recharche Maj GRR
+    public static function RechercheMajGRR() {
+        global $version_grr, $grr_devel_url, $gRecherche_MAJ;
+
+        $resultText = "";
+        $resultNum = 0; // 0 : pas de résultat, 1 : pas de recherche, 2 : maj à jour, 3 :  maj dispo
+        $derniereVersion = "";
+
+
+        if($gRecherche_MAJ == 1)
+        {
+
+            $url = "https://grr.devome.com/API/majgrr.php";
+            $opts = [
+                    'http' => [
+                            'method' => 'GET',
+                            'timeout' => 2,
+                            'header' => [
+                                    'User-Agent: PHP'
+                            ]
+                    ]
+            ];
+            
+            $ctx = stream_context_create($opts);
+            $json = @file_get_contents( $url, 0, $ctx );
+            
+            $myObj = json_decode($json);
+
+            if($json === FALSE) {
+                $resultText = "<span class=\"label label-info\">".get_vocab("maj_impossible_rechercher")."</span>". get_vocab("maj_go_www")."<a href=\"".$grr_devel_url."\">".get_vocab("mrbs")."</a>";
+                $resultNum = 0;
+            } else{
+
+                $derniereVersion = substr($myObj->tag_name,1);
+
+                if (version_compare($version_grr, $derniereVersion, '<')) {
+                    $resultText = "<span class=\"label label-warning\">".get_vocab("maj_dispo")." : ".$myObj->tag_name." - ".$myObj->published_at."</span>";
+                    $resultNum = 3;
+                } else{
+                    $resultText = "<span class=\"label label-success\">".get_vocab("maj_dispo_aucune")."</span>";
+                    $resultNum = 2;
+                }
+            }
+        } else {
+            $resultText = "<span class=\"label label-info\">".get_vocab("maj_recherche_desactive")."</span> ". get_vocab("maj_go_www")."<a href=\"".$grr_devel_url."\">".get_vocab("mrbs")."</a>";
+            $resultNum = 1;
+        }
+
+        return array($resultText, $resultNum, $derniereVersion);
+    }
+}
+
+?>

@@ -1,0 +1,6 @@
+identifiant materiel;designation;precision;mac;marque;numero de serie;code barre usmb;os;annee;commentaire;localisation;statut;pret multiple
+Ec_1;Ecran;;;DELL;HDXNFZ2;;;;;Bureau 2022;stocke;0
+A_1;Clavier;;;DELL;;;;;;Bureau 2022;stocke;1
+A_2;Souris;;;DELL;;;;;;Bureau 2022;stocke;1
+OP_1;Ordinateur portable;;F4-30-B9-18-41-6C;HP;L4QI9AV;;W;;;Bureau 2012;stocke;0
+Ec_57;Ecran;P2214Hb;;DELL;CN-029C29-74261-57R-90GL;;;;;Bureau 2033;stocke;0

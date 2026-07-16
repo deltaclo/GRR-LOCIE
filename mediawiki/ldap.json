@@ -1,0 +1,23 @@
+{
+  "USMB": {
+    "connection": {
+      "server": "ldap-bourget.univ-smb.fr",
+      "port": 636,
+      "enctype": "ssl",
+      "options": {
+        "LDAP_OPT_DEREF": 1
+      },
+      "basedn": "ou=people,ou=uds,dc=agalan,dc=org",
+      "userbasedn": "ou=people,ou=uds,dc=agalan,dc=org",
+      "searchattribute": "uid",
+      "usernameattribute": "uid",
+      "realnameattribute": "cn",
+      "emailattribute": "mail"
+    },
+    "authentication": {
+      "usernameattribute": "uid",
+      "realnameattribute": "cn",
+      "emailattribute": "mail"
+    }
+  }
+}

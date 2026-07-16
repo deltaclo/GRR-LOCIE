@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"LOCIE"
+		]
+	},
+	"grraccessgate-desc": "Contrôle l’accès à MediaWiki au moyen d’une preuve de session émise par GRR",
+	"grraccessgate-api-access-denied": "Une session GRR valide est requise pour accéder à l’API MediaWiki.",
+	"grraccessgate-api-config-error": "La passerelle GRR/MediaWiki est mal configurée."
+}

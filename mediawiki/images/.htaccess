@@ -1,0 +1,22 @@
+<IfModule php7_module>
+php_flag engine off
+</IfModule>
+# In php8, php dropped the version number.
+<IfModule php_module>
+php_flag engine off
+</IfModule>
+
+RemoveHandler .php
+
+<FilesMatch "\.ph(p[3457]?s?|tml)$">
+	SetHandler None
+</FilesMatch>
+
+# Les fichiers sont servis par grr_img_auth.php après validation de la preuve
+# GRR. Cette règle doit produire HTTP 403 pour toute URL directe sous images/.
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+	Deny from all
+</IfModule>

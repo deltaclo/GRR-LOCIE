@@ -1,0 +1,87 @@
+{
+	"name": "GrrAccessGate",
+	"version": "0.3.0",
+	"author": [
+		"LOCIE"
+	],
+	"url": "https://intranet-locie.local.univ-savoie.fr/",
+	"descriptionmsg": "grraccessgate-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.43"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\GrrAccessGate\\": "includes/"
+	},
+	"MessagesDirs": {
+		"GrrAccessGate": [
+			"i18n"
+		]
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\GrrAccessGate\\Hooks",
+			"services": [
+				"MainConfig"
+			]
+		}
+	},
+	"Hooks": {
+		"BeforeInitialize": "main",
+		"BeforePageDisplay": "main",
+		"ApiBeforeMain": "main",
+		"HTMLFileCache::useFileCache": "main",
+		"ResourceLoaderGetConfigVars": "main"
+	},
+	"ResourceModules": {
+		"ext.grrAccessGate.keepalive": {
+			"scripts": [
+				"resources/keepalive.js"
+			]
+		}
+	},
+	"config": {
+		"GrrAccessGateEnabled": {
+			"description": "Active le contrôle d'accès GRR.",
+			"value": false
+		},
+		"GrrAccessGateSecret": {
+			"description": "Secret HMAC partagé avec le module GRR mediawiki_auth.",
+			"value": ""
+		},
+		"GrrAccessGateCookieName": {
+			"description": "Nom du cookie de preuve émis par GRR.",
+			"value": "GRRMediaWikiAccess"
+		},
+		"GrrAccessGateAudience": {
+			"description": "Audience attendue dans la preuve GRR.",
+			"value": "mediawiki-production"
+		},
+		"GrrAccessGateAuthorizeUrl": {
+			"description": "URL locale du point d'autorisation GRR.",
+			"value": "/grr/personnalisation/modules/mediawiki_auth/authorize.php"
+		},
+		"GrrAccessGateRefreshUrl": {
+			"description": "URL locale de renouvellement silencieux de la preuve GRR.",
+			"value": "/grr/personnalisation/modules/mediawiki_auth/refresh.php"
+		},
+		"GrrAccessGateWikiPath": {
+			"description": "Chemin URL de l'instance MediaWiki protégée.",
+			"value": "/mediawiki/"
+		},
+		"GrrAccessGateClockSkew": {
+			"description": "Tolérance maximale, en secondes, pour l'horloge d'émission.",
+			"value": 30
+		},
+		"GrrAccessGateMaxTokenLifetime": {
+			"description": "Durée de vie maximale acceptée pour une preuve, en secondes.",
+			"value": 600
+		},
+		"GrrAccessGateRefreshInterval": {
+			"description": "Intervalle de renouvellement silencieux, en secondes.",
+			"value": 60
+		}
+	},
+	"manifest_version": 2
+}

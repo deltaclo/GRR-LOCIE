@@ -1,0 +1,350 @@
+﻿ligne excel;motif anomalie;identifiant personnel;identifiant materiel;identifiant materiel excel;localisation;date debut;date fin prevue;date fin effective;commentaire
+5;date_debut_manquante;Jul_R_2;OP_1;OP_1;Bureau 2012;;;;Import Excel 26062026 ligne prets 5
+6;date_debut_manquante;Jul_R_2;A_3;A_3;Bureau 2012;;;;Import Excel 26062026 ligne prets 6
+7;date_debut_manquante;Jul_R_2;A_4;A_4;Bureau 2012;;;;Import Excel 26062026 ligne prets 7
+8;date_debut_manquante;Jul_R_2;Ec_2;Ec_2;Bureau 2012;;;;Import Excel 26062026 ligne prets 8
+9;date_debut_manquante;Jul_R_2;OP_2;OP_2;Bureau 2012;;;;Import Excel 26062026 ligne prets 9
+10;date_debut_manquante;Jul_R_2;A_5;A_5;Bureau 2012;;;;Import Excel 26062026 ligne prets 10
+11;date_debut_manquante;Jul_R_2;A_6;A_6;Bureau 2012;;;;Import Excel 26062026 ligne prets 11
+12;date_debut_manquante;Jul_R_2;A_7;A_7;Bureau 2012;;;;Import Excel 26062026 ligne prets 12
+13;date_debut_manquante;Jul_R_2;A_8;A_8;Bureau 2012;;;;Import Excel 26062026 ligne prets 13
+14;date_debut_manquante;Nol_L_3;OP_3;OP_3;Bureau 2012;;;;Import Excel 26062026 ligne prets 14
+15;date_debut_manquante;Nol_L_3;Ec_3;Ec_3;Bureau 2012;;;;Import Excel 26062026 ligne prets 15
+16;date_debut_manquante;Nol_L_3;A_9;A_9;Bureau 2012;;;;Import Excel 26062026 ligne prets 16
+17;date_debut_manquante;Nol_L_3;A_10;A_10;Bureau 2012;;;;Import Excel 26062026 ligne prets 17
+18;date_debut_manquante;Nol_L_3;SA_1;SA_1;Bureau 2012;;;;Import Excel 26062026 ligne prets 18
+19;date_debut_manquante;Nol_L_3;A_11;A_11;Bureau 2012;;;;Import Excel 26062026 ligne prets 19
+20;date_debut_manquante;Nol_L_3;OP_4;OP_4;Bureau 2012;;;;Import Excel 26062026 ligne prets 20
+21;date_debut_manquante;Nol_L_3;A_12;A_12;Bureau 2012;;;;Import Excel 26062026 ligne prets 21
+22;date_debut_manquante;Nol_L_3;A_13;A_13;Bureau 2012;;;;Import Excel 26062026 ligne prets 22
+23;date_debut_manquante;Nol_L_3;A_14;A_14;Bureau 2012;;;;Import Excel 26062026 ligne prets 23
+24;date_debut_manquante;Jul_R_2;OP_5;OP_5;Bureau 2012;;;;Import Excel 26062026 ligne prets 24
+25;date_debut_manquante;Jul_R_2;SA_2;SA_2;Bureau 2012;;;;Import Excel 26062026 ligne prets 25
+26;date_debut_manquante;Flo_G_4;OP_6;OP_6;Bureau 2011;;;;Import Excel 26062026 ligne prets 26
+27;date_debut_manquante;Flo_G_4;SA_3;SA_3;Bureau 2011;;;;Import Excel 26062026 ligne prets 27
+28;date_debut_manquante;Flo_G_4;Ec_4;Ec_4;Bureau 2011;;;;Import Excel 26062026 ligne prets 28
+29;date_debut_manquante;Flo_G_4;Ec_5;Ec_5;Bureau 2011;;;;Import Excel 26062026 ligne prets 29
+30;date_debut_manquante;Flo_G_4;A_15;A_15;Bureau 2011;;;;Import Excel 26062026 ligne prets 30
+31;date_debut_manquante;Flo_G_4;A_16;A_16;Bureau 2011;;;;Import Excel 26062026 ligne prets 31
+32;date_debut_manquante;Flo_G_4;A_17;A_17;Bureau 2011;;;;Manip: caméra rapide
+33;date_debut_manquante;Flo_G_4;OP_7;OP_7;Bureau 2011;;;;Manip: caméra rapide
+34;date_debut_manquante;Flo_G_4;OP_8;OP_8;Bureau 2011;;;;Manip: crayon confocal (+ caméra IR?)
+35;date_debut_manquante;Flo_G_4;A_18;A_18;Bureau 2011;;;;Import Excel 26062026 ligne prets 35
+36;date_debut_manquante;Gér_M_5;OP_9;OP_9;Bureau 2011;;;;Import Excel 26062026 ligne prets 36
+37;date_debut_manquante;Moh_A_6;OP_10;OP_10;Bureau 2011;;;;Import Excel 26062026 ligne prets 37
+38;date_debut_manquante;Moh_A_6;Ec_6;Ec_6;Bureau 2011;;;;Import Excel 26062026 ligne prets 38
+39;date_debut_manquante;Moh_A_6;A_19;A_19;Bureau 2011;;;;Import Excel 26062026 ligne prets 39
+40;date_debut_manquante;Moh_A_6;A_20;A_20;Bureau 2011;;;;Import Excel 26062026 ligne prets 40
+41;date_debut_manquante;Moh_A_6;A_21;A_21;Bureau 2011;;;;Import Excel 26062026 ligne prets 41
+42;date_debut_manquante;Moh_A_6;A_22;A_22;Bureau 2011;;;;Import Excel 26062026 ligne prets 42
+43;date_debut_manquante;Moh_A_6;A_23;A_23;Bureau 2011;;;;Import Excel 26062026 ligne prets 43
+44;date_debut_manquante;Moh_A_6;A_24;A_24;Bureau 2011;;;;Import Excel 26062026 ligne prets 44
+45;date_debut_manquante;Emm_R_7;OP_11;OP_11;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 45
+46;date_debut_manquante;Emm_R_7;Ec_7;Ec_7;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 46
+47;date_debut_manquante;Emm_R_7;Ec_8;Ec_8;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 47
+48;date_debut_manquante;Emm_R_7;A_25;A_25;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 48
+49;date_debut_manquante;Emm_R_7;A_26;A_26;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 49
+50;date_debut_manquante;Emm_R_7;A_27;A_27;Bureau 2024;;2025-12-31;;Import Excel 26062026 ligne prets 50
+51;date_debut_manquante;Emm_R_7;A_28;A_28;Bureau 2024;;2025-12-31;;Import Excel 26062026 ligne prets 51
+52;date_debut_manquante;Emm_R_7;A_29;A_29;Bureau 2024;;2025-12-31;2025-12-19;Import Excel 26062026 ligne prets 52
+53;date_debut_manquante;Emm_R_7;A_30;A_30;Bureau 2024;;2025-12-31;;Import Excel 26062026 ligne prets 53
+54;date_debut_manquante;Lau_M_8;OF_1;OF_1;Bureau 2030;;;;Import Excel 26062026 ligne prets 54
+55;date_debut_manquante;Lau_M_8;Ec_9;Ec_9;Bureau 2030;;;;Import Excel 26062026 ligne prets 55
+56;date_debut_manquante;Lau_M_8;Ec_10;Ec_10;Bureau 2030;;;;Import Excel 26062026 ligne prets 56
+57;date_debut_manquante;Ben_G_9;Ec_11;Ec_11;Bureau 2021;;;;Import Excel 26062026 ligne prets 57
+58;date_debut_manquante;Han_M_10;Ec_12;Ec_12;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 58
+59;date_debut_manquante;Ben_G_9;A_31;A_31;Bureau 2021;;;;Import Excel 26062026 ligne prets 59
+60;date_debut_manquante;Ben_G_9;A_32;A_32;Bureau 2021;;;;Import Excel 26062026 ligne prets 60
+61;date_debut_manquante;Han_M_10;OP_12;OP_12;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 61
+62;date_debut_manquante;Ben_G_9;SA_4;SA_4;;;;;Import Excel 26062026 ligne prets 62
+63;date_debut_manquante;Han_M_10;A_33;A_33;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 63
+64;date_debut_manquante;Ben_G_9;A_34;A_34;Bureau 2021;;;;Import Excel 26062026 ligne prets 64
+65;date_debut_manquante;Ben_G_9;A_35;A_35;Bureau 2021;;;;Import Excel 26062026 ligne prets 65
+67;date_debut_manquante;Mar_C_11;OF_2;OF_2;Bureau 2022;;;;Import Excel 26062026 ligne prets 67
+68;date_debut_manquante;Mar_C_11;A_36;A_36;Bureau 2022;;;;Import Excel 26062026 ligne prets 68
+69;date_debut_manquante;Mar_C_11;Ec_13;Ec_13;Bureau 2022;;;;Import Excel 26062026 ligne prets 69
+70;date_debut_manquante;Mar_C_11;Ec_14;Ec_14;Bureau 2022;;;;Import Excel 26062026 ligne prets 70
+71;date_debut_manquante;Chr_R_12;Ec_15;Ec_15;Bureau 2012;;;;Import Excel 26062026 ligne prets 71
+72;date_debut_manquante;Chr_R_12;A_37;A_37;Bureau 2012;;;;Import Excel 26062026 ligne prets 72
+73;date_debut_manquante;Chr_R_12;A_38;A_38;Bureau 2012;;;;Import Excel 26062026 ligne prets 73
+74;date_debut_manquante;Chr_R_12;OF_3;OF_3;Bureau 2012;;;;Import Excel 26062026 ligne prets 74
+75;date_debut_manquante;Gui_L_13;OP_14;OP_14;Bureau 2041;;2025-12-31;;Prolongation du prêt pour rédaction article
+76;date_debut_manquante;Gui_L_13;Ec_16;Ec_16;Bureau 2041;;2025-12-31;2026-01-16;Import Excel 26062026 ligne prets 76
+77;date_debut_manquante;Gui_L_13;Ec_17;Ec_17;Bureau 2041;;2025-12-31;2026-01-16;Import Excel 26062026 ligne prets 77
+78;date_debut_manquante;Gui_L_13;SA_5;SA_5;Bureau 2041;;2025-12-31;2026-01-16;Import Excel 26062026 ligne prets 78
+79;date_debut_manquante;Gui_L_13;A_39;A_39;Bureau 2041;;2025-12-31;2026-01-16;Import Excel 26062026 ligne prets 79
+80;date_debut_manquante;Gui_L_13;A_40;A_40;Bureau 2041;;2025-12-31;2026-01-16;Import Excel 26062026 ligne prets 80
+81;date_debut_manquante;Gui_L_13;A_41;A_41;Bureau 2041;;2025-12-31;;Import Excel 26062026 ligne prets 81
+82;date_debut_manquante;Rui_D_14;OP_15;OP_15;Bureau 2041;;2025-12-31;2025-12-12;Import Excel 26062026 ligne prets 82
+83;date_debut_manquante;Rui_D_14;Ec_18;Ec_18;Bureau 2041;;2025-12-31;2025-12-12;Import Excel 26062026 ligne prets 83
+84;date_debut_manquante;Rui_D_14;A_42;A_42;Bureau 2041;;2025-12-31;2025-12-12;Import Excel 26062026 ligne prets 84
+85;date_debut_manquante;Rui_D_14;SA_6;SA_6;Bureau 2041;;2025-12-31;2025-12-12;Import Excel 26062026 ligne prets 85
+86;date_debut_manquante;Rui_D_14;A_43;A_43;Bureau 2041;;2025-12-31;2025-12-12;Import Excel 26062026 ligne prets 86
+87;date_debut_manquante;Man_G_15;A_44;A_44;Bureau 2011;;2026-09-30;;Import Excel 26062026 ligne prets 87
+88;date_debut_manquante;Apo_F_16;A_45;A_45;Domicile;;2025-04-27;;Import Excel 26062026 ligne prets 88
+89;date_debut_manquante;Apo_F_16;A_46;A_46;Domicile;;2025-04-27;;Import Excel 26062026 ligne prets 89
+90;date_debut_manquante;Ali_D_17;OP_16;OP_16;Bureau 2041;;2025-12-31;;Import Excel 26062026 ligne prets 90
+91;date_debut_manquante;Ali_D_17;A_47;A_47;Bureau 2041;;2025-12-31;2025-12-05;Import Excel 26062026 ligne prets 91
+92;date_debut_manquante;Ali_D_17;A_48;A_48;Bureau 2041;;2025-12-31;2025-12-05;Import Excel 26062026 ligne prets 92
+93;date_debut_manquante;Ali_D_17;A_49;A_49;Bureau 2041;;2025-12-31;;Import Excel 26062026 ligne prets 93
+94;date_debut_manquante;Jul_R_2;OP_17;OP_17;Bureau 2012;;;;Import Excel 26062026 ligne prets 94
+95;date_debut_manquante;Mar_R_18;A_50;A_50;Bureau 2041;;2026-10-08;;Import Excel 26062026 ligne prets 95
+96;date_debut_manquante;Mar_R_18;A_51;A_51;Bureau 2041;;2026-10-08;;Import Excel 26062026 ligne prets 96
+97;date_debut_manquante;Mar_R_18;Ec_19;Ec_19;Bureau 2041;;2026-10-08;;Import Excel 26062026 ligne prets 97
+98;date_debut_manquante;Xia_J_19;OP_18;OP_18;Bureau 2041;;2026-03-07;2026-04-12;Import Excel 26062026 ligne prets 98
+99;date_debut_manquante;Xia_J_19;SA_7;SA_7;Bureau 2041;;2026-03-07;2026-04-12;Import Excel 26062026 ligne prets 99
+100;date_debut_manquante;Xia_J_19;A_52;A_52;Bureau 2041;;2026-03-07;2026-04-12;Import Excel 26062026 ligne prets 100
+101;date_debut_manquante;Xia_J_19;A_53;A_53;Bureau 2041;;2026-03-07;2026-04-12;Import Excel 26062026 ligne prets 101
+102;date_debut_manquante;Xia_J_19;Ec_20;Ec_20;Bureau 2041;;2026-03-07;2008-04-12;Import Excel 26062026 ligne prets 102
+103;date_debut_manquante;Xia_J_19;A_54;A_54;Bureau 2041;;2026-03-07;;Import Excel 26062026 ligne prets 103
+104;date_debut_manquante;Mon_W_20;OP_19;OP_19;Bureau 2033;;;2025-09-30;A priori, PC de la manip flux métrique du labo hygro
+105;date_debut_manquante;Chr_M_21;OP_20;OP_20;Bureau 2023;;;;Import Excel 26062026 ligne prets 105
+106;date_debut_manquante;Chr_M_21;Ec_21;Ec_21;Bureau 2023;;;;Import Excel 26062026 ligne prets 106
+107;date_debut_manquante;Chr_M_21;A_55;A_55;Bureau 2023;;;;Import Excel 26062026 ligne prets 107
+108;date_debut_manquante;Mar_T_22;OP_21;OP_21;Bureau 2011;;;;Import Excel 26062026 ligne prets 108
+109;date_debut_manquante;Mar_T_22;Ec_22;Ec_22;Bureau 2011;;;;Import Excel 26062026 ligne prets 109
+110;date_debut_manquante;Mar_T_22;Ec_23;Ec_23;Bureau 2011;;;;Import Excel 26062026 ligne prets 110
+111;date_debut_manquante;Mar_T_22;A_56;A_56;Bureau 2011;;;;Import Excel 26062026 ligne prets 111
+112;date_debut_manquante;Mar_T_22;A_57;A_57;Bureau 2011;;;;Import Excel 26062026 ligne prets 112
+113;date_debut_manquante;Mar_T_22;SA_8;SA_8;Bureau 2011;;;;Import Excel 26062026 ligne prets 113
+114;date_debut_manquante;Mar_T_22;A_58;A_58;Bureau 2011;;;;Import Excel 26062026 ligne prets 114
+115;date_debut_manquante;Mar_T_22;A_59;A_59;Bureau 2011;;;;Import Excel 26062026 ligne prets 115
+116;date_debut_manquante;Mar_T_22;A_60;A_60;Bureau 2011;;;;Import Excel 26062026 ligne prets 116
+117;date_debut_manquante;Mar_T_22;SA_9;SA_9;Domicile;;;;Import Excel 26062026 ligne prets 117
+118;date_debut_manquante;Jau_F_23;OP_22;OP_22;Bureau 2044;;;;Import Excel 26062026 ligne prets 118
+119;date_debut_manquante;Jau_F_23;Ec_24;Ec_24;Bureau 2044;;;;Import Excel 26062026 ligne prets 119
+120;date_debut_manquante;Jau_F_23;A_61;A_61;Bureau 2044;;;;Import Excel 26062026 ligne prets 120
+121;date_debut_manquante;Jau_F_23;A_62;A_62;Bureau 2044;;;;Import Excel 26062026 ligne prets 121
+122;date_debut_manquante;Jau_F_23;SA_10;SA_10;Bureau 2044;;;;Import Excel 26062026 ligne prets 122
+123;date_debut_manquante;Mar_T_22;A_63;A_63;Bureau 2011;;;;Import Excel 26062026 ligne prets 123
+124;date_debut_manquante;Han_M_10;A_64;A_64;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 124
+125;date_debut_manquante;Han_M_10;SA_11;SA_11;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 125
+126;date_debut_manquante;Han_M_10;A_65;A_65;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 126
+127;date_debut_manquante;Man_G_15;OP_23;OP_23;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 127
+128;date_debut_manquante;Man_G_15;Ec_25;Ec_25;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 128
+129;date_debut_manquante;Man_G_15;SA_12;SA_12;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 129
+130;date_debut_manquante;Man_G_15;A_66;A_66;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 130
+131;date_debut_manquante;Fat_G_24;OP_24;OP_24;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 131
+132;date_debut_manquante;Fat_G_24;A_67;A_67;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 132
+133;date_debut_manquante;Fat_G_24;Ec_26;Ec_26;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 133
+134;date_debut_manquante;Fat_G_24;SA_13;SA_13;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 134
+135;date_debut_manquante;Fat_G_24;OF_4;OF_4;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 135
+136;date_debut_manquante;Lau_M_8;A_68;A_68;Bureau 2030;;;;Import Excel 26062026 ligne prets 136
+137;date_debut_manquante;Mon_W_20;OP_25;OP_25;;;;;Sera donnée à la prochaine pré-doc de Monika
+138;date_debut_manquante;Han_M_10;A_69;A_69;Bureau 2021;;2027-09-30;;Import Excel 26062026 ligne prets 138
+139;date_debut_manquante;Lau_M_8;A_70;A_70;Bureau 2030;;;;Import Excel 26062026 ligne prets 139
+140;date_debut_manquante;Cat_B_25;OF_5;OF_5;Bureau 2067;;;;Import Excel 26062026 ligne prets 140
+141;date_debut_manquante;Cat_B_25;SA_14;SA_14;Bureau 2068;;;;Import Excel 26062026 ligne prets 141
+142;date_debut_manquante;Cat_B_25;A_71;A_71;Bureau 2069;;;;Import Excel 26062026 ligne prets 142
+143;date_debut_manquante;Cat_B_25;A_72;A_72;Bureau 2070;;;;Import Excel 26062026 ligne prets 143
+144;date_debut_manquante;Cat_B_25;Ec_27;Ec_27;Bureau 2071;;;;Import Excel 26062026 ligne prets 144
+145;date_debut_manquante;Cat_B_25;A_73;A_73;Bureau 2072;;;;Import Excel 26062026 ligne prets 145
+146;date_debut_manquante;Cat_B_25;A_74;A_74;Bureau 2073;;;;Import Excel 26062026 ligne prets 146
+147;date_debut_manquante;Cat_B_25;A_75;A_75;Bureau 2074;;;;Import Excel 26062026 ligne prets 147
+148;date_debut_manquante;Arn_D_26;OP_26;OP_26;Bureau 2048;;;;Import Excel 26062026 ligne prets 148
+149;date_debut_manquante;Arn_D_26;Ec_28;Ec_28;Bureau 2048;;;;Import Excel 26062026 ligne prets 149
+150;date_debut_manquante;Arn_D_26;A_76;A_76;Bureau 2048;;;;Import Excel 26062026 ligne prets 150
+151;date_debut_manquante;Arn_D_26;A_77;A_77;Bureau 2048;;;;Import Excel 26062026 ligne prets 151
+152;date_debut_manquante;Arn_D_26;SA_15;SA_15;Bureau 2048;;;;Import Excel 26062026 ligne prets 152
+153;date_debut_manquante;Arn_D_26;A_78;A_78;Bureau 2048;;;;Import Excel 26062026 ligne prets 153
+154;date_debut_manquante;Arn_D_26;A_79;A_79;Bureau 2048;;;;Import Excel 26062026 ligne prets 154
+155;date_debut_manquante;Sim_R_27;OP_27;OP_27;Bureau 2066;;;;Import Excel 26062026 ligne prets 155
+156;date_debut_manquante;Sim_R_27;Ec_29;Ec_29;Bureau 2066;;;;Import Excel 26062026 ligne prets 156
+157;date_debut_manquante;Sim_R_27;Ec_30;Ec_30;Bureau 2066;;;;Import Excel 26062026 ligne prets 157
+158;date_debut_manquante;Sim_R_27;A_80;A_80;Bureau 2066;;;;Import Excel 26062026 ligne prets 158
+159;date_debut_manquante;Sim_R_27;A_81;A_81;Bureau 2066;;;;Import Excel 26062026 ligne prets 159
+160;date_debut_manquante;Sim_R_27;SA_16;SA_16;Bureau 2066;;;;Import Excel 26062026 ligne prets 160
+161;date_debut_manquante;Sim_R_27;A_82;A_82;Bureau 2066;;;;Import Excel 26062026 ligne prets 161
+162;date_debut_manquante;Sim_R_27;A_83;A_83;Bureau 2066;;;;Import Excel 26062026 ligne prets 162
+163;date_debut_manquante;Ann_P_28;OP_28;OP_28;Bureau 2043;;;;Import Excel 26062026 ligne prets 163
+164;date_debut_manquante;Ann_P_28;Ec_31;Ec_31;Bureau 2043;;;;Import Excel 26062026 ligne prets 164
+165;date_debut_manquante;Ann_P_28;Ec_32;Ec_32;Bureau 2043;;;;Import Excel 26062026 ligne prets 165
+166;date_debut_manquante;Ann_P_28;A_84;A_84;Bureau 2043;;;;Import Excel 26062026 ligne prets 166
+167;date_debut_manquante;Ann_P_28;A_85;A_85;Bureau 2043;;;;Import Excel 26062026 ligne prets 167
+168;date_debut_manquante;Ann_P_28;A_86;A_86;Bureau 2043;;;;Import Excel 26062026 ligne prets 168
+169;date_debut_manquante;Ann_P_28;SA_17;SA_17;Domicile;;;;Import Excel 26062026 ligne prets 169
+170;date_debut_manquante;Ann_P_28;A_87;A_87;Bureau 2043;;;;Import Excel 26062026 ligne prets 170
+171;date_debut_manquante;Ben_S_29;OP_29;OP_29;Bureau 2043;;;;Import Excel 26062026 ligne prets 171
+172;date_debut_manquante;Ben_S_29;Ec_33;Ec_33;Bureau 2043;;;;Import Excel 26062026 ligne prets 172
+173;date_debut_manquante;Ben_S_29;Ec_34;Ec_34;Bureau 2043;;;;Import Excel 26062026 ligne prets 173
+174;date_debut_manquante;Ben_S_29;Ec_35;Ec_35;Domicile;;;;Import Excel 26062026 ligne prets 174
+175;date_debut_manquante;Ben_S_29;A_88;A_88;Bureau 2043;;;;Import Excel 26062026 ligne prets 175
+176;date_debut_manquante;Ben_S_29;A_89;A_89;Bureau 2043;;;;Import Excel 26062026 ligne prets 176
+177;date_debut_manquante;Ben_S_29;SA_18;SA_18;Bureau 2043;;;;Import Excel 26062026 ligne prets 177
+178;date_debut_manquante;Ben_S_29;A_90;A_90;Bureau 2043;;;;Import Excel 26062026 ligne prets 178
+179;date_debut_manquante;Ben_S_29;A_91;A_91;Bureau 2043;;;;Import Excel 26062026 ligne prets 179
+180;date_debut_manquante;Mon_W_20;OP_30;OP_30;Bureau 2045;;;;Import Excel 26062026 ligne prets 180
+181;date_debut_manquante;Mon_W_20;OP_31;OP_31;Bureau 2045;;;;Import Excel 26062026 ligne prets 181
+182;date_debut_manquante;Mon_W_20;SA_19;SA_19;Bureau 2045;;;;Import Excel 26062026 ligne prets 182
+183;date_debut_manquante;Mon_W_20;A_92;A_92;Bureau 2045;;;;Import Excel 26062026 ligne prets 183
+184;date_debut_manquante;Mon_W_20;A_93;A_93;Domicile;;;;Import Excel 26062026 ligne prets 184
+185;date_debut_manquante;Mon_W_20;A_94;A_94;Bureau 2045;;;;Import Excel 26062026 ligne prets 185
+186;date_debut_manquante;Mon_W_20;A_95;A_95;Bureau 2045;;;;Import Excel 26062026 ligne prets 186
+187;date_debut_manquante;Mon_W_20;A_96;A_96;Bureau 2045;;;;Import Excel 26062026 ligne prets 187
+188;date_debut_manquante;Mon_W_20;A_97;A_97;Bureau 2045;;;;Import Excel 26062026 ligne prets 188
+189;date_debut_manquante;Mon_W_20;A_98;A_98;Bureau 2045;;;;Import Excel 26062026 ligne prets 189
+190;date_debut_manquante;Mon_W_20;A_99;A_99;Bureau 2045;;;;Import Excel 26062026 ligne prets 190
+191;date_debut_manquante;Gil_F_30;OP_32;OP_32;Bureau 2046;;;;Import Excel 26062026 ligne prets 191
+192;date_debut_manquante;Gil_F_30;Ec_36;Ec_36;Bureau 2046;;;;Import Excel 26062026 ligne prets 192
+193;date_debut_manquante;Gil_F_30;A_100;A_100;Bureau 2046;;;;Import Excel 26062026 ligne prets 193
+194;date_debut_manquante;Gil_F_30;A_101;A_101;Bureau 2046;;;;Import Excel 26062026 ligne prets 194
+195;date_debut_manquante;Gil_F_30;SA_20;SA_20;Bureau 2046;;;;Import Excel 26062026 ligne prets 195
+196;date_debut_manquante;Gil_F_30;Ec_37;Ec_37;Domicile;;;;Import Excel 26062026 ligne prets 196
+197;date_debut_manquante;Gil_F_30;A_102;A_102;Bureau 2046;;;;Import Excel 26062026 ligne prets 197
+198;date_debut_manquante;Gil_F_30;A_103;A_103;Bureau 2046;;;;Import Excel 26062026 ligne prets 198
+199;date_debut_manquante;Mic_O_31;OP_33;OP_33;Domicile;;;;Ventilateur abimé, sujet au crash
+200;date_debut_manquante;Mic_O_31;Ec_38;Ec_38;Bureau 2010;;;;Import Excel 26062026 ligne prets 200
+201;date_debut_manquante;Mic_O_31;A_104;A_104;Bureau 2010;;;;Import Excel 26062026 ligne prets 201
+202;date_debut_manquante;Mic_O_31;A_105;A_105;Bureau 2010;;;;Import Excel 26062026 ligne prets 202
+203;date_debut_manquante;Mic_O_31;A_106;A_106;Bureau 2010;;;;Import Excel 26062026 ligne prets 203
+204;date_debut_manquante;Mic_O_31;A_107;A_107;Bureau 2010;;;;Import Excel 26062026 ligne prets 204
+205;date_debut_manquante;Mic_O_31;A_108;A_108;Bureau 2010;;;;Import Excel 26062026 ligne prets 205
+206;date_debut_manquante;Mar_C_11;OP_34;OP_34;Bureau 2022;;;;Import Excel 26062026 ligne prets 206
+207;date_debut_manquante;Mar_R_18;SA_21;SA_21;Bureau 2041;;2026-10-08;;Import Excel 26062026 ligne prets 207
+208;date_debut_manquante;Fat_G_24;A_109;A_109;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 208
+209;date_debut_manquante;Noé_P_32;OP_35;OP_35;Bureau 2063;;;;Import Excel 26062026 ligne prets 209
+210;date_debut_manquante;Noé_P_32;Ec_39;Ec_39;Bureau 2063;;;;Import Excel 26062026 ligne prets 210
+211;date_debut_manquante;Noé_P_32;A_110;A_110;Bureau 2063;;;;Import Excel 26062026 ligne prets 211
+212;date_debut_manquante;Noé_P_32;A_111;A_111;Bureau 2063;;;;Import Excel 26062026 ligne prets 212
+213;date_debut_manquante;Fat_G_24;Ec_40;Ec_40;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 213
+214;date_debut_manquante;Fat_G_24;A_112;A_112;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 214
+215;date_debut_manquante;Fat_G_24;A_113;A_113;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 215
+216;date_debut_manquante;Mar_R_18;OP_36;OP_36;Bureau 2041;;2026-10-08;;Import Excel 26062026 ligne prets 216
+217;date_debut_manquante;Her_B_33;Ec_41;Ec_41;Domicile;;;;Import Excel 26062026 ligne prets 217
+218;date_debut_manquante;Sek_E_34;OP_37;OP_37;Domicile;;2025-01-01;;Import Excel 26062026 ligne prets 218
+219;date_debut_manquante;Mic_P_35;OP_38;OP_38;Bureau 2046;;;;Import Excel 26062026 ligne prets 219
+220;date_debut_manquante;Mic_P_35;SA_22;SA_22;Bureau 2046;;;;Import Excel 26062026 ligne prets 220
+221;date_debut_manquante;Mic_P_35;Ec_42;Ec_42;Bureau 2046;;;;2 écrans
+222;date_debut_manquante;Mic_P_35;Ec_43;Ec_43;Bureau 2046;;;;Import Excel 26062026 ligne prets 222
+223;date_debut_manquante;Mic_P_35;A_114;A_114;Bureau 2046;;;;2 disques Lacie
+224;date_debut_manquante;Mic_P_35;A_115;A_115;Bureau 2046;;;;Import Excel 26062026 ligne prets 224
+225;date_debut_manquante;Mic_P_35;A_116;A_116;Bureau 2046;;;;Import Excel 26062026 ligne prets 225
+226;date_debut_manquante;Mic_P_35;A_117;A_117;Bureau 2046;;;;Import Excel 26062026 ligne prets 226
+227;date_debut_manquante;Mic_P_35;A_118;A_118;Bureau 2046;;;;Import Excel 26062026 ligne prets 227
+228;date_debut_manquante;Eve_G_36;A_119;A_119;Bureau 2010;;;;Import Excel 26062026 ligne prets 228
+229;date_debut_manquante;Eve_G_36;A_120;A_120;Bureau 2010;;;;Import Excel 26062026 ligne prets 229
+230;date_debut_manquante;Eve_G_36;A_121;A_121;Bureau 2010;;;;Import Excel 26062026 ligne prets 230
+231;date_debut_manquante;Eve_G_36;Ec_44;Ec_44;Bureau 2010;;;;2 écrans
+232;date_debut_manquante;Eve_G_36;Ec_45;Ec_45;Bureau 2010;;;;Import Excel 26062026 ligne prets 232
+233;date_debut_manquante;Eve_G_36;SA_23;SA_23;Bureau 2010;;;;2 stations
+234;date_debut_manquante;Eve_G_36;SA_24;SA_24;Domicile;;;;Import Excel 26062026 ligne prets 234
+235;date_debut_manquante;Eve_G_36;OP_39;OP_39;Bureau 2010;;;;Import Excel 26062026 ligne prets 235
+236;date_debut_manquante;Eve_G_36;OF_6;OF_6;Bureau 2010;;;;Manip, pas encore en service
+237;date_debut_manquante;Eve_G_36;A_122;A_122;Bureau 2010;;;;Import Excel 26062026 ligne prets 237
+238;date_debut_manquante;Eve_G_36;A_123;A_123;Bureau 2010;;;;Import Excel 26062026 ligne prets 238
+239;date_debut_manquante;Eve_G_36;A_124;A_124;Bureau 2010;;;;Archives admin LOCIE / gestionnaire
+240;date_debut_manquante;Ann_L_37;SA_25;SA_25;Bureau 2064;;;;Import Excel 26062026 ligne prets 240
+241;date_debut_manquante;Ann_L_37;OP_40;OP_40;Bureau 2064;;;;Import Excel 26062026 ligne prets 241
+242;date_debut_manquante;Ann_L_37;Ec_46;Ec_46;Bureau 2064;;;;Import Excel 26062026 ligne prets 242
+243;date_debut_manquante;Ann_L_37;A_125;A_125;Bureau 2064;;;;Import Excel 26062026 ligne prets 243
+244;date_debut_manquante;Jea_P_38;OP_41;OP_41;Bureau 2063;;;;Import Excel 26062026 ligne prets 244
+245;date_debut_manquante;Jea_P_38;A_126;A_126;Bureau 2063;;;;Import Excel 26062026 ligne prets 245
+246;date_debut_manquante;Jea_P_38;A_127;A_127;Bureau 2063;;;;Import Excel 26062026 ligne prets 246
+247;date_debut_manquante;Jea_P_38;Ec_47;Ec_47;Bureau 2063;;;;Import Excel 26062026 ligne prets 247
+248;date_debut_manquante;Jea_P_38;OF_7;OF_7;Bureau 2063;;;;Import Excel 26062026 ligne prets 248
+249;date_debut_manquante;Jea_P_38;Ec_48;Ec_48;Bureau 2063;;;;Import Excel 26062026 ligne prets 249
+250;date_debut_manquante;Van_P_39;A_128;A_128;CEA;;2027-03-31;;Import Excel 26062026 ligne prets 250
+251;date_debut_manquante;Dia_D_40;OP_42;OP_42;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 251
+252;date_debut_manquante;Dia_D_40;Ec_49;Ec_49;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 252
+253;date_debut_manquante;Dia_D_40;A_129;A_129;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 253
+254;date_debut_manquante;Dia_D_40;A_130;A_130;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 254
+255;date_debut_manquante;Dia_D_40;SA_26;SA_26;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 255
+256;date_debut_manquante;Dia_D_40;A_131;A_131;Bureau 2041;;2026-09-30;;Import Excel 26062026 ligne prets 256
+257;date_debut_manquante;Fat_G_24;A_132;A_132;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 257
+258;date_debut_manquante;Jea_P_38;OP_43;OP_43;Domicile;;;;Import Excel 26062026 ligne prets 258
+259;date_debut_manquante;Han_M_10;SA_27;SA_27;Domicile;;2027-09-30;;Import Excel 26062026 ligne prets 259
+260;date_debut_manquante;Ana_P_41;OP_44;OP_44;CEA;;2025-10-28;2025-11-28;Import Excel 26062026 ligne prets 260
+261;date_debut_manquante;Ana_P_41;SA_28;SA_28;CEA;;2025-10-28;2025-11-28;Import Excel 26062026 ligne prets 261
+262;date_debut_manquante;Ana_P_41;A_133;A_133;CEA;;2025-10-28;2025-11-28;Import Excel 26062026 ligne prets 262
+263;date_debut_manquante;Ana_P_41;A_134;A_134;CEA;;2025-10-28;2025-11-28;Import Excel 26062026 ligne prets 263
+264;date_debut_manquante;Ana_P_41;A_135;A_135;CEA;;2025-10-28;2025-11-28;Import Excel 26062026 ligne prets 264
+265;date_debut_manquante;Ham_N_42;OP_45;OP_45;Australie;;2027-01-01;;Passthrough MAC: 98-E7-43-EE-FE-E1
+266;date_debut_manquante;Pau_A_43;A_136;A_136;CEA;;;;Import Excel 26062026 ligne prets 266
+267;date_debut_manquante;Oli_P_44;Ec_50;Ec_50;Bureau 2064;;;;Import Excel 26062026 ligne prets 267
+268;date_debut_manquante;Oli_P_44;A_137;A_137;Bureau 2064;;;;Import Excel 26062026 ligne prets 268
+269;date_debut_manquante;Oli_P_44;A_138;A_138;Bureau 2064;;;;Import Excel 26062026 ligne prets 269
+270;date_debut_manquante;Oli_P_44;SA_29;SA_29;Bureau 2064;;;;Import Excel 26062026 ligne prets 270
+276;date_debut_manquante;Fat_G_24;A_141;A_141;Bureau 2041;;2026-12-01;;Import Excel 26062026 ligne prets 276
+283;date_debut_manquante;Ham_N_42;A_145;A_145;Australie;;2027-01-01;;Import Excel 26062026 ligne prets 283
+284;date_debut_manquante;Arn_D_26;A_146;A_146;Bureau 2048;;;;Souris ergonomique
+285;date_debut_manquante;Flo_G_4;A_147;A_147;;;;;Salle expérimentale
+286;date_debut_manquante;Man_G_15;OP_48;OP_48;Bureau 2041;;2026-09-30;;Mesures SHT - expérimental
+287;date_debut_manquante;Chr_R_12;OP_49;OP_49;Bureau 2012;;;;Ancien - utilisé pour les cours
+288;date_debut_manquante;Chr_R_12;Ec_53;Ec_53;Bureau 2012;;;;Import Excel 26062026 ligne prets 288
+289;date_debut_manquante;Chr_R_12;Ec_54;Ec_54;Bureau 2012;;;;Import Excel 26062026 ligne prets 289
+290;date_debut_manquante;Chr_R_12;A_148;A_148;Bureau 2013;;;;Import Excel 26062026 ligne prets 290
+291;date_debut_manquante;Chr_R_12;A_149;A_149;Bureau 2014;;;;Import Excel 26062026 ligne prets 291
+292;date_debut_manquante;Chr_R_12;OF_8;OF_8;Bureau 2015;;;;Import Excel 26062026 ligne prets 292
+293;date_debut_manquante;Chr_R_12;OF_9;OF_9;Bureau 2016;;;;Import Excel 26062026 ligne prets 293
+294;date_debut_manquante;Chr_R_12;A_150;A_150;Bureau 2017;;;;Sans fil
+295;date_debut_manquante;Chr_R_12;A_151;A_151;Bureau 2018;;;;Sans fil
+296;date_debut_manquante;Chr_R_12;A_152;A_152;Bureau 2019;;;;Import Excel 26062026 ligne prets 296
+297;date_debut_manquante;Eli_H_47;OP_50;OP_50;Bureau 2010;;2025-08-31;;Import Excel 26062026 ligne prets 297
+298;date_debut_manquante;Eli_H_47;SA_32;SA_32;Bureau 2010;;2025-08-31;;Import Excel 26062026 ligne prets 298
+299;date_debut_manquante;Eli_H_47;Ec_55;Ec_55;Bureau 2010;;2025-08-31;;Import Excel 26062026 ligne prets 299
+300;date_debut_manquante;Eli_H_47;A_153;A_153;Bureau 2010;;2025-08-31;;Sans fil
+301;date_debut_manquante;Eli_H_47;A_154;A_154;Bureau 2010;;2025-08-31;;Sans fil
+302;date_debut_manquante;Eli_H_47;A_155;A_155;Bureau 2010;;2025-08-31;;Import Excel 26062026 ligne prets 302
+303;date_debut_manquante;Mon_W_20;A_156;A_156;;;;;Manip fluxmetre
+305;date_debut_manquante;Dav_C_48;Ec_56;Ec_56;Bureau 2047;;;;Ecran CAO
+306;date_debut_manquante;Dav_C_48;SA_33;SA_33;Bureau 2047;;;;Import Excel 26062026 ligne prets 306
+307;date_debut_manquante;Dav_C_48;A_157;A_157;Bureau 2047;;;;Stockage GRR et fichier prototypage / instrumentation /LabVIEW
+308;date_debut_manquante;Dav_C_48;A_158;A_158;Bureau 2047;;;;Sans fil
+309;date_debut_manquante;Dav_C_48;A_159;A_159;Bureau 2047;;;;Sans fil
+312;date_debut_manquante;Lau_M_8;A_160;A_160;Bureau 2030;;;;Import Excel 26062026 ligne prets 312
+313;date_debut_manquante;Emm_R_7;A_161;A_161;Bureau 2024;;2025-12-31;;Import Excel 26062026 ligne prets 313
+314;date_debut_manquante;Lau_M_8;A_162;A_162;Bureau 2030;;;;Souris +clavier sans fil
+315;date_debut_manquante;Lau_M_8;A_163;A_163;Bureau 2030;;;;Souris +clavier sans fil
+316;date_debut_manquante;Ann_P_28;SA_34;SA_34;Bureau 2043;;;;Import Excel 26062026 ligne prets 316
+317;date_debut_manquante;Ann_P_28;OP_53;OP_53;Bureau 2043;;;;Import Excel 26062026 ligne prets 317
+318;date_debut_manquante;Mon_W_20;A_164;A_164;;;;;Import Excel 26062026 ligne prets 318
+319;date_debut_manquante;Gil_F_30;OP_54;OP_54;Bureau 2046;;;;Import Excel 26062026 ligne prets 319
+320;date_debut_manquante;Van_P_39;Ec_58;Ec_58;Domicile;;2027-03-31;;+ cable VGA
+321;date_debut_manquante;Lau_L_50;A_165;A_165;Bureau 2041;;2025-08-31;;Import Excel 26062026 ligne prets 321
+325;date_debut_manquante;Chr_R_12;OF_10;OF_10;Domicile;;;;Import Excel 26062026 ligne prets 325
+326;date_debut_manquante;Oli_P_44;Ec_60;Ec_60;Bureau 2064;;;;Import Excel 26062026 ligne prets 326
+327;date_debut_manquante;Oli_P_44;A_167;A_167;Bureau 2064;;;;Import Excel 26062026 ligne prets 327
+328;date_debut_manquante;Oli_P_44;A_168;A_168;Bureau 2064;;;;Import Excel 26062026 ligne prets 328
+329;date_debut_manquante;Chr_R_12;Ec_61;Ec_61;Bureau 2022;;;;Localisation peut changer
+330;date_debut_manquante;Chr_R_12;OF_11;OF_11;Bureau 2022;;;;Localisation peut changer, station de calcul
+331;date_debut_manquante;Chr_R_12;A_169;A_169;Bureau 2022;;;;Import Excel 26062026 ligne prets 331
+332;date_debut_manquante;Chr_R_12;A_170;A_170;Bureau 2022;;;;Import Excel 26062026 ligne prets 332
+340;date_debut_manquante;Chr_R_12;A_173;A_173;Bureau 2022;;;;Import Excel 26062026 ligne prets 340
+341;date_debut_manquante;Chr_R_12;OP_58;OP_58;Bureau 2022;;;;Import Excel 26062026 ligne prets 341
+342;date_debut_manquante;Mic_O_31;OP_59;OP_59;Bureau 2010;;;;Import Excel 26062026 ligne prets 342
+343;date_debut_manquante;Car_C_54;OP_60;OP_60;Bureau 2066;;;;Import Excel 26062026 ligne prets 343
+344;date_debut_manquante;Car_C_54;A_174;A_174;Bureau 2066;;;;Import Excel 26062026 ligne prets 344
+345;date_debut_manquante;Car_C_54;Ec_64;Ec_64;Bureau 2066;;;;Import Excel 26062026 ligne prets 345
+355;date_debut_manquante;Ben_G_9;OP_63;OP_63;Bureau 2021;;;;Ancien PC: Precision 5540, CD5M473, MAC: CC-48-3A-98-B7-8A
+362;date_debut_manquante;Car_C_54;SA_40;SA_40;Bureau 2066;;;;Import Excel 26062026 ligne prets 362
+364;date_debut_manquante;Car_C_54;Ec_68;Ec_68;Bureau 2066;;;;Import Excel 26062026 ligne prets 364
+366;date_debut_manquante;Car_C_54;OF_12;OF_12;Bureau 2066;;;;Import Excel 26062026 ligne prets 366
+381;date_debut_manquante;Chr_R_12;Ec_72;Ec_72;Bureau 2011;;;;Post-doc Supria
+403;date_debut_manquante;Gui_L_13;A_192;A_192;Bureau 2041;;2025-12-31;;Import Excel 26062026 ligne prets 403
+416;date_debut_manquante;Has_M_51;SA_53;SA_53;;;2025-10-31;2025-11-20;Import Excel 26062026 ligne prets 416
+418;date_debut_manquante;Moh_A_6;A_197;A_197;Bureau 2011;;;;Import Excel 26062026 ligne prets 418
+419;date_debut_manquante;Ben_G_9;OP_73;OP_73;;;;2025-07-25;Pour stagiaire Marius Poirier
+425;date_debut_manquante;Chr_R_12;OF_14;OF_14;Bureau 2011;;;;Post-doc Supria
+426;date_debut_manquante;Jul_R_2;OP_75;OP_75;Bureau 2012;;;;Import Excel 26062026 ligne prets 426
+427;date_debut_manquante;Jul_R_2;SA_56;SA_56;Bureau 2012;;;;Import Excel 26062026 ligne prets 427
+428;date_debut_manquante;Jul_R_2;SA_57;SA_57;Domicile;;;;Import Excel 26062026 ligne prets 428
+429;date_debut_manquante;Jul_R_2;A_200;A_200;Bureau 2012;;;;Import Excel 26062026 ligne prets 429
+436;date_debut_manquante;Mon_W_20;OP_77;OP_77;Bureau 2045;;;;Import Excel 26062026 ligne prets 436
+437;date_debut_manquante;Mon_W_20;A_203;A_203;Bureau 2045;;;;Sans fil
+438;date_debut_manquante;Mon_W_20;A_204;A_204;Bureau 2045;;;;Sans fil
+439;date_debut_manquante;Mon_W_20;SA_59;SA_59;Bureau 2045;;;;Import Excel 26062026 ligne prets 439
+440;date_debut_manquante;Jul_R_2;SA_60;SA_60;Bureau 2012;;;;Import Excel 26062026 ligne prets 440
+444;date_debut_manquante;Dav_C_48;OP_91;OP_91;;;;;expérimentation Maya HAJJ-OBEID
+445;date_debut_manquante;Dav_C_48;OP_92;OP_92;;;;;expérimentation Xiaohui JUI
+446;date_debut_manquante;Sim_B_71;OP_93;OP_93;;;2026-12-31;;récupération données campagne EvalConfort
+447;date_debut_manquante;Chr_M_21;OP_94;OP_94;;;;;Import Excel 26062026 ligne prets 447
+464;pret_ouvert_doublon_materiel;Léa_C_76;A_1;A_1;Bureau 2047;2026-01-19;2029-01-19;;Import Excel 26062026 ligne prets 464
+465;pret_ouvert_doublon_materiel;Léa_C_76;A_2;A_2;Bureau 2047;2026-01-19;2029-01-19;;Import Excel 26062026 ligne prets 465
+466;pret_ouvert_doublon_materiel;Sér_M_77;OP_15;OP_15;Bureau 2041;2026-02-20;2029-01-12;;Import Excel 26062026 ligne prets 466
+467;pret_ouvert_doublon_materiel;Sér_M_77;Ec_80;EC_80;Bureau 2041;2026-02-20;2029-01-12;;Import Excel 26062026 ligne prets 467
+468;pret_ouvert_doublon_materiel;Sér_M_77;A_1;A_1;Bureau 2041;2026-02-20;2029-01-12;;Import Excel 26062026 ligne prets 468
+469;pret_ouvert_doublon_materiel;Sér_M_77;A_2;A_2;Bureau 2041;2026-02-20;2029-01-12;;Import Excel 26062026 ligne prets 469
+477;pret_ouvert_doublon_materiel;Mel_D_67;A_1;A_1;Bureau 2041;2026-04-28;2028-10-05;;Clavier Lenovo Filaire
+478;pret_ouvert_doublon_materiel;Mel_D_67;A_2;A_2;Bureau 2041;2026-04-28;2028-10-05;;Souris Lenovo Bluetooth
+482;pret_ouvert_doublon_materiel;Moh_R_72;A_1;A_1;Bureau 2012;2026-01-04;2026-11-03;;Import Excel 26062026 ligne prets 482
+483;pret_ouvert_doublon_materiel;Moh_R_72;A_2;A_2;Bureau 2012;2026-01-04;2026-11-03;;Import Excel 26062026 ligne prets 483

@@ -1,0 +1,27 @@
+<Files "ldap.json">
+    Require all denied
+</Files>
+
+<Files "LocalSettings.grr-secret.php">
+    Require all denied
+</Files>
+
+<Files "LocalSettings.grr-production.php">
+    Require all denied
+</Files>
+
+# Les variantes GRR grr_rest.php et grr_img_auth.php sont les seuls points
+# d'entree autorises pour REST et les fichiers MediaWiki. Les scripts de
+# miniatures historiques sont inutiles puisque les miniatures generees passent
+# elles aussi par grr_img_auth.php.
+<FilesMatch "^(rest|img_auth|thumb|thumb_handler)\.php$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    <FilesMatch "^grr_(rest|img_auth)\.php$">
+        Header always set Cache-Control "private, no-store, no-cache, must-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+        Header always merge Vary "Cookie"
+    </FilesMatch>
+</IfModule>

@@ -1,0 +1,154 @@
+{% extends 'layout.twig' %}
+
+{% block css %}
+	<link rel="stylesheet" href="../jslib/datatables-bs5/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="../jslib/datatables-buttons/css/buttons.bootstrap5.min.css">
+{% endblock %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+	<div class="row">
+		<div class="col col-md-12">
+
+			<div class="box box-info">
+				<div class="box-header">
+					<h3 class="box-title">{{trad.users_connected}}</h3>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body">
+				  <table id="tableuser" class="table display table-bordered table-striped">
+						<thead>
+							<tr>
+							  <th>{{trad.login_name}}</th>
+							  <th>{{trad.names}}</th>
+							  <th>{{trad.send_a_mail}}</th>
+							  <th>{{trad.action}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for utilisateurCo in utilisateursconnecte %}
+								<tr>
+									<td>{{ utilisateurCo.login }}</td>
+									<td>{{ utilisateurCo.nomprenom }}</td>
+									<td><a href="mailto:{{ utilisateurCo.email }}" class="btn btn-info btn-md"><i class="icon fa fa-envelope"></i></a></td>
+									<td>
+										{% if utilisateurCo.deconnexion == 1 %}
+											<a href="?p=admin_view_connexions&amp;user_login={{ utilisateurCo.login }} ">{{ trad.disconnect2 }}</a>
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+						<thead>
+							<tr>
+							  <th>{{trad.login_name}}</th>
+							  <th>{{trad.names}}</th>
+							  <th>{{trad.send_a_mail}}</th>
+							  <th>{{trad.action}}</th>
+							</tr>
+						</thead>
+				  </table>
+				</div>
+			</div>
+
+
+			<div class="box box-success">
+				<div class="box-header">
+					<h3 class="box-title">{{d.TitreDateLog}}</h3>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body">
+					<p>{{ trad.msg_explain_log }}
+				  <table id="tablelog" class="table display table-bordered table-striped">
+						<thead>
+							<tr>
+							  <th>{{trad.login_name}}</th>
+							  <th>{{trad.names}}</th>
+							  <th>{{trad.begining_of_session}}</th>
+							  <th>{{trad.end_of_session}}</th>
+							  <th>{{trad.ip_adress}}</th>
+							  <th>{{trad.navigator}}</th>
+							  <th>{{trad.referer}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for log in logsconnexion %}
+								<tr {% if log.clos == 0 %}class="success"{% endif %}>
+									<td>{{ log.login }}</td>
+									<td>{{ log.nomprenom }}</td>
+									<td>{{ log.debut }}</td>
+									<td>{{ log.fin }}</td>
+									{% if settings.ActiveModeDemo == 'y' %}
+										<td>{{ trad.demo_info_cache }}</td>
+										<td>{{ trad.demo_info_cache }}</td>
+										<td>{{ trad.demo_info_cache }}</td>
+									{% else %}
+										<td>{{ log.ip }}</td>
+										<td>{{ log.navigateur }}</td>
+										<td>{{ log.provenance }}</td>
+									{% endif %}
+								</tr>
+							{% endfor %}
+						</tbody>
+						<thead>
+							<tr>
+							  <th>{{trad.login_name}}</th>
+							  <th>{{trad.names}}</th>
+							  <th>{{trad.begining_of_session}}</th>
+							  <th>{{trad.end_of_session}}</th>
+							  <th>{{trad.ip_adress}}</th>
+							  <th>{{trad.navigator}}</th>
+							  <th>{{trad.referer}}</th>
+							</tr>
+						</thead>
+				  </table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascript %}
+	<!-- DataTables -->
+	<script src="../jslib/datatables/dataTables.min.js"></script>
+	<script src="../jslib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+
+	<!-- Buttons -->
+	<script src="../jslib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="../jslib/datatables-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.html5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.print.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+	<!-- Excel / PDF -->
+	<script src="../jslib/jszip/jszip.min.js"></script>
+	<script src="../jslib/pdfmake/pdfmake.min.js"></script>
+	<script src="../jslib/pdfmake/vfs_fonts.js"></script>
+
+	<script>
+		$(function() {
+
+			var table = $('#tablelog').DataTable({
+				lengthChange: true,
+				lengthMenu: [[10, 25, 50, 100, -1],[10, 25, 50, 100, 'All']],
+				dom:
+					"<'row mb-2'<'col-md-6 d-flex align-items-center flex-nowrap gap-2'lB><'col-md-6 d-flex justify-content-end'f>>" +
+					"<'row'<'col-12'tr>>" +
+					"<'row mt-2'<'col-md-5'i><'col-md-7 d-flex justify-content-end'p>>",
+
+				pagingType: 'full_numbers',
+
+				buttons: [
+					'copy',
+					'excel',
+					'csv',
+					'pdfHtml5',
+					'colvis'
+				]
+			});
+
+		});
+	</script>
+{% endblock %}

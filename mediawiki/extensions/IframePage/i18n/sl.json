@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"iframepage": "Stran iframe",
+	"iframepage-desc": "Omogoča vdelavo okvirja iframe v posebno stran",
+	"iframepage-error-wgifsrc": "V <code>LocalSettings.php</code> je treba nastaviti spremenljivko <code>$wgIframePageSrc</code>."
+}

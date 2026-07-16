@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"iframepage": "Iframe puslapis",
+	"iframepage-desc": "Leidžia įterpti iframe į specialų puslapį",
+	"iframepage-error-wgifsrc": "<code>$wgIframePageSrc</code> kintamasis turi būti nustatytas <code>LocalSettings.php</code>."
+}

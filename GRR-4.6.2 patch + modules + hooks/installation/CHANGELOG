@@ -1,0 +1,786 @@
+Version 4.6.2 - 15/06/2026 Généré par @JeromeDevome
+[Correction] Position du numéro de jour cycle - fcf846c76 - @ynaessens
+[Correction] Nom de variable - e2e3aaf18 - @ynaessens
+[Correction] Affichage des jours cycle dans la page de création - 2465a0ea4 - @ynaessens
+[Correction] Vue mois_all: Affichage et droits - 4a05b5ed6 - @JeromeDevome
+
+Version 4.6.1 - 14/06/2026 Généré par @JeromeDevome
+[Correction] Affichage vue jour en tant que visiteur - 90a27e7df - @JeromeDevome
+[Correction] Envois de mail au modérateur - aa79549b5 - @JeromeDevome
+[Correction] Affichage du bouton enregistrer sans droits de modifification - 95d19ed9c - @JeromeDevome
+[Correction] Affichage connexion désactivé pour ldap, sso - ea2500a84 - @JeromeDevome
+[Correction] Affichage de la légende - 17ac5e6fc - @JeromeDevome
+[Correction] Accès aux résa mois_all dont certaines masquées - b1aac26bd - @JeromeDevome
+[Modification] Champs additionnel ne pas afficher dans vue planning même si droits (selon param du champ) - e6766a210 - @JeromeDevome 
+[Modification] Amélioration lisibilité des réservations supprimées dans le compte utilisateur - e5eb7bddf - @JeromeDevome
+[Modification] Mise à jour des librairies PHP (Symfony) - 58acb372b - @JeromeDevome
+[Modification] Mise à jour des librairies JS (pdfmake) - 58acb372b - @JeromeDevome
+
+Version 4.6.0 - 04/06/2026 Généré par @JeromeDevome
+[Ajout] Drag & Drop des réservations - @JeromeDevome
+[Ajout]Gestion des accès aux ressources restreintes par groupe - @JeromeDevome
+[Ajout] Ajout du style des cellules associées à des réservations dont la liste des participants est complète - af1c971dc - @ynaessens
+[Ajout] Définition du nombre maximal de réservations affichées dans la vue mensuelle via un paramètre configurable - 1a7e8cf41 & 36763442b - @JeromeDevome
+[Ajout] Affichage des e-mails dans l’historique des réservations - 9e3ca3931 - @JeromeDevome
+[Ajout] Suppression des utilisateurs par groupe - a9d472943 - @JeromeDevome
+[Ajout] Modération par lot - 37fba38 - @JeromeDevome
+[Ajout] Affichage de l’heure du serveur SQL dans l’administration pour le debug - f7c7865b3 - @JeromeDevome
+[Ajout] Interdiction des mots de passe trop simples (selon une liste définie) - 89cc3b4c8 - @JeromeDevome
+[Ajout] Option obligeant l’utilisateur à changer son mot de passe s’il ne répond pas aux critères définis - 89cc3b4c8 - @JeromeDevome
+[Ajout] Autoriser format d'image WebP - 163bafcd2 -@JeromeDevome
+[Correction] Prise en compte des balises HTML dans le message d’accueil - 739c15363 - @JeromeDevome
+[Correction] Retour à la vue précédente après une réservation - acc2636f3 - @JeromeDevome
+[Correction] Gestion des caractères spéciaux lors de l’édition d’une réservation - e32aacee3 - @JeromeDevome
+[Correction] Ajout d’un participant par un gestionnaire - ec3bbe686 - @JeromeDevome
+[Correction] Changement de langue via les drapeaux - b773092c8 - @JeromeDevome
+[Correction] Affichage de la vue "Année All" - 396a4f4ce - @JeromeDevome
+[Correction] Compatibilité UTF-8 de la fonction mail avec PHP 8.2 - d17288619 - @JeromeDevome
+[Correction] Import CSV des utilisateurs avec caractères UTF-8 - c1f0d0c6c - @JeromeDevome
+[Correction] Masquage du menu gauche par défaut - 11a2bac61 - @JeromeDevome
+[Correction] Fermeture correcte des sessions - 67b9b3f11 - @JeromeDevome
+[Correction] Affichage du nom du site dans la recherche et les statistiques - eb11092e6 - @JeromeDevome
+[Correction] Configuration LDAP - bdffa931f - @JeromeDevome
+[Correction] Accès à la fiche ressource pour le gestionnaire - 89774fd9d - @JeromeDevome
+[Correction] Case "Ne pas notifier le bénéficiaire" - 4155da3eb - @JeromeDevome
+[Correction] Compteur dans les logs de réservation - bdbbe7b5b - @JeromeDevome
+[Correction] Heure de début de session basée sur l’heure du serveur - 55063df0f - @JeromeDevome
+[Correction] Requêtes SQL - 9b9289843 & 26e167f2f - @JeromeDevome
+[Correction] Affichage du champ heure dans le formulaire de réservation sous Edge - d48bb0476 - @JeromeDevome
+[Correction] Filtre LDAP - dfcc3e9ff - @JeromeDevome
+[Correction] Calcul  des droits d'accès pour un administrateur de domaine - 6515a4eb8 & a4c0a94f6 - @ynaessens
+[Correction] Gestion des performance (calcul +) sur Mois2_all - 09686e493 - @JeromeDevome
+[Correction] Demande de compte - Identifiant par défaut email - 72dd3db55 - @JeromeDevome
+[Correction] Ajout contrôle des droits de gestion pour les fichiers résa - d59e2ce1c - @JeromeDevome
+[Correction] Sécurité SQL - 6489a81bc - @JeromeDevome
+[Correction] Retour sur la bonne vue après supression d'un document dans la réservation - 429733f31 @JeromeDevome
+[Modification] Mise à jour des fichiers de langue - @ynaessens & @JeromeDevome
+[Modification] Refonte de l’envoi des e-mails - b47bedfbd - @JeromeDevome
+[Modification] Réorganisation des fonctions d’envoi des e-mails dans l’administration - d5ea2771e - @JeromeDevome
+[Modification] Ne pas afficher la popup d’informations si elle est vide - 46f759acc - @JeromeDevome
+[Modification] Suppression des popups JS dans l’administration - b792661af & e315ceb2a & 7b1a208d1 - @JeromeDevome
+[Modification] Amélioration des logs e-mail (erreurs SMTP, templates…) - 9e3ca3931 - @JeromeDevome
+[Modification] Réorganisation des fonctions de sécurité - @JeromeDevome
+[Modification] Gestion des jours fériés et des vacances par année - 3065c739e - @JeromeDevome
+[Modification] Mise à jour des vacances scolaires 2026-2027 - 0be37c8c1 & 7fef7e0 - @JeromeDevome & @ynaessens
+[Modification] Mise à jour des librairies PHP (Symfony, Twig, phpCAS, TCPDF, PHPMailer) - @JeromeDevome
+[Modification] Mise à jour des librairies JS (pdfmake, DataTables, Ace Editor, select2) - @JeromeDevome
+
+
+Version 4.5.4 - 22/03/2026 Généré par @JeromeDevome
+[Ajout] Variables pour désactiver les alertes serveurs - f50371694 - @JeromeDevome
+[Ajout] Widget de tableau de bord pour le contrôle des mises à jour - 5b5b6fe9a - @JeromeDevome
+[Ajout] Envoi d’un mail au modérateur lors de la modification d’une réservation - 66d912782 - @JeromeDevome
+[Ajout] Détails de l’historique sur les réservations pour les gestionnaires de ressources - 9f1e1780f - @JeromeDevome
+[Ajout] Accès à une vue des réservations à modérer pour les gestionnaires - 228f585d4 - @JeromeDevome
+[Correction] Affichage hors réservation dans mois_all - 94d24cafa - @JeromeDevome
+[Correction] Désactivation de la fonction de périodicité - e34405c94 - @JeromeDevome
+[Correction] Affichage des journées pleines dans mois2_all - fbd32644d - @JeromeDevome
+[Correction] Redirection vers la même vue lors d’un accès direct par date - 61aec07f0 - @JeromeDevome
+[Correction] Enregistrement des paramètres de performance - 9adec4c2d - @JeromeDevome
+[Correction] Vue de retour après création d’une réservation - 651393591 - @JeromeDevome
+[Correction] Erreur d’intitulé dans la personnalisation des mails - 95b7c27ba - @JeromeDevome
+[Correction] Suppression d’un utilisateur - ea81829e8 - @JeromeDevome
+[Correction] Variable %urldetail% lors de la création ou modification d’une réservation - 3395ad907 - @JeromeDevome
+[Correction] Informations de périodicité dans les mails lors d’une modification - a646de627 - @JeromeDevome
+[Modification] Mise à jour des fichiers langues - e1b6d59e9 & 6aa7269a2 & 674db6b1a - @JeromeDevome & @ynaessens & Paul Friedli
+[Modification] Mise à jour de Symfony et TCPDF - b455caaa4 - @JeromeDevome
+[Modification] Mise à jour de Twig - 8f76fe800 - @JeromeDevome
+[Modification] Mise à jour de PDF Make - eab7da017 - 670af02c6 - @JeromeDevome
+
+Version 4.5.3 - 28/02/2026 Généré par @JeromeDevome
+[Ajout] Possibilité de configurer "SameSite" depuis configperso.inc.php - 8a3e3566b - @JeromeDevome
+[Ajout] Droit pour l'accès à l'édition des ressources - 6ab8c514a -@ynaessens
+[Ajout] Configuration des attributs CAS depuis l'administration - 82336c228 - @JeromeDevome
+[Ajout] Restriction sur le mode démo - ec37f00a2 - @JeromeDevome
+[Correction] Lien sélection vue depuis page jour - 3e09bf29a - @ynaessens
+[Correction] Clic sur l'horloge lors de la création d'une réservation - e84067ba1 - @JeromeDevome
+[Correction] Insertion lien - 7d6f89eb1 - @JeromeDevome
+[Correction] Liens mois mois2_all - f9ee950cd - @JeromeDevome
+[Correction] Enregistrement à l'ouverture de la personnalisation des mails - 8b8f58bc5 - @JeromeDevome
+[Modification] Mise à jour langue anglaise - 1c5af831b - @JeromeDevome
+[Modification] Installation paramètre passé en POST au lieu de GET - bb4ef81de - @JeromeDevome
+[Modification] Nettoyage librairies JS - @JeromeDevome
+[Modification] Mise à jours dépendances PHP - 133d84725 - @JeromeDevome
+
+Version 4.5.2 - 17/02/2026 Généré par @JeromeDevome
+[Ajout] Fichier .htaccess pour sécuriser les accès et gérer les erreurs - 3d8607e38 - @JeromeDevome
+[Ajout] Icône trombone pour les réservations comportant des pièves jointe - ff2dbfc3b - @JeromeDevome
+[Ajout] Visualisation des mails envoyés dans l'administration - 0e662da80 - @JeromeDevome
+[Ajout] Personnalisation code CSS depuis l'administration - 98d40516c - @JeromeDevome
+[Correction] Valeur date de fin d'une réservation sur nouvelle réservation - 82b8df17b - @JeromeDevome
+[Correction] Affichage du sujet et du message dans la liste des mails - d10fe1bbb - @JeromeDevome
+[Correction] Import pièce jointe dans une réservation avec un nom trop long - f99d0898c - @JeromeDevome
+[Correction] Mail envoyé en double aux modérateurs lors d'une suppression - 8a7aedbd1 - @JeromeDevome
+[Modification] Mise à jour librairies JS Admin - @JeromeDevome
+[Modification] Nettoyage librairies JS Admin - @JeromeDevome
+
+Version 4.5.1 - 09/02/2026 Généré par @JeromeDevome
+[Ajout] Message administration : Dossier installation existant, ou connexion non sécurisée - 74a13cdb4 - @JeromeDevome
+[Correction] Définition index dans contactresa - 330b1975b - @ynaessens
+[Correction] Correction clé primaire pour la gestion des droits par domaines restreints - 8a5dffb6d - @JeromeDevome
+[Correction] Sélection couleur dans les champs texte avancée - 42a5e2977 - @JeromeDevome
+[Correction] Affichage warning serveur mails désactivé - da7b7ea7e - @JeromeDevome
+[Correction] Création d'un site restreint - 0ee28b44a - @JeromeDevome
+[Modification] Unification des paramètres accès à la configuration d'une ressource - 4f707921c - @ynaessens 
+[Modification] Remplacement de popup par toast bootstrap - 83ea332dd - @JeromeDevome
+[Modification] Mise à jour librairies JS Admin - @JeromeDevome
+[Modification] Nettoyage librairies JS Admin - @JeromeDevome
+
+Version 4.5.0 - 28/01/2026 Généré par @JeromeDevome
+[Ajout] Types de réservations : Option tri automatique ordre d'affichage des types par identifiant ou nom - 9ed96228 - @JeromeDevome
+[Ajout] Types de réservations : Fusionner deux types de réservation - 9ed96228 - @JeromeDevome
+[Ajout] Réservation confidentielle - Limite les informations aux autres usagés - 7f0211b2 - @JeromeDevome
+[Ajout] Suppression des réservations périodique à venir - d3000995 - @JeromeDevome
+[Ajout] Import fichier dans une réservation - 8b091906 - @ynaessens & @JeromeDevome
+[Ajout] Système de notification par pop-up - a94256245 - @JeromeDevome
+[Ajout] Hook planning - 1a1d06b3f - @JeromeDevome 
+[Ajout] Hook vocab - 9f02cd7d2 - @JeromeDevome
+[Correction] Le champ commentaire doit avoir une valeur par défaut pour l'authentification LDAP - f7416f0d - @ynaessens
+[Correction] Synchro des groupes - 2fb93cc6 cabcdb8a 015f2a10 e159069e - @DavidDelehelle
+[Correction] Syntaxe HTML dans l'administration - 469345de - @ynaessens
+[Correction] Test bloquant en mise à jour - e981a281 - @ynaessens
+[Correction] Sélecteur mal défini dans le formulaire de contact - f298587f & c7279376 - @ynaessens
+[Correction] Retour de page en cas de conflit de réservation - 4d5ce7df - @JeromeDevome
+[Correction] Affichage de la légende en haut de page - b4f48056 - @ynaessens
+[Correction] Afficher les cellules vides non masquées pour corriger un décalage dans l'affichage du planning semaine - 31682f0e - @ynaessens
+[Correction] Bénéficiaire extérieurs qui ne s'enregistrent pas - f7ded0e6 - @aurel9n
+[Correction] Traitement des erreurs en édition de réservation - 9f95f594 - @ynaessens
+[Correction] Champ additionnel obligatoire non respecté lors de la modification d'une réservation - c77aa11c - @JeromeDevome
+[Correction] Date sur la vue semaine - 4d191212325ce7df - @JeromeDevome
+[Correction] Contrôle sur une ressource restreinte - 9a7b3c1b - @JeromeDevome
+[Correction] Sécuririsation configuration LDAP - 3ff9504a - @JeromeDevome
+[Correction] Sécuririsation restauration BDD - e1f93b08 - @JeromeDevome
+[Correction] Sécurisation import des données - 4ef77f91 - @JeromeDevome
+[Correction] Variables non définies - 65a01a52 - @ynaessens
+[Correction] Edition réservation - 1f79b2ec - @ynaessens
+[Correction] Droits mal évalués sur la page admin pour la gestion des accès aux ressources restreintes - 33f99acc - @ynaessens
+[Correction] Lien de retour vers un planning mois après réservation - a9408df4 - @ynaessens
+[Correction] Chemin fichier CSS/JS - 824dba95 - @JeromeDevome
+[Correction] Limitation warning PHP si site n'ayant pas de domaine - c07a09bb - @JeromeDevome
+[Correction] Recherche & Stat : Retour à la ligne dans la description - b3658f9b - @JeromeDevome
+[Correction] Elimination de messages d'erreur au cas où le domaine ou la ressource n'existe pas - fc69c2d2c - @ynaessens
+[Correction] redirection de mois vers mois_all si le paramètre $room n'est pas défini - 37dac3d0b - @ynaessens
+[Correction] Rétablit l'accès inconditionnel à la fiche de réservation pour son créateur - 19c33b36d - @ynaessens
+[Correction] Conflit variable page avec url back - da07bf497 - @JeromeDevome
+[Correction] Divers corrections sécurités - a9743f42f & a8055a170 - @JeromeDevome & Cédric Picard
+[Correction] Fichier non utilisé - b90fc7ee0 - @JeromeDevome
+[Correction] Connexion HTTTP - 07cb84493 - @JeromeDevome
+[Correction] Contrôle IP avec php 8.4 - a8055a170 - @JeromeDevome
+[Correction] Lien vers config_ldap.inc.php - 38007f299 - @JeromeDevome
+[Correction] Warning modif réservation avec date de fin (modulo) - 150df0ccd - @JeromeDevome
+[Correction] Fix date de fin en éditant une réservation - 9b0e847a4 - @JeromeDevome
+[Correction] (dés-)activation d'un compte utilisateur - e6599fc43 - @ynaessens
+[Modification] Calendrier jours ignorés, configuration par année - 711adf56 - @JeromeDevome
+[Modification] Fichier des vacances scolaires 2025 (France) - 03dd20b6 - @ynaessens
+[Modification] Types de réservations : Amélioration de l'affichage et pop-up - 9ed96228 - @JeromeDevome
+[Modification] Autorisation donnée aux gestionnaires de la ressource pour gérer l'accès aux ressources restreintes - 8e3d2891 - @ynaessens
+[Modification] Mise à jour PHPMailer - 5486b136 - @JeromeDevome
+[Modification] Mise à jour des fichier langues - @JeromeDevome & @ynaessens
+[Modification] Si authentification obligatoire et utilisateur non connecté, redirection vers la page de connexion - abf7b77b - @JeromeDevome
+[Modification] Contrôle des tables en utf8mb4_unicode_ci systématique lors de la mise à jour - f12d081a - @JeromeDevome
+[Modification] Mise à jour des dépendances PHP - ee9fc5d4a - @JeromeDevome
+[Modification] Passage de la popup de confirmation en toast bootstrap sur certaines pages admin - @JeromeDevome
+[Modification] Divers nettoyage de code - @JeromeDevome & @ynaessens
+[Modification] homogénéisation du style des sélecteurs de site, domaine et ressource - 80d1d8062 - @ynaessens
+[Modification] Internalisation des traductions dans certaines pages de l'admin - @ynaessens
+
+Version 4.4.2 - 23/09/2025 Généré par @JeromeDevome
+[Correction] Variable manquante pour la sauvegarde - aed762ca - @ynaessens
+[Correction] Bouton annulation, modification réservation - e7622790 - @Aurely9n
+[Correction] Lien vers domaine ou ressource dans mode arborescence - 6b6d65c4 - @ynaessens
+[Correction] Champ commentaire peut être null - 8e3b5244 & 1f6ec663 - @ynaessens & @JeromeDevome
+[Correction] Récupération de la durée lors d'une modification - b8a4c9ee - @JeromeDevome
+[Correction] Affichage des champs additionnel compartant des apostrophes - 35c6a9ec - @JeromeDevome
+[Correction] Liens avant-après dans jour et semaine_all - efafabbe - @ynaessens
+[Correction] Liens dans la vue année - 81da04c8 - @ynaessens
+[Correction] Gestion des sites restreints - 9521016c & 1f6ec663 - @DavidDelehelle & @JeromeDevome
+[Correction] Paramètres de retour sur le planning - 2792d6df - @JeromeDevome
+[Correction] Affichage décalé en vue semaine - 8ba9cdc6 - @JeromeDevome
+[Correction] Affichage décalé en vue mois2 + intialisation variable - 0ff922c5 - @JeromeDevome
+[Correction] Init variable vue mois All - 15e8b289 - @JeromeDevome
+[Correction] Correction affichage vue mois - 81c3f41a - @JeromeDevome
+[Correction] Désactiver la fonction échange de réservation - 8543c4cf - @JeromeDevome
+[Correction] Synchro de groupe - 13a1b7b8 - @DavidDelehelle
+[Correction] Bug en affichage bouton / multisite - f6cec710 - @DavidDelehelle
+[Correction] Lien pour page imprimable - 6fae6eb5 - @ynaessens
+[Correction] évite une erreur lors de mise à jour depuis GRR v3.9 - 7a821df2 - @ynaessens
+[Correction] évite des erreurs non critiques lors de restauration de données issues de versions antérieures - 4f95e251 - @ynaessens
+[Correction] Sécurisation contre injection SQL - 6b3fd50c - @JeromeDevome
+[Modification] Optimisation - 7c909c94 & 257d63cd - @JeromeDevome
+
+
+Version 4.4.1 - 22/07/2025 Généré par @JeromeDevome
+[Ajout] Liste des réservations à modérer - ede4065 - @JeromeDevome
+[Ajout] Lien historique de la réservation pour les admins dans la vue réservation - 3646378 - @JeromeDevome
+[Correction] Lien de connexion - 3814e4a - @Aurely9n
+[Correction] Liens semaine avant-après- c8167c7 - @ynaessens
+[Correction] Mail UTF8 - b37217f - @JeromeDevome & @Rico
+[Correction] Correction stat sur champ additionnel - 506c252 - @JeromeDevome
+[Correction] Affichage de la périodicité dans la réservation - b05fd4c - @JeromeDevome 
+[Correction] Numéro jour vue mensuelle (cas jour masqué) - 0f61cd7 - @JeromeDevome
+[Correction] Remplissage certains champs en édition de réservation - 2cc2fa3 - @JeromeDevome
+[Correction] Gestion des conflits de réservation - ef6076c - @JeromeDevome
+[Correction] Champ nombre de participant en double - 78de91d - @JeromeDevome
+[Correction] Fix date début série en modification de réservation - 9c3ffb6 - @JeromeDevome
+[Correction] Nom de la ressource dans l'envois de mail en cas de modification - defa882 - @JeromeDevome
+[Correction] Variable nombre participant max manquante - f5be0b8 - @JeromeDevome
+[Modification] Mise à jour langue espagnol - 4549004 - @JeromeDevome
+
+Version 4.4.0 - 06/07/2025  Généré par @JeromeDevome
+[Ajout] Page de connexion, choix entre deux thèmes - @JeromeDevome
+[Ajout] Page de connexion, possibilité de faire apparaitre le nom de l'établissement, logo...  - @JeromeDevome
+[Ajout] Message d'alerte mail désactivé dans les emails automatiques - 11a74469  - @JeromeDevome
+[Ajout] Gestion de lien externe sur différente page - @JeromeDevome
+[Ajout] Envois de mail hebdomadaire - 2b01cd4f - @JeromeDevome
+[Ajout] Actu DEVOME - 9bad522d - @JeromeDevome
+[Ajout] Gestion des accès domaine restreint via les groupes - 02049645 - @JeromeDevome
+[Ajout] Gestion des accès sites restreint via utilisateur et les groupes - 527d676 & 02049645 - @DavidDelehelle & @JeromeDevome
+[Ajout] Options pour améliorer la performance : Désactiver calcul fct plages_libre_semaine_ressource - fe0aebb6 - @JeromeDevome
+[Ajout] Autorisation import image extension .jpeg - e013f288 - @JeromeDevome
+[Ajout] Commentaire dans la fiche utilisateur - 15f774ff - @JeromeDevome
+[Ajout] Possibilité de désactiver l'envoi de mail à un utilisateur - 15f774ff - @JeromeDevome
+[Ajout] Contrôle des ip lors d'ajout de restriction de connexion - e3eee847 - @JeromeDevome
+[Ajout] Possibilité pour un gestionnaire, de désactiver l'envois de mail sur la modification d'une réservation - 613df9ed - @JeromeDevome
+[Ajout] Ajout de deux variables pour la personnalisation des mails - 2ff44f7c - @JeromeDevome
+[Ajout] Message d'avertissement lors de l'installation d'une version non stable - 6897c133 - @JeromeDevome
+[Ajout] Installation, ajout lien vers la documentation - bf8c868d - @JeromeDevome
+[Ajout] Affichage du nombre de participant dans la vue calendrier selon choix admin - f152eb45 - @JeromeDevome
+[Ajout] Affichage d'une icone quand l'utilisateur participe à une réservation - 1cdcf3d9 - @JeromeDevome
+[Ajout] Droit sur l'activation participant apronfondit - d86f2eb7 - @JeromeDevome
+[Ajout] Droit de participer - 4bc08126 - @JeromeDevome
+[Ajout] Nombre de participant par défaut - 4bc08126 - @JeromeDevome
+[Ajout] colonne date fin et heure de fin pour les stats - 7de8241 - @JeromeDevome
+[Correction] Correction date de recherche par défaut - 33ec7268 - @JeromeDevome
+[Correction] Liste des participants - 98294155 - @JeromeDevome
+[Correction] Correction du chemin de recherche de la config LDAP - 199ebf38 - @maxbes
+[Correction] Affichage de la version lors de l'installation - fa8d7ef6 - @JeromeDevome
+[Correction] Correction affichage selon droits - 3f484fe5 - @JeromeDevome
+[Correction] Langue anglaise - @darxmurf
+[Correction] Tri par date log des mails - 583518b - @JeromeDevome
+[Correction] Variable en double dans les mails - d430f5d - @JeromeDevome
+[Correction] Différentes corrections
+[Modification] Passage des pages réservations sous twig - @JeromeDevome
+[Modification] Mise à jour bootstrap - b22b3c82 - @JeromeDevome
+[Modification] Masquer version GRR - 607728ac - @JeromeDevome
+[Modification] Nettoyage de codes - @JeromeDevome
+[Modification] Optimisations - @JeromeDevome & @darxmurf
+[Modification] Refonte des appels automatiques - 29071220 - @JeromeDevome
+[Modification] Mise à jours des librairies - @JeromeDevome
+[Modification] Différentes modications mineures
+[Suppression] Fichiers inutiles - @JeromeDevome
+[Suppression] Documention locale (Pas de mise à jour) - 567795c0 - @JeromeDevome
+
+
+Version 4.3.9 - 09/12/2024 Généré par @JeromeDevome
+[Ajout] Liste des utilisateurs : Sélecteur du nombre de ligne à afficher - 6be5b6ef - @JeromeDevome
+[Ajout] Recherche & Stat : Sélecteur du nombre de ligne à afficher - 22aeafbb - @JeromeDevome
+[Ajout] Stat serveur GRR - 4d04950a - @JeromeDevome
+[Correction] Couleurs pur les types (>Z) sur planning - 3c175540 - @JeromeDevome
+[Correction] Champ summernote dans l'administration (menu déroulant dans les champs texte) - 3be98864 - @JeromeDevome
+[Correction] Redirection vers "moncompte" pour compléter des champs - 9cce28b4 - @JeromeDevome
+[Modification] Date d'ouverture des réservations à l'installation - 1a50840e - @JeromeDevome
+[Modification] Contrôle de version GRR via serveur DEVOME - 67cac734 - @JeromeDevome
+[Modification] Mise à jour librairies JS - ae40fcaf - @JeromeDevome
+[Modification] Mise à jour symfony - 39497b35 & 00d2f4cb - @JeromeDevome
+[Modification] Mise à jour phpmailer - 6bb7d6b5 - @JeromeDevome
+
+Version 4.3.8 - 09/11/2024 Généré par @JeromeDevome
+[Correction] Selection demande de compte - c6368752 - @ynaessens
+[Correction] Champ manquant - ea10d530 - @ynaessens
+[Correction] Numéro de version BDD lors de l'installation - a8221546 - @JeromeDevome
+[Correction] Création de compte si valeur defaut null - 78b0e701 - @JeromeDevome
+[Correction] Liste déroulante des zones pour les vacances scolaires - 168bc3a2 - @sdelcroix
+[Correction] Masquer la description complète - 97a1521f - @JeromeDevome
+[Correction] Message : Deux reservations ont le même ID lors d'une base corrompue - 97a1521f - @jfsenechal
+[Modification] Uptade symfony, twig, tcpdf - a8221546 - @JeromeDevome
+
+
+Version 4.3.7 - 13/10/2024 Généré par @JeromeDevome
+[Ajout] Demande de compte, choix : Login = E-Mail - ed1c288f - @JeromeDevome
+[Ajout] Warning dans la gestion des email si envois de mail désactivé - 990215d6 - @JeromeDevome
+[Ajout] Lien dans l'administration vers la documentation en ligne - ff93ea41 - @JeromeDevome
+[Ajout] Paramétrage de la complexité du mot de passe - 5134ddb8 - @JeromeDevome
+[Correction] Affichage des réservations finissant le dernier jour du mois - e6a5c723 - @ynaessens
+[Correction] Affichage de la date de fin de périodicité dans les mails - b54e9fd9 - @JeromeDevome
+[Correction] Affichage de page édition des utilisateurs - 72def5c1 - @JeromeDevome
+[Correction] Lien thème couleur personnalisée - 0a938bcf - @JeromeDevome
+[Correction] Contrôle accès page month_all - f55c1cc7 - @JeromeDevome
+[Correction] Confirmation suppression réservation - 9c2d836c - @JeromeDevome
+[Correction] Taille champ login dans les groupes - 8f9239d7 - @JeromeDevome
+[Correction] Valeur par défaut pour les nouveaux utilisateurs - e1e64289 - @JeromeDevome
+[Correction] Vocabulaire et traduction - 805e51e3 & ea935564 - @JeromeDevome
+[Correction] Type de réservations: Choix de la couleur à la création du type - 36d12aae - @JeromeDevome
+[Correction] Interdiction des espaces dans l'identifiant via l'import - d0d92d00 - @JeromeDevome
+[Correction] Nom du champ URL déconnexion - 0a767864 - @JeromeDevome
+[Modification] Affichage des paramètres serveur de mail - 0a9299fd - @JeromeDevome
+[Modification] Type de réservations: Limitation à la taille du champ est obligation de le remplir - 45985e28 - @JeromeDevome
+[Modification] L'ordre des réservations à modérer est selon la date de début - 650b4773 - @JeromeDevome
+[Modification] Uptade symfony - 82fbfc65 - @JeromeDevome
+[Modification] Update phpmailer and tcpdf - a210495a - @JeromeDevome
+
+Version 4.3.6 - 17/07/2024 Généré par @JeromeDevome
+[Ajout] Changer l'état d'un utilisateur - bc8d8b35 - @JeromeDevome
+[Ajout] Possibilité d'écraser des réservations sans être admin du domaine à conditions que les réservations appartiennent à l'utilisateur - ee721e00 - @JeromeDevome
+[Correction] N'affiche pas la page si la réservation a été supprimée - c9fb1928 - @ynaessens
+[Correction] Conservation du type lors d'édition ou de copie - 21855b12 - @JeromeDevome
+[Correction] Actualisation des champs additionnels  lors d'un changement de domaine - 043efb2a - @JeromeDevome
+[Correction] Vocabulaire - b8846160 - @ynaessens
+[Correction] En cas de conflit, réserver les créneaux hors conflit - d1368d3d - @ynaessens
+[Correction] Accès des administrateurs de site à l'administration des domaines - 19a661d3 - @ynaessens
+[Correction] Accès des administrateurs de site à la duplication des domaines - 95b49462 - @ynaessens
+[Correction] Accès des gestionnaires de ressources à la modification des ressources - d6e5cba2 - @ynaessens
+[Correction] Prise en charge des adresses IPv6 - b17e1d87 - @ynaessens
+[Modification] Nom logo aléatoire, problème de cache - 09d4aea3 - @JeromeDevome
+[Modification] Mise à jour symfony - 80d2cbf7 - @JeromeDevome
+[Modification] Mise à jour JS admin - c525737e - @JeromeDevome
+
+Version 4.3.5 - 12/06/2024 Généré par @JeromeDevome
+[Ajout] Variable date de fin pour les mails - a2bc3831 - @JeromeDevome
+[Ajout] Variable URL de la réservation pour les mails - c77702c8 - @JeromeDevome
+[Correction] Accès sur la vue journalière - dcae040a - @JeromeDevome
+[Correction] Warning PHP vue réservation - 54852e14 - @JeromeDevome
+[Correction] Vocabulaire - a6408a7b & f6a2a31a - @ynaessens
+[Modification] Header du mail - c94dc4fb- @ynaessens
+[Modification] Mise à jour de twig - 0934fcba - @JeromeDevome
+[Modification] Mise à jour symfony - a343823d - @JeromeDevome
+
+
+Version 4.3.4 - 06/05/2024 Généré par @JeromeDevome
+[Ajout] Nouveau Hook pour module externe - 7011a1a3 - @JeromeDevome
+[Correction] Affiche du html dans le champ brêve description - 23c683c0 - @JeromeDevome
+[Correction] Mise à jour GRR 4.3.0 - d15719ff - @JeromeDevome
+[Correction] Affichage resa compact - fa332a49 - @JeromeDevome
+[Correction] Modification des réservations avec périodicité - 2273a583 - @JeromeDevome
+[Modification] Optimisation suite à 4.3.0 (202be69e) - a700ad79 - @JeromeDevome
+[Modification] Ajout traduction - 5b8b2ddb - @JeromeDevome
+[Modification] Mise à jour des dépendances PHP - fb4f2141 - @JeromeDevome
+
+
+Version 4.3.3 - 31/03/2024 Généré par @JeromeDevome
+[Ajout] Nom du GRR dans l'administration
+[Correction] Réservations en bloc - 54264dbd - @JeromeDevome
+[Correction] Syntaxe URL suppression - 69269935 - @ynaessens
+[Correction] Fonction envois de mail - 0e08c51b - @JeromeDevome
+[Correction] Variable - 1833d9c2 - @JeromeDevome
+[Correction] Redirection si nom ou prénom non renseigné - 71f1896a - @JeromeDevome
+[Correction] Changement de la valeur du paramètre de "Logs mails" - bbb35054 - @JeromeDevome
+[Correction] Exclure les réservations supprimées des quotos - 61df1276 - @JeromeDevome
+[Correction] Vue journaliere toute les ressources - c2e31bb3 - @JeromeDevome
+[Correction] Accès au jours du mini calendrier - 4556b90d - @JeromeDevome
+[Correction] Regression : Ressource empruntée dans la saisie de réservation - ca18d289 - @JeromeDevome
+[Correction] Vue réservation avec ressource empruntée - b2d6b216 - @JeromeDevome
+[Correction] Raison mail variable non définit - a19ec824 - @JeromeDevome
+[Modification] Changement de lien pour la modération (vue réservation) - 9b1f25cf - @JeromeDevome
+[Modification] Mise à jour des dépendances PHP - 79e522e1 - @JeromeDevome
+
+-----
+--
+-----
+Version 4.3.2 - 03/03/2024 Généré par @JeromeDevome
+[Correction] Traduction manquante - 02e751e6 - @JeromeDevome
+[Correction] Affichage des réservations à confirmer - ae9c064f - @JeromeDevome
+[Correction] Réservations à confirmer: ignorer les réservations supprimées - 530bbe29 - @JeromeDevome
+[Correction] Suppression des sites - 2ad69eb6 - @JeromeDevome
+[Correction] Affichage des sites dans l'administration - 2ad69eb6 - @JeromeDevome
+[Correction] Type de réservation par défaut dans un domaine - 9cd84b08 - @JeromeDevome
+[Correction] Choix du site par défaut - 30533fe6 - @JeromeDevome & @bambi1013
+[Correction] Redirection après suppression d'une réservation - 294971f2 - @JeromeDevome
+[Modification] Blocage du nombre de caractère maximum dans le champs de création/modification de site - 2ad69eb6 - @JeromeDevome
+[Modification] Mise à jour symfony - 6e529d1b & bc70e054 - @JeromeDevome
+
+-----
+--
+-----
+Version 4.3.1 - 18/02/2024 Généré par @JeromeDevome
+La version 4.3.1 : Comprend les correction de la version 4.2.5 
+[Correction] Traduction manquante - ba1cf440 - @ynaessens
+[Correction] Liste des visiteurs dans les réservations - 4f877997 - @JeromeDevome
+[Correction] Mise à jour au changement de domanine dans l'éditition de réservation - 0174d14b - @JeromeDevome
+[Correction] Supression d'utilisateur : Liaison groupe - bf2156df - @JeromeDevome
+[Correction] Message d'avertissement si login utilise des caractères invalide - ddf37779 -@JeromeDevome
+[Correction] Connexion IMAP - 20423113 & 92316373 - @JeromeDevome
+[Correction] Supression message d'erreur non critique à la ma mise à jour - d581f6df - @ynaessens
+et :
+[Correction] Lien de la fiche ressource depuis l'administration - bc11a787 - @JeromeDevome
+[Correction] Modification du compte - f350fb2d - @JeromeDevome
+[Correction] Affichage de la brêve description - 1c59567c - @JeromeDevome
+[Correction] Traduction ressource empruntée - 7189cdc2 - @JeromeDevome
+
+-----
+--
+-----
+Version 4.3.0 - 04/02/2024 Généré par @JeromeDevome
+[Ajout] Réservation restreinte - d065d1fa - @ynaessens & @JeromeDevome
+[Ajout] Infos à afficher dans les plannings par rôle d'utilisateur - 202be69e - @JeromeDevome
+[Ajout] Nettoyage de la BDD - a15d2572 - @JeromeDevome
+[Ajout] Interdiction changement de valeur dans le compte (style, langue...) - 02d34b31 - @JeromeDevome
+[Ajout] Contrôle prérequis PHP à l'installation - b6e24482 - @JeromeDevome
+[Ajout] Contrôle prérequis PHP dans Infos Serveur - 11ab212c - @JeromeDevome
+[Correction] Requête dans la mise à jour - abec15f1 - @ynaessens
+[Modification] Nettoyage de code - e2e67217 de926731 3bc17e68 - @JeromeDevome
+[Modification] Passage fiche ressource sous twig - 82bb50ab- @JeromeDevome
+[Modification] Passage droits domaine  sous twig - 9c29111a - @JeromeDevome
+[Modification] Passage droits ressource sous twig - be83feec - @JeromeDevome
+[Modification] Passage déconnexion sous twig - 5ad51f89 - @JeromeDevome
+[Modification] Passage vue réservation ressource sous twig - 4cbcb487 - @JeromeDevome
+[Modification] Mise à jour symfony - 30178024 - @JeromeDevome
+[Modification] Compatibilité PHP 8.3 - b8e6b204 - @JeromeDevome
+
+-----
+--
+-----
+Version 4.2.5 - 18/02/2024 Généré par @JeromeDevome
+[Correction] Traduction manquante - ba1cf440 - @ynaessens
+[Correction] Liste des visiteurs dans les réservations - 4f877997 - @JeromeDevome
+[Correction] Mise à jour au changement de domanine dans l'éditition de réservation - 0174d14b - @JeromeDevome
+[Correction] Supression d'utilisateur : Liaison groupe - bf2156df - @JeromeDevome
+[Correction] Message d'avertissement si login utilise des caractères invalide - ddf37779 -@JeromeDevome
+[Correction] Connexion IMAP - 20423113 & 92316373 - @JeromeDevome
+[Correction] Supression message d'erreur non critique à la ma mise à jour - d581f6df - @ynaessens
+
+-----
+--
+-----
+Version 4.2.4 - 30/01/2024 Généré par @JeromeDevome
+
+[Ajout] Affichage de la description complète de la ressource dans la page days (selon configuration) - 63c729ea - @JeromeDevome
+[Ajout] Recherche & Stats : filtre par site (Dans le cas ou le multi-site est activé) - 4719961b - @JeromeDevome
+[Ajout] Formulaire de contact de réservation prés remplis pour les visiteurs connecté (nom, prénom, email) - 97b85558 - @JeromeDevome
+[Ajout] Inclusion des visiteurs dans la liste des bénéficiaires le cas où la fonctionnalité réserver pour autrui est activée - 43596515 - @ynaessens
+[Correction] Variable vocab - 2047367a & fdc54a69 & 191b898a - @JeromeDevome, @ynaessens
+[Correction] Prise en compte de l'adresse d'envois pour le serveur SMTP - e176bfc6 - @JeromeDevome
+[Correction] Variable site par défaut (problème 4.2.3) - 6fa510d4 & 37b64328 - @JeromeDevome
+[Correction] Caractères accentué dans la description complète d'une ressource - d059b70c - @JeromeDevome
+[Correction] Affichage du formulaire de modération, via lien email - 68bc28ac - @JeromeDevome
+[Suppression] Nettoyage de code dans l'administration - @JeromeDevome
+
+-----
+--
+-----
+Version 4.2.3 - 13/01/2024 Généré par @JeromeDevome
+
+[Ajout] Modification utilisateur via admin : Paramétrage langue, style, domaine par défaut - 04806794 - @JeromeDevome
+[Ajout] Lien pour modifier l'utilisateur dans le login - 568f381d - @JeromeDevome
+[Ajout] Synchonisation du type d'affichage avec tout les utilisateurs - 86a9747e - @JeromeDevome
+[Ajout] Synchonisations site, domaine et ressource par défaut - f51ff7f7 - @JeromeDevome
+[Ajout] Gestion du cache selon version de GRR - 44fc5b43 - @JeromeDevome
+[Correction] Tris sur date des logs de reservations - 6e83a272 - @JeromeDevome
+[Correction] Privilège complet de l'utilisateur dans l'admin - edb54722 - @JeromeDevome
+[Correction] Temporaire affichage table avec bandeau supérieur - 0b4a751b - @JeromeDevome
+[Correction] Traduction - c15b602b & 1a9580e7 - @JeromeDevome
+[Correction] Impression des liens - ceeaf143 - @JeromeDevome
+[Correction] Balises dans mon compte - df2017d9 - @JeromeDevome
+[Modification] Amélioration de l'affichage domaine par défaut - e451fe6f - @JeromeDevome
+[Modification] Modification de l'utilisateur, affichage de validation par toast - 640b3a75 - @JeromeDevome
+[Modification] Upgrade Symfony - 641782f8 - @JeromeDevome
+
+
+-----
+--
+-----
+Version 4.2.2 - 03/12/2023 Généré par @JeromeDevome
+
+[Ajout] Sélection date directe dans le bandeau du haut - 89c56b5c - @JeromeDevome, @shalut
+[Correction] Désactivation demande création de compte (Pb 4.2.0) - 78f667ca - @JeromeDevome
+[Correction] Enregistrement page CGU (Pb 4.2.0) - edf48d0d - @JeromeDevome
+[Correction] Maj version 3.4.3 - fcd3681b - @ynaessens
+[Correction] Email spécifique dans les champs additionnel - 3fe39a01 - @JeromeDevome
+[Correction] Lien JS dans l'édition d'entrée (Pb 4.2.1) - ba5d161c - @JeromeDevome, @Aurely9n, @ynaessens
+[Correction] Divers erreur de vocab - ba5d161c 9f963c5b 5cbfc40a - @JeromeDevome
+[Correction] Date et heure dans le bandeau - ba5d161c - @JeromeDevome
+[Correction] Fonction participation - 6497f9ad -  @JeromeDevome
+[Modification] Affichage du bénéficiare ext. dans Recherche & Stat - fbd9796b - @JeromeDevome, @Aurely9n
+[Modification] Mise à jour des dépendances PHP - 62e045d9 - @JeromeDevome
+
+
+-----
+--
+-----
+Version 4.2.1 - 26/11/2023 Généré par @JeromeDevome
+
+[Ajout] Prévisualisation des couleurs dans l'administration des types de réservations @JeromeDevome
+[Correction] Calcul de la page edit_entry @ynaessens
+[Correction] Droits à modifier pour le bénéficiaire @ynaessens
+[Correction] Champs de recherche par brève description manquant (Pb v4.0.0) @ynaessens
+[Correction] Pipette de couleur pour les champs hexadécimal @JeromeDevome
+[Correction] Sauvegarde via une tâche CRON (Pb v4.0.0) @JeromeDevome
+[Correction] Module appelé plusieurs fois sur un même Hook @JeromeDevome
+[Modification] Lien d'activation des modules remplacer par une checkbox @JeromeDevome
+[Modification] Mise à jour des libraires JS @JeromeDevome
+[Modification] Mise à jour des libraires PHP @JeromeDevome
+
+
+-----
+--
+-----
+Version 4.2.0 - 24/10/2023 Généré par @JeromeDevome
+
+[Ajout] Création de compte utilisateur via un système de demande @JeromeDevome
+[Ajout] Personnalisations des mails via l'administration @JeromeDevome
+[Ajout] Personnalisation du titre des CGU @JeromeDevome
+[Ajout] Champs additionnels de type checkbox @ynaessens & eric.lemeur (Forum)
+[Ajout] Hooks pour les modules @JeromeDevome
+[Ajout] Module ext. : Possibilité de bloquer en actif via config.inc.php
+[Correction] Accès aux pages sans connexion @JeromeDevome
+[Correction] Sécurisation cookies @JeromeDevome
+[Correction] Jour périodicité dans les PDF @JeromeDevome
+[Correction] Correction des choix des langues @JeromeDevome
+[Correction] Amélioration de la mise à jour de 3.5.1 vers 4.1.1 @ynaessens
+[Correction] Sécurisation de l'envoi des mails @ynaessens & eric.lemeur (Forum)
+[Correction] Style administration @ynaessens
+[Correction] Création sous dossier récursive (Pb v4.0.0) @JeromeDevome
+[Correction] Accès aux administrateurs de site (Pb v4.0.0) @ynaessens
+[Correction] Accès aux administrateurs de domaine (Pb v4.0.0) @ynaessens
+[Correction] Lien dans mon compte (Pb v4.0.0) @ynaessens
+[Correction] Compteur des réservations à modérer (Pb v4.0.0) @JeromeDevome
+[Modification] Amélioration traduction italien @JeromeDevome
+[Modification] Upgrade dépendances PHP @JeromeDevome
+[Modification] Mise à jour : vacances.xml @ynaessens
+[Modification] Tri par chronologie des dates dans les stats @JeromeDevome
+
+
+-----
+--
+-----
+Version 4.1.1 - 23/07/2023 Généré par @JeromeDevome
+
+[Ajout] Option "ressource emprunté" directement dans la création de réservation @JeromeDevome @ynaessens
+[Correction] Conservation en édition "Réservation au nom de " @JeromeDevome 
+[Correction] Lien mon compte @ynaessens
+[Correction] Prise en compte du fichier configperso @JeromeDevome
+[Correction] Popup de confirmation dans l'administration @JeromeDevome
+[Correction] Affichage du bénéficiaire extérieur dans la vue réservation @JeromeDevome @Aurely9n 
+[Modification] Tableau de bord de l'administration @Larsene
+[Modification] Mise à jour des libraires JS @JeromeDevome 
+
+
+-----
+--
+-----
+Version 4.1.0 - 30/06/2023 Généré par @JeromeDevome
+
+[Ajout] Accès a une journée directement via le sélecteur de date @JeromeDevome
+[Ajout] Administration : Nouvelle section, Fonctionnalités @JeromeDevome
+[Ajout] Possibilité d'ajouté des liens dans l'admin via le fichier configperso @JeromeDevome
+[Ajout] Possibilité de désactiver l'échange de réservation @JeromeDevome
+[Ajout] Captcha pour le formulaire de contact pour les réservations @JeromeDevome
+[Ajout] Interdire l'adresse mail comme mot de passe lors de l'installation @gregouzdev
+[Correction] Calcul des droits pour un gestionnaire de ressource @ynaessens
+[Correction] Récupération des attributs issus d'un serveur CAS @ynaessens
+[Correction] Affichage des réservations week sur créneau 1h30 @JeromeDevome
+[Correction] Possibilité de réserver depuis la page week après avoir supprimé une réservation sur toute la journée @JeromeDevome
+[Correction] Échange de réservation @ynaessens
+[Correction] Formulaire de contact pour réservation @JeromeDevome
+[Correction] Erreur JS dans l'administration (Pb v4.0.0) @JeromeDevome
+[Correction] Correction champ SSO modification des informations (Pb v4.0.0) @ynaessens
+[Modification] Sélecteur de date passage en Bootstap @JeromeDevome
+[Modification] Nettoyage fonction UTF8 @ynaessens
+[Modification] Passage à Jquery3 @JeromeDevome
+[Modification] Sécurisation de variables @JeromeDevome
+[Modification] Sécurisation de la session @JeromeDevome
+[Modification] Mise à jour des librairies JS @JeromeDevome
+[Modification] Passage de twig 2 à 3 @JeromeDevome 
+[Modification] Mise à jour librairie PHP @JeromeDevome
+[Suppression] Librairies non utilisées @JeromeDevome
+[Suppression] [Temporaire] Tableau de bord contrôle des mots de passes faciles - Problème timeout, avec un grand nombre d'utilisateur @JeromeDevome
+
+-----
+--
+-----
+Version 4.0.3 - 31/03/2023 Généré par @JeromeDevome
+
+[Ajout] Peronnalisation de la couleur des liens @JeromeDevome
+[Ajout] Ajout multiple administrateur de ste @JeromeDevome
+[Correction] ProtectDataSql cas d'une valeur à null @JeromeDevome
+[Correction] Suppression (en affichage) des réservations périodique après modification de la série (Pb v4.0.0) @JeromeDevome
+[Correction] Permission gestion des clés @JeromeDevome
+[Correction] Suppression d'un administrateur de site (Pb v4.0.0) @JeromeDevome
+[Correction] Syntaxe + liens @ynaessens
+[Correction] Langue du calendrier (Pb v4.0.0) @JeromeDevome & @sdelcroix
+[Modification] Amélioration compatibilité PHP 8.2 (Compatibilité partielle) @ynaessens
+[Modification] Mise à jours de traductions @JeromeDevome
+[Modification] Couleur titre "Identification" page login selon la couleur du thème @JeromeDevome
+[Modification] Alignement des liens (Contact, CGU) dans la page login @JeromeDevome
+[Modification] Mise à jour de phpmailer 6.8.0  @JeromeDevome
+
+-----
+--
+-----
+Version 4.0.2 - 02/03/2023 Généré par @JeromeDevome
+
+[Ajout] Interrogation LDAP après authentification Apache @ynaessens (proposition de @ericlemeur)
+[Ajout] Regénération du cache navigateur à chaque modification su style perso @JeromeDevome
+[Ajout] Contrôle de la taille du mot de passe lors de modification par l'utilisateur @JeromeDevome
+[Ajout] Possibilité de masquer le champ description complète dans le formulaire de réservation @JeromeDevome
+[Ajout] Hash du mot de passe admin à l'installation @JeromeDevome
+[Ajout] Possibilité de désactiver le warning backup de l'administration via le fichier config @JeromeDevome
+[Ajout] Fonction anomalie, affichage de toute les anomalies dans l'administration @JeromeDevome
+[Correction] Style perso (Pb v4.0.0) @JeromeDevome
+[Correction] Correction du lien de nombre de connecté (Pb v4.0.0) @JeromeDevome
+[Correction] Connexion LDAP (Pb v4.0.0) @JeromeDevome
+[Correction] Menu haut ou gauche; Reprise correction de la 3.5 @ynaessens + correction légende @JeromeDevome
+[Correction] Raffraichissement après modification des données dans la congiguration Générales (Pb v4.0.0) @JeromeDevome
+[Correction] Redirection vers serveur CAS @ynaessens
+[Correction] Statut actif par défaut à la cration d'un compte (Pb v4.0.0) @JeromeDevome
+[Correction] Nombre d'utilisateur avec un mot de passe facile (Pb v4.0.1) @ynaessens
+[Modification] Contrôle de la version GRR via l'api GitHub @JeromeDevome
+[Modification] Upgrade phpcas 1.6.0 => 1.6.1 @JeromeDevome
+[Modification] Upgrade jszip @JeromeDevome
+[Modification] Upgrade dépendance JS @JeromeDevome
+[Modification] Mise à jours de traductions @JeromeDevome & @Apollon1977
+[Modification] Connexion mysql orienté objet @ynaessens
+[Modification] Date d'ouverture pour les réservations après une nouvelle installation
+[Modification] Remplacement de l'outil md5 par la fonc hash @JeromeDevome
+[Modification] Amélioration compatibilité PHP 8.2 (Compatibilité partielle) @JeromeDevome
+[Modification] Contrôle du hash à la connexion  @JeromeDevome
+
+-----
+--
+-----
+Version 4.0.1 - 29/01/2023 Généré par @JeromeDevome
+
+[Ajout] Adresse mail dans la liste des utilisateurs @JeromeDevome
+[Ajout] Passage d'un utilisateur externe en local et inverse @JeromeDevome
+[Ajout] Authentification CAS SSO possibilité de choisir la version du cas dans l'administration @JeromeDevome
+[Correction] Authentification CAS SSO @Aurely9n & @JeromeDevome
+[Modification] Système de hash du mot de passe @ynaessens & @JeromeDevome
+[Modification] Modules Externes @JeromeDevome
+[Modification] Amélioration de l'affichage de la liste des utilisateurs @JeromeDevome
+[Modification] Mise à jour tcpdf 6.6.1 => 6.6.2 @JeromeDevome
+[Modification] Mise à jour twig v2.15.3 => v2.15.4 @JeromeDevome
+[Modification] Refonte graphique de la page authentification SSO @JeromeDevome
+[Modification] Taille champs login @ynaessens
+
+-----
+--
+-----
+Version 4.0.0 - 17/12/2022 Généré par @JeromeDevome
+
+[Ajout] Contrôle version PHP @JeromeDevome
+[Ajout] Contrôle version MySQL @JeromeDevome
+[Ajout] Administration : Lien vers la documentation @JeromeDevome
+[Ajout] Possibilité de créer son fichier config qui ne sera pas écrasé par les mises à jours @JeromeDevome
+[Ajout] Infos PHP dans les informations du serveur @JeromeDevome
+[Ajout] Visualisation des variables du fichier config.inc.php dans les informations du serveur @JeromeDevome
+[Ajout] Champs additionnel dans les exports @JeromeDevome
+[Ajout] Changement de mot passe à la prochaine connexion @JeromeDevome
+[Ajout] Possibilité lors de l'importation des utilisateurs par csv de demander de changer de mot de passe @JeromeDevome
+[Ajout] Groupes d'utilisateur @JeromeDevome
+[Ajout] Personnalisations de la couleur du texte par type de réservation @JeromeDevome & @ynaessens
+[Ajout] Synchronisation de la langue avec tout les utilisateurs @JeromeDevome
+[Ajout] Synchronisation du thème avec tout les utilisateurs @JeromeDevome
+[Ajout] Fonctionnalité de participation @JeromeDevome
+[Ajout] Restriction des connexions par horaire @JeromeDevome
+[Ajout] Enregistrement de la personnalisation des couleurs @JeromeDevome
+[Ajout] Historisation des réservations et des modifications @JeromeDevome
+[Ajout] Historisation des mails envoyés @JeromeDevome
+[Ajout] Destinataire mail spécifique par champ additionnel @JeromeDevome
+[Ajout] Variables dans config pour désactiver la fonction mail @JeromeDevome
+[Ajout] Limitation d'envois de mail par action @JeromeDevome
+[Correction] Déconnexion utilisateur lorsque une connexion externe est activée @JeromeDevome
+[Correction] Nombreuses corrections par @ynaessens
+[Modification] Lors d'une nouvelle installation, par défaut il faut obligatoirement être connecté pour accéder au planning @JeromeDevome 
+[Modification] Administration : passage sous twig @JeromeDevome
+[Modification] Administration : Theme AdminLTE @JeromeDevome
+[Modification] Mon  compte : passage sous twig @JeromeDevome
+[Modification] Recherche & stat : passage sous twig + export via tableau @JeromeDevome
+[Modification] Compatibilité PHP 8.1 @JeromeDevome & @ynaessens
+[Modification] Déconnexion de l'utilisateur de puis l'administration sans le changement de mot de passe @JeromeDevome
+[Modification] Séparation de la date, heure début de réservation et la durée dans les exports @JeromeDevome
+[Modification] Passgae des dépendances CAS, Phpmailer sous composer @JeromeDevome
+[Modification] Séparation de la date, heure début de réservation et la durée dans les exports  @JeromeDevome
+[Modification] Mise à jour des vacances scolaires @ynaessens
+[Modification] Mise à jours de traductions @JeromeDevome & @ynaessens
+[Modification] Emplacement des personnalisations (images, configs, trad...) @JeromeDevome
+[Modification] Installation : Refonte graphique
+De nombreuse autre modifications ont eu lieu mais ne sont pas renseignée dans ce changelog.
+
+
+-----
+--
+-----
+Version en cours de développement sur GitHUB (3.4.1) // Numéro de version à confirmer
+    [ajout] Echange de deux réservations
+    [ajout] Page year_all affichant les réservations sur plusieurs mois et plusieurs domaines (à utiliser avec prudence s'il y a beaucoup de réservations ou de ressources)
+    [amelioration] reprise du code des pages plannings pour gérer les menus escamotables (fait toutes pages)
+    
+-----
+--
+-----
+
+Version 3.4.0
+	[ajout] Personnalisation des couleurs pour les types de réservation depuis l'administration, soit un passage de 28 couleurs à 16 777 216 couleurs
+	[ajout] Possibilité d'afficher le formulaire de demande de réservation aux non connectés et aux visiteurs ou simplement aux visiteurs 
+	[ajout] Interdire les différentes configurations d'authentification externe via le fichier de config
+	[ajout] Menu administration : Couleur bleu sur le lien où l'on se situe
+	[ajout] Menu administration : Possiblité d'accéder au lien où l'on se situe
+	[ajout] Moteur de page
+	[ajout] Conditions Générales d'Utilisation personalisables
+	[ajout] Lors de l'envoi mail, notifier le changement de ressources s'il y a lieu
+	[ajout] Gestion de modules externes
+    [ajout] message dans l'entête s'il existe une réservation à modérer
+    [amélioration] filtrage par plage IP au format CIDR
+    [amélioration] retour à la page d'appel après modération
+    [amélioration] présentation des réservations modérées
+    [amélioration] possibilité d'utiliser les couleurs du texte et du fond
+    [amélioration] intégration au portail EnvOLE
+    [amélioration] filtrage des adresses mail
+    [amélioration] affichage et liens pour créer une réservation en page month_all2
+    [amélioration] affichage des menus, changement de paramétrage de make_room_list_html
+    [amélioration] affichage des réservations successives dans une journée en page week_all
+    [correctif] paramètre manquant dans mysqli_connect
+    [correctif] divers correctifs syntaxiques
+    [correctif] donner une valeur numérique à $dbPort
+    [correctif] prise en compte des préférences de l'utilisateur dans le calcul de la page d'accueil
+    [correctif] la couleur jaune est illisible sur fond blanc
+    [correctif] affichage ou non de l'imprimante
+    [correctif] gestion du menu gauche escamotable
+	[mise à jour] CKEditor 4.8.0 
+	[modification] Génération des PDF, on parle de ressource et non de salle, réorganisation du format PDF (compatible en enveloppe fenêtre)
+	[modification] Date de début et fin des réservations par défaut lors d'une première installation
+	[modification] Longueur minimum du mot de passe, passage de 6 à 8 caractères lors d'une première installation
+	[modification] Conformité avec le RGPD
+    [modification] boutons mois précédent/suivant
+
+	
+-----
+--
+-----
+
+Version 3.3.1
+    [ajout] Visualisation des utilisateurs avec un mot de passe trop simple (A titre indicatif, certains mots de passe simples ne sont pas listés)
+    [ajout] Configuration du calendrier des vacances depuis l'administration
+    [ajout] Nouveau calendrier pour indiquer les fériés depuis l'administration
+    [ajout] Ajout de fichiers redirection pour empêcher la lecture de certains répertoires
+    [ajout] Champs additionnels dans l'affichage d'une réservation
+    [ajout] Page permettant la suppression de toutes les réservations postérieures à une date
+    [ajout] Page permettant la suppression de toutes les réservations antérieures à une date
+    [ajout] Page permettant de réserver en masse à partir d'un fichier csv
+    [ajout] Page permettant de réserver en masse à partir d'un fichier csv issu du logiciel UnDeuxTemps
+    [ajout] bibliothèques phpCAS dans le dossier /include
+    [ajout] Lien vers la page year.php depuis le numéro de l'année dans les pages month*.php
+	[ajout] Variable dans config permettant de désactiver la recherche de mise à jour
+    [correction] Affichage des champs additionnel, même dans le cas de caractère non utf8
+    [correction] Bordure de séparation pour les réservations entre les réservations dans la vue mois d'une ressources
+    [correction] Bordure de séparation pour les réservations entre les réservations dans la vue mois d'un domaine
+    [correction] Correction de la connexion LDAP lorsqu'un utilisateur externe existant se connecte ( merci à pboissonneault )
+    [correction] Affichage de la colonne gauche de l'admin dans la page admin_import_users_csv.php
+	[correction] Vue semaine d'une ressource sur plusieurs jour (horaire et crénaux)
+    [modification] La configuration d'un cas SSO ce fait depuis l'administration
+    [modification] Déplacement images dans le dossier approprié
+    [modification] de la page admin_calend.php pour en faire une page de choix entre:
+        -- l'ancienne page admin_calend.php renommée admin_calend2.php
+        -- une page permettant de supprimer toutes les réservations avant une date donnée
+        -- une page permettant de supprimer toutes les réservations après une date donnée
+        -- une page permettant de réserver en masse à partir d'un fichier csv
+        -- une page permettant de réserver en masse à partir d'un fichier csv issu du logiciel UnDeuxTemps
+    [modification] reprise des patches utilisés dans GEPI pour utilisation derrière un reverse-proxy
+	[modification] Amélioration du bandeau du haut : Supression texte "Accueil", réduction de la hauteur, optimisation du contenu
+	[modification] Passage d'image en CSS (Glyphicon)
+    [Suppression] Fichiers inutiles
+    [mise à jour] fichier des vacances scolaires (source index-education)
+    [mise à jour] documentation
+
+
+Version 3.3.0 et inférieur
+- Voir sur le site grr.devome.com

@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * Configuration de production GRR/MediaWiki.
+ *
+ * Copier ce fichier sous le nom LocalSettings.grr-production.php dans la
+ * racine MediaWiki de production, puis l'inclure à la fin du LocalSettings.php :
+ *
+ * require __DIR__ . '/LocalSettings.grr-production.php';
+ *
+ * Ne pas copier le LocalSettings.php de l'environnement de test.
+ */
+
+if (!defined('MEDIAWIKI')) {
+	exit;
+}
+
+wfLoadExtension('GrrAccessGate');
+
+# Interrupteur de déploiement et de retour arrière.
+$wgGrrAccessGateEnabled = false;
+$wgGrrAccessGateSecret = '';
+
+# Le fichier réel ne contient que $wgGrrAccessGateSecret.
+$grrAccessGateSecretFile = __DIR__ . '/LocalSettings.grr-secret.php';
+if (is_readable($grrAccessGateSecretFile)) {
+	require $grrAccessGateSecretFile;
+}
+
+$wgGrrAccessGateCookieName = 'GRRMediaWikiAccess';
+$wgGrrAccessGateAudience = 'mediawiki-production';
+$wgGrrAccessGateAuthorizeUrl =
+	'/grr/personnalisation/modules/mediawiki_auth/authorize.php';
+$wgGrrAccessGateRefreshUrl =
+	'/grr/personnalisation/modules/mediawiki_auth/refresh.php';
+$wgGrrAccessGateWikiPath = '/mediawiki/';
+$wgGrrAccessGateClockSkew = 30;
+$wgGrrAccessGateMaxTokenLifetime = 600;
+$wgGrrAccessGateRefreshInterval = 60;
+
+# Les permissions ne changent que lorsque la passerelle est activée. Avec
+# false, la politique d'accès historique définie plus haut dans
+# LocalSettings.php reste appliquée.
+if ($wgGrrAccessGateEnabled) {
+	$wgGroupPermissions['*']['read'] = true;
+	$wgGroupPermissions['*']['edit'] = false;
+	$wgGroupPermissions['*']['createaccount'] = false;
+	$wgGroupPermissions['*']['autocreateaccount'] = false;
+
+	$wgGroupPermissions['user']['edit'] = false;
+	$wgGroupPermissions['editor']['read'] = true;
+	$wgGroupPermissions['editor']['edit'] = true;
+
+	# Points d'entrée protégés de production.
+	$wgRestPath = "$wgScriptPath/grr_rest.php";
+	$wgUploadPath = "$wgScriptPath/grr_img_auth.php";
+	$wgImgAuthPath = "$wgScriptPath/grr_img_auth.php";
+}

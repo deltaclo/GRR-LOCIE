@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Айбикә",
+			"З. ӘЙЛЕ"
+		]
+	},
+	"iframepage": "Iframe-бите",
+	"iframepage-desc": "Махсус биткә iframe ҡуйырға рөхсәт итә",
+	"iframepage-error-wgifsrc": "<code>$wgIframePageSrc</code> үҙгәреүсәне <code>LocalSettings.php</code> ҡуйылырға тейеш."
+}

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"LOCIE"
+		]
+	},
+	"grraccessgate-desc": "{{desc|name=GrrAccessGate|url=https://intranet-locie.local.univ-savoie.fr/}}",
+	"grraccessgate-api-access-denied": "API error returned when the GRR access proof is missing or invalid.",
+	"grraccessgate-api-config-error": "API error returned when the GRR access gateway configuration is invalid."
+}

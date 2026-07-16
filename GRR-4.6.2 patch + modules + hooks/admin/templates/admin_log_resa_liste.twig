@@ -1,0 +1,90 @@
+{% extends 'layout.twig' %}
+
+{% block css %}
+	<link rel="stylesheet" href="../jslib/datatables-bs5/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="../jslib/datatables-buttons/css/buttons.bootstrap5.min.css">
+{% endblock %}
+
+{% import 'messagesysteme.twig' as msgSyst %}
+
+{% block content %}
+	<div class="row">
+		<div class="col col-md-12">
+
+			<div class="box box-success">
+				<div class="box-header">
+					<h3 class="box-title">Logs réservations</h3>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body">
+				  <table id="tablelog" class="table display table-bordered table-striped">
+						<thead>
+							<tr>
+							  <th>Id</th>
+							  <th>Début réservation</th>
+							  <th>Fin réservation</th>
+							  <th>Nom</th>
+							  <th>Détail</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for log in logsmail %}
+								<tr>
+									<td>{{ log.idresa }}</td>
+									<td data-order="{{log.debutts}}">{{ log.debut }}</td>
+									<td data-order="{{log.fints}}">{{ log.fin }}</td>
+									<td>{{ log.titre }} {% if log.sup == 1 %} <i class="fa fa-trash"></i>{%endif%}</td>
+									<td><a class="btn btn-block btn-info btn-xs" href="?p=admin_log_resa&amp;idresa={{ log.idresa }}"><i class="fa fa-search bg-aqua"></i></a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+				  </table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascript %}
+	<!-- DataTables -->
+	<script src="../jslib/datatables/dataTables.min.js"></script>
+	<script src="../jslib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+
+	<!-- Buttons -->
+	<script src="../jslib/datatables-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="../jslib/datatables-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.html5.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.print.min.js"></script>
+	<script src="../jslib/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+	<!-- Excel / PDF -->
+	<script src="../jslib/jszip/jszip.min.js"></script>
+	<script src="../jslib/pdfmake/pdfmake.min.js"></script>
+	<script src="../jslib/pdfmake/vfs_fonts.js"></script>
+
+	<script>
+		$(function() {
+
+			var table = $('#tablelog').DataTable({
+				lengthChange: true,
+				lengthMenu: [[10, 25, 50, 100, -1],[10, 25, 50, 100, 'All']],
+				dom:
+					"<'row mb-2'<'col-md-6 d-flex align-items-center flex-nowrap gap-2'lB><'col-md-6 d-flex justify-content-end'f>>" +
+					"<'row'<'col-12'tr>>" +
+					"<'row mt-2'<'col-md-5'i><'col-md-7 d-flex justify-content-end'p>>",
+
+				pagingType: 'full_numbers',
+
+				buttons: [
+					'copy',
+					'excel',
+					'csv',
+					'pdfHtml5',
+					'colvis'
+				]
+			});
+
+		});
+	</script>
+{% endblock %}

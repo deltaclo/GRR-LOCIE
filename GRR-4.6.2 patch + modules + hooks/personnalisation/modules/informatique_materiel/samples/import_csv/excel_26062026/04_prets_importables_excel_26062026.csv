@@ -1,0 +1,135 @@
+﻿identifiant personnel;identifiant materiel;localisation;date debut;date fin prevue;date fin effective;commentaire
+Bor_N_1;Ec_1;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 2
+Bor_N_1;A_1;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 3
+Bor_N_1;A_2;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 4
+Lau_M_8;OP_13;Bureau 2030;2023-10-25;;;Import Excel 26062026 ligne prets 66
+Far_C_45;OP_46;Bureau 2051;2024-01-08;2026-09-14;;Import Excel 26062026 ligne prets 271
+Far_C_45;Ec_51;Bureau 2051;2024-01-08;2026-09-14;;Import Excel 26062026 ligne prets 272
+Far_C_45;A_139;Bureau 2051;2024-01-08;2026-09-14;;Import Excel 26062026 ligne prets 273
+Far_C_45;A_140;Bureau 2051;2024-01-08;2026-09-14;;Import Excel 26062026 ligne prets 274
+Far_C_45;SA_30;Bureau 2051;2024-01-08;2026-09-14;;Import Excel 26062026 ligne prets 275
+Gha_B_46;OP_47;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 277
+Gha_B_46;Ec_52;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 278
+Gha_B_46;A_142;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 279
+Gha_B_46;A_143;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 280
+Gha_B_46;SA_31;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 281
+Gha_B_46;A_144;Bureau 2051;2024-01-08;2026-12-01;;Import Excel 26062026 ligne prets 282
+Dav_C_48;OP_51;Bureau 2047;2021-11-22;;;Import Excel 26062026 ligne prets 304
+Hib_M_49;Ec_57;Bureau 2033;2024-01-15;2025-11-30;2025-11-18;Import Excel 26062026 ligne prets 310
+Hib_M_49;OP_52;Bureau 2033;2024-01-15;2025-11-30;2026-01-09;Import Excel 26062026 ligne prets 311
+Hib_M_49;A_166;Bureau 2033;2024-01-15;2025-11-30;2025-11-18;Import Excel 26062026 ligne prets 322
+Has_M_51;Ec_59;Bureau 2033;2024-06-10;2025-10-31;2025-11-19;Import Excel 26062026 ligne prets 323
+Has_M_51;OP_55;Bureau 2033;2024-06-10;2025-10-31;2025-11-20;Import Excel 26062026 ligne prets 324
+Ant_D_52;OP_56;Bureau 2041;2024-09-15;2027-08-31;;Responsable: Florine Giraud
+Ant_D_52;SA_35;Bureau 2041;2024-09-15;2027-08-31;;Responsable: Florine Giraud
+Ant_D_52;Ec_62;Bureau 2041;2024-09-15;2027-08-31;2025-10-03;Ecran aux archives (durant séjour à Nancy)
+Ant_D_52;Ec_63;Bureau 2041;2024-09-15;2027-08-31;;Responsable: Florine Giraud
+Ant_D_52;A_171;Bureau 2041;2024-09-15;2027-08-31;;Responsable: Florine Giraud
+Ant_D_52;A_172;Bureau 2041;2024-09-15;2027-08-31;;Responsable: Florine Giraud
+Igi_I_53;OP_57;Bureau 2074;2024-09-23;2026-06-30;;Responsable: Florine/Christian
+Osm_N_55;SA_36;Bureau 2051;2024-10-01;2027-09-30;;Responsable: Jaume
+Osm_N_55;OP_61;Bureau 2051;2024-10-01;2027-09-30;;Responsable: Jaume
+Osm_N_55;Ec_65;Bureau 2051;2024-10-01;2027-09-30;;Responsable: Jaume
+Osm_N_55;A_175;Bureau 2051;2024-10-01;2027-09-30;;Responsable: Jaume
+Bor_N_1;OP_62;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 350
+Bor_N_1;SA_37;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 351
+Bor_N_1;A_176;Bureau 2022;2023-03-01;2026-08-31;;Import Excel 26062026 ligne prets 352
+Yun_A_56;A_177;Bureau 2051;2024-10-04;2027-09-30;;Import Excel 26062026 ligne prets 353
+Yun_A_56;A_178;Bureau 2051;2024-10-04;2027-09-30;;Import Excel 26062026 ligne prets 354
+Hib_M_49;SA_38;Bureau 2033;2024-01-15;2025-11-30;2025-11-18;Import Excel 26062026 ligne prets 356
+Yun_A_56;SA_39;Bureau 2051;2024-10-04;2027-09-30;;Import Excel 26062026 ligne prets 357
+Yun_A_56;Ec_66;Bureau 2051;2024-10-04;2027-09-30;;Import Excel 26062026 ligne prets 358
+Yun_A_56;Ec_67;Bureau 2051;2024-10-04;2027-09-30;;Non utilisé pour le moment
+Yun_A_56;OP_64;Bureau 2051;2024-10-04;2027-09-30;;Import Excel 26062026 ligne prets 360
+Gil_P_57;OP_65;Bureau 2030;2025-08-21;2026-08-31;;Import Excel 26062026 ligne prets 361
+Gil_P_57;SA_41;Bureau 2030;2025-08-21;2026-08-31;;Import Excel 26062026 ligne prets 363
+Gil_P_57;Ec_69;Bureau 2030;2025-08-21;2026-08-31;;Import Excel 26062026 ligne prets 365
+Nat_M_58;A_179;Bureau 2021;2024-11-04;2028-10-31;;Import Excel 26062026 ligne prets 367
+Gil_P_57;A_180;Bureau 2030;2025-08-21;2026-08-31;;Import Excel 26062026 ligne prets 368
+Nat_M_58;A_181;Bureau 2021;2024-11-04;2028-10-31;;Import Excel 26062026 ligne prets 369
+Gil_P_57;A_182;Bureau 2030;2025-08-21;2026-08-31;;Import Excel 26062026 ligne prets 370
+Nat_M_58;Ec_70;Bureau 2021;2024-11-04;2028-10-31;;Import Excel 26062026 ligne prets 371
+Jea_H_59;OP_66;Bureau 2010;2025-08-29;2026-08-31;;Import Excel 26062026 ligne prets 372
+Nat_M_58;SA_42;Bureau 2021;2024-11-04;2028-10-31;;Import Excel 26062026 ligne prets 373
+Jea_H_59;Ec_71;Bureau 2010;2025-08-29;2026-08-31;;Import Excel 26062026 ligne prets 374
+Jea_H_59;A_183;Bureau 2010;2025-08-29;2026-08-31;;Import Excel 26062026 ligne prets 375
+Jea_H_59;A_184;Bureau 2010;2025-08-29;2026-08-31;;Import Excel 26062026 ligne prets 376
+Jea_H_59;SA_43;Bureau 2010;2025-08-29;2026-08-31;;Import Excel 26062026 ligne prets 377
+Jea_H_59;A_185;Bureau 2010;2025-08-09;2026-08-31;;Import Excel 26062026 ligne prets 378
+Eve_G_36;SA_44;Bureau 2010;2025-08-09;;;Import Excel 26062026 ligne prets 379
+Eve_G_36;OP_67;Bureau 2010;2025-08-09;;;Import Excel 26062026 ligne prets 380
+Mar_C_11;SA_45;Bureau 2022;2025-08-09;;;Import Excel 26062026 ligne prets 382
+Mon_N_60;A_186;Bureau 2041;2024-12-05;2027-12-01;;Pack - sans fil
+Mar_C_11;Ec_73;Bureau 2022;2025-08-09;;;Import Excel 26062026 ligne prets 384
+Mon_N_60;A_187;Bureau 2041;2024-12-05;2027-12-01;;Pack - sans fil
+Flo_F_61;SA_46;Bureau 2051;2025-09-22;2026-02-27;;Import Excel 26062026 ligne prets 386
+Mon_N_60;SA_47;Bureau 2041;2024-12-05;2027-12-01;;Import Excel 26062026 ligne prets 387
+Flo_F_61;Ec_74;Bureau 2051;2025-09-22;2026-02-27;;Import Excel 26062026 ligne prets 388
+Mon_N_60;OP_68;Bureau 2041;2024-12-05;2027-12-01;;Import Excel 26062026 ligne prets 389
+Jan_S_62;OP_69;Bureau 2051;2025-02-10;2026-01-31;;Import Excel 26062026 ligne prets 390
+Mon_N_60;Ec_75;Bureau 2041;2024-12-05;2027-12-01;;Import Excel 26062026 ligne prets 391
+Bor_N_1;OF_13;Bureau 2022;2025-10-03;2026-08-31;;Héberge le site internet de diffusion des résultats détection PV
+Cam_L_63;SA_48;Bureau 2041;2025-10-06;2028-05-30;2025-11-28;Responsable Florine
+Noé_P_32;SA_49;Bureau 2063;2025-01-31;;;Import Excel 26062026 ligne prets 394
+Cam_L_63;Ec_76;Bureau 2041;2025-10-06;2028-05-30;;Responsable Florine
+Noé_P_32;OP_70;Bureau 2063;2025-01-31;;;Import Excel 26062026 ligne prets 396
+Cam_L_63;A_188;Bureau 2041;2025-10-06;2028-05-30;;Responsable Florine
+Cam_L_63;A_189;Bureau 2041;2025-10-06;2028-05-30;;Responsable Florine
+Ant_D_52;SA_50;Bureau 2051;2025-10-06;2027-08-31;;Responsable Benoit Stutz
+Ant_D_52;Ec_77;Bureau 2051;2025-10-06;2027-08-31;2026-01-04;Responsable Benoit Stutz
+Ant_D_52;A_190;Bureau 2051;2025-10-06;2027-08-31;;Responsable Benoit Stutz
+Ant_D_52;A_191;Bureau 2051;2025-10-06;2027-08-31;;Responsable Benoit Stutz
+Ale_B_65;Ec_78;Bureau 2021;2025-11-24;;;Import Excel 26062026 ligne prets 404
+Jul_V_66;Ec_79;Bureau 2041;2025-11-24;2026-10-29;2026-01-16;Import Excel 26062026 ligne prets 405
+Jul_V_66;SA_51;Bureau 2041;2025-11-24;2026-10-29;;Import Excel 26062026 ligne prets 406
+Jul_V_66;A_193;Bureau 2041;2025-11-24;2026-10-29;;Import Excel 26062026 ligne prets 407
+Jul_V_66;A_194;Bureau 2041;2025-11-24;2026-10-29;;Import Excel 26062026 ligne prets 408
+Mel_D_67;Ec_80;Bureau 2041;2025-11-24;2028-10-05;;Import Excel 26062026 ligne prets 409
+Ant_L_68;OP_71;Bureau 2051;2025-11-28;2026-07-08;;Responsable Benoit Stutz
+Ant_L_68;SA_52;Bureau 2051;2025-11-28;2026-07-08;;Responsable Benoit Stutz
+Ant_L_68;A_195;Bureau 2051;2025-11-28;2026-07-08;;Responsable Benoit Stutz
+Ant_L_68;A_196;Bureau 2051;2025-11-28;2026-07-08;;Responsable Benoit Stutz
+Ant_L_68;Ec_81;Bureau 2051;2025-11-28;2026-07-08;;Import Excel 26062026 ligne prets 414
+Cam_L_63;OP_72;Bureau 2041;2025-11-28;2028-05-30;;Import Excel 26062026 ligne prets 415
+Cam_L_63;SA_54;Bureau 2041;2025-11-28;2028-05-30;;Import Excel 26062026 ligne prets 417
+Ben_R_69;OP_74;Bureau 2030;2025-04-18;2025-12-31;;Prolongation du prêt pour rédaction article
+Ben_R_69;Ec_82;Bureau 2030;2025-04-18;2025-12-31;;Import Excel 26062026 ligne prets 421
+Ben_R_69;SA_55;Bureau 2030;2025-04-18;2025-12-31;;Import Excel 26062026 ligne prets 422
+Ben_R_69;A_198;Bureau 2030;2025-04-18;2025-12-31;;Import Excel 26062026 ligne prets 423
+Ben_R_69;A_199;Bureau 2030;2025-04-18;2025-12-31;;Import Excel 26062026 ligne prets 424
+Sim_R_27;A_201;Bureau 2066;2025-03-31;;;Stagiaire Simon Rouchier: Ala Eddine BERRAHAL
+Sim_R_27;A_202;Bureau 2066;2025-03-31;;;Stagiaire Simon Rouchier: Ala Eddine BERRAHAL
+Sim_R_27;Ec_83;Bureau 2066;2025-03-31;;;Stagiaire Simon Rouchier: Ala Eddine BERRAHAL
+Sim_R_27;OF_15;Bureau 2066;2025-03-31;;;Stagiaire Simon Rouchier: Ala Eddine BERRAHAL
+Ben_R_69;SA_58;Bureau 2030;2025-04-18;2025-12-31;;Import Excel 26062026 ligne prets 434
+Nat_M_58;OP_76;Bureau 2021;2024-11-04;2028-10-31;;Import Excel 26062026 ligne prets 435
+Moh_E_70;Ec_84;Bureau 2041;2026-01-05;2028-12-31;;Responsable Martin Thebault
+Ant_L_68;OF_21;Bureau 2025;2026-01-06;2026-07-08;;Banc sorption
+Man_G_15;OP_82;Halles techniques;2025-01-01;2026-09-30;;Import Excel 26062026 ligne prets 443
+Gil_P_57;A_135;Bureau 2030;2026-01-06;2026-08-31;;Import Excel 26062026 ligne prets 448
+Isa_C_74;OP_11;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 449
+Isa_C_74;Ec_7;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 450
+Isa_C_74;Ec_8;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 451
+Isa_C_74;A_25;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 452
+Isa_C_74;A_26;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 453
+Isa_C_74;A_27;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 454
+Isa_C_74;A_28;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 455
+Isa_C_74;A_29;Bureau 2024;2026-01-05;;;Import Excel 26062026 ligne prets 456
+Dav_C_48;OF_24;Bureau 2033;2026-01-12;;;Installation Linux pour tests
+Sér_N_75;OP_15;Bureau 2041;2026-01-22;2029-01-22;;Import Excel 26062026 ligne prets 458
+Jul_V_66;Ec_16;Bureau 2041;2026-01-16;2026-10-29;;Import Excel 26062026 ligne prets 459
+Jul_V_66;Ec_17;Bureau 2041;2026-01-16;2026-10-29;;Import Excel 26062026 ligne prets 460
+Léa_C_76;OP_96;Bureau 2047;2026-01-19;2029-01-19;;Import Excel 26062026 ligne prets 461
+Léa_C_76;SA_61;Bureau 2047;2026-01-19;2029-01-19;;Import Excel 26062026 ligne prets 462
+Léa_C_76;Ec_59;Bureau 2047;2026-01-19;2029-01-19;;Import Excel 26062026 ligne prets 463
+Sér_M_77;SA_62;Bureau 2041;2026-02-20;2029-01-12;;Import Excel 26062026 ligne prets 470
+Ann_L_37;OP_18;;2026-04-20;;;pour stagiaire Suele Goetz
+Mic_A_78;OP_73;Extérieur - CIFRE;2026-04-20;2029-01-12;;Import Excel 26062026 ligne prets 472
+Chr_R_12;OP_52;Bureau 2011;2026-04-27;;;Stagiaire Judith Mergui
+Mic_P_35;OP_97;Bureau 2032;2025-07-01;;;Import Excel 26062026 ligne prets 474
+Mel_D_67;OP_98;Bureau 2041;2026-04-01;2028-10-05;;Import Excel 26062026 ligne prets 475
+Mel_D_67;Ec_85;Bureau 2041;2026-04-01;2028-10-05;;Import Excel 26062026 ligne prets 476
+Ale_B_65;OP_99;Bureau 2021;2026-04-28;;;Import Excel 26062026 ligne prets 479
+Moh_R_72;OP_100;Bureau 2012;2026-01-04;2026-11-03;;Import Excel 26062026 ligne prets 480
+Moh_R_72;SA_63;Bureau 2012;2026-01-04;2026-11-03;;Import Excel 26062026 ligne prets 481
+Moh_R_72;Ec_77;Bureau 2012;2026-01-04;2026-11-03;;Import Excel 26062026 ligne prets 484

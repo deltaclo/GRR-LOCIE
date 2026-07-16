@@ -1,0 +1,471 @@
+<?php
+/**
+ * admin_edit_room.php
+ * Script de création/modification des ressources de l'application GRR
+ * Dernière modification : $Date: 2026-05-11 16:16$
+ * @author    Laurent Delineau & JeromeB & Marc-Henri PAMISEU & Yan Naessens
+ * @copyright Since 2003 Team DEVOME - JeromeB
+ * @link      http://www.gnu.org/licenses/licenses.html
+ *
+ * This file is part of GRR.
+ *
+ * GRR is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+include('../include/import.class.php');
+include('../include/fichier.class.php');
+
+$grr_script_name = "admin_edit_room.php";
+
+$ok = NULL;
+if (Settings::get("module_multisite") == "Oui")
+	$id_site = isset($_POST["id_site"]) ? $_POST["id_site"] : (isset($_GET["id_site"]) ? $_GET["id_site"] : -1);
+$action = isset($_POST["action"]) ? $_POST["action"] : (isset($_GET["action"]) ? $_GET["action"] : NULL);
+$area_id = isset($_POST["area_id"]) ? $_POST["area_id"] : (isset($_GET["area_id"]) ? $_GET["area_id"] : NULL);
+$retour_page = isset($_POST["retour_page"]) ? $_POST["retour_page"] : (isset($_GET["retour_page"]) ? $_GET["retour_page"] : NULL);
+$room = isset($_POST["room"]) ? $_POST["room"] : (isset($_GET["room"]) ? $_GET["room"] : NULL);
+$area_name = isset($_POST["area_name"]) ? $_POST["area_name"] : NULL;
+$room_name = isset($_POST["room_name"]) ? $_POST["room_name"] : NULL;
+$description = isset($_POST["description"]) ? $_POST["description"] : NULL;
+$capacity = isset($_POST["capacity"]) ? $_POST["capacity"] : NULL;
+$delais_max_resa_room  = isset($_POST["delais_max_resa_room"]) ? $_POST["delais_max_resa_room"] : NULL;
+$delais_min_resa_room  = isset($_POST["delais_min_resa_room"]) ? $_POST["delais_min_resa_room"] : NULL;
+$delais_option_reservation  = isset($_POST["delais_option_reservation"]) ? $_POST["delais_option_reservation"] : NULL;
+$allow_action_in_past  = isset($_POST["allow_action_in_past"]) ? $_POST["allow_action_in_past"] : NULL;
+$dont_allow_modify  = isset($_POST["dont_allow_modify"]) ? $_POST["dont_allow_modify"] : NULL;
+$qui_peut_reserver_pour  = isset($_POST["qui_peut_reserver_pour"]) ? $_POST["qui_peut_reserver_pour"] : NULL;
+$who_can_see  = isset($_POST["who_can_see"]) ? $_POST["who_can_see"] : NULL;
+$who_can_book  = isset($_POST["who_can_book"]) ? intval(SecuChaine::CleanInput($_POST["who_can_book"])) : 1;
+$max_booking = isset($_POST["max_booking"]) ? $_POST["max_booking"] : NULL;
+settype($max_booking, "integer");
+if ($max_booking<-1)
+	$max_booking = -1;
+$statut_room = isset($_POST["statut_room"]) ? "0" : "1";
+$show_fic_room = isset($_POST["show_fic_room"]) ? "y" : "n";
+/*if (isset($_POST["active_ressource_empruntee"]))
+	$active_ressource_empruntee = 'y';
+else
+{
+	$active_ressource_empruntee = 'n';
+	// toutes les reservations sont considerees comme restituee
+	grr_sql_query("update ".TABLE_PREFIX."_entry set statut_entry = '-' where room_id = '".$room."'");
+}
+if (isset($_POST["active_cle"]))
+	$active_cle = 'y';
+else
+{
+	$active_cle = 'n';
+	// toutes les reservations sont considerees comme restituee
+	grr_sql_query("update ".TABLE_PREFIX."_entry set statut_entry = '-' where room_id = '".$room."'");
+}
+*/
+$active_participant = isset($_POST["active_participant"]) ? $_POST["active_participant"] : NULL;
+$inscription_participant = isset($_POST["inscription_participant"]) ? $_POST["inscription_participant"] : NULL;
+$nb_participant_defaut = isset($_POST["nb_participant_defaut"]) ? $_POST["nb_participant_defaut"] : 0;
+$picture_room = isset($_POST["picture_room"]) ? $_POST["picture_room"] : '';
+$comment_room = isset($_POST["comment_room"]) ? $_POST["comment_room"] : NULL;
+$show_comment = isset($_POST["show_comment"]) ? "y" : "n";
+$change_done = isset($_POST["change_done"]) ? $_POST["change_done"] : NULL;
+$change_room = isset($_POST["change_room"]) ? $_POST["change_room"] : NULL;
+$type_affichage_reser = isset($_POST["type_affichage_reser"]) ? $_POST["type_affichage_reser"] : NULL;
+$moderate = isset($_POST['moderate']) ? $_POST["moderate"] : NULL;
+$confidentiel_resa  = isset($_POST["confidentiel_resa"]) ? 1 : 0;
+
+if(!isset($_POST["area_order"]) || empty($_POST["area_order"]))
+	$area_order = 0;
+else
+	$area_order = $_POST["area_order"];
+
+if ($moderate == 'on')
+	$moderate = 1;
+else
+	$moderate = 0;
+settype($type_affichage_reser, "integer");
+
+if (isset($_POST["change_room_and_back"]))
+{
+	$change_room = "yes";
+	$change_done = "yes";
+}
+
+// memorisation du chemin de retour
+if (!isset($retour_page))
+{
+	$retour_page = $back;
+	// on nettoie la chaine :
+	$long_chaine_a_supprimer = strlen(strstr($retour_page, "&amp;msg=")); // longueur de la chaine e partir de la premiere occurence de &amp;msg=
+	if ($long_chaine_a_supprimer == 0)
+		$long_chaine_a_supprimer = strlen(strstr($retour_page, "?msg="));
+	$long = strlen($retour_page) - $long_chaine_a_supprimer;
+	$retour_page = substr($retour_page, 0, $long);
+}
+// modification d'une ressource : admin ou gestionnaire
+$user_id = getUserName();
+$acces_config_ress_level = (Settings::get('acces_config'))? Settings::get('acces_config') : 3;
+if (SecuAccess::UserLevel($user_id, $room) < $acces_config_ress_level)
+{
+	showAccessDenied($back);
+	exit();
+}
+
+/*
+if (SecuAccess::UserLevel(getUserName(),-1) < 6)
+{
+    if (isset($area_id)){
+        $test = grr_sql_query1("SELECT id FROM ".TABLE_PREFIX."_area WHERE id='".$area_id."'");
+        if ($test == -1){
+            showAccessDenied($back);
+            exit();
+        }
+        elseif(SecuAccess::UserLevel($user_id,$area_id,'area')<4){
+            showAccessDenied($back);
+            exit();
+        }
+    }
+	// Il s'agit d'une modif de ressource
+	elseif (((SecuAccess::UserLevel($user_id,$room) < 3)) || (!SecuAccess::UserResource($user_id, $room)))
+	{
+		showAccessDenied($back);
+		exit();
+	}
+}*/
+$msg ='';
+
+// Enregistrement d'une ressource
+if (isset($change_room))
+{
+	if (empty($capacity))
+		$capacity = 0;
+	if ($capacity < 0)
+		$capacity = 0;
+	settype($delais_max_resa_room,"integer");
+	if ($delais_max_resa_room < 0)
+		$delais_max_resa_room = -1;
+	settype($delais_min_resa_room,"integer");
+	if ($delais_min_resa_room < 0)
+		$delais_min_resa_room = 0;
+	settype($delais_option_reservation,"integer");
+	if ($delais_option_reservation < 0)
+		$delais_option_reservation = 0;
+	if ($allow_action_in_past == '')
+		$allow_action_in_past = 'n';
+	if ($dont_allow_modify == '')
+		$dont_allow_modify = 'n';
+  if (isset($_POST["active_cle"]))
+    $active_cle = 'y';
+  else
+  {
+    $active_cle = 'n';
+    // toutes les clés sont considerees comme restituees
+    if(!is_null($room))
+      grr_sql_command("update ".TABLE_PREFIX."_entry set clef = 0 where room_id ='$room'");
+  }
+  if (isset($_POST["active_ressource_empruntee"]))
+    $active_ressource_empruntee = 'y';
+  else
+  {
+    $active_ressource_empruntee = 'n';
+    // toutes les reservations sont considerees comme restituees
+    if(!is_null($room))
+      grr_sql_command("update ".TABLE_PREFIX."_entry set statut_entry = '-' where room_id ='$room'");
+  }
+	if ((isset($room)) && !((isset($action) && ($action == "duplique_room"))))
+	{
+		$sql = "UPDATE ".TABLE_PREFIX."_room SET
+		room_name='".SecuChaine::ProtectDataSql($room_name)."',
+		description='".SecuChaine::ProtectDataSql($description)."', ";
+		if ($picture_room != '')
+			$sql .= "picture_room='".SecuChaine::ProtectDataSql($picture_room)."', ";
+		$sql .= "comment_room='".SecuChaine::ProtectDataSql($comment_room)."',
+		show_comment='".$show_comment."',
+		area_id='".$area_id."',
+		show_fic_room='".$show_fic_room."',
+		active_ressource_empruntee = '".$active_ressource_empruntee."',
+		active_cle = '".$active_cle."',
+		active_participant = '".$active_participant."',
+		inscription_participant = '".$inscription_participant."',
+		nb_participant_defaut = '".$nb_participant_defaut."',
+		capacity='".$capacity."',
+		delais_max_resa_room='".$delais_max_resa_room."',
+		delais_min_resa_room='".$delais_min_resa_room."',
+		delais_option_reservation='".$delais_option_reservation."',
+		allow_action_in_past='".$allow_action_in_past."',
+		dont_allow_modify='".$dont_allow_modify."',
+		qui_peut_reserver_pour = '".$qui_peut_reserver_pour."',
+		who_can_see = '".$who_can_see."',
+		who_can_book = '".$who_can_book."',
+		order_display='".SecuChaine::ProtectDataSql($area_order)."',
+		type_affichage_reser='".$type_affichage_reser."',
+		max_booking='".$max_booking."',
+		moderate='".$moderate."',
+		statut_room='".$statut_room."',
+		confidentiel_resa='".$confidentiel_resa."'
+		WHERE id=$room";
+		if (grr_sql_command($sql) < 0)
+		{
+			fatal_error(0, get_vocab('update_room_failed') . grr_sql_error());
+			$ok = 'no';
+		}
+	}
+	else
+	{
+		$sql = "insert into ".TABLE_PREFIX."_room
+		SET room_name='".SecuChaine::ProtectDataSql($room_name)."',
+		area_id='".$area_id."',
+		description='".SecuChaine::ProtectDataSql($description)."',
+		picture_room='".SecuChaine::ProtectDataSql($picture_room)."',
+		comment_room='".SecuChaine::ProtectDataSql(corriger_caracteres($comment_room))."',
+		show_fic_room='".$show_fic_room."',
+		active_ressource_empruntee = '".$active_ressource_empruntee."',
+		active_cle = '".$active_cle."',
+		active_participant = '".$active_participant."',
+		inscription_participant = '".$inscription_participant."',
+		nb_participant_defaut = '".$nb_participant_defaut."',
+		capacity='".$capacity."',
+		delais_max_resa_room='".$delais_max_resa_room."',
+		delais_min_resa_room='".$delais_min_resa_room."',
+		delais_option_reservation='".$delais_option_reservation."',
+		allow_action_in_past='".$allow_action_in_past."',
+		dont_allow_modify='".$dont_allow_modify."',
+		qui_peut_reserver_pour = '".$qui_peut_reserver_pour."',
+		who_can_see = '".$who_can_see."',
+		who_can_book = '".$who_can_book."',
+		order_display='".SecuChaine::ProtectDataSql($area_order)."',
+		type_affichage_reser='".$type_affichage_reser."',
+		max_booking='".$max_booking."',
+		moderate='".$moderate."',
+		statut_room='".$statut_room."',
+		confidentiel_resa='".$confidentiel_resa."'";
+		if (grr_sql_command($sql) < 0)
+			fatal_error(1, "<p>" . grr_sql_error());
+		$room = mysqli_insert_id($GLOBALS['db_c']);
+	}
+	#Si room_name est vide on le change maintenant que l'on a l'id room
+	if ($room_name == '')
+	{
+		$room_name = get_vocab("room")." ".$room;
+		grr_sql_command("UPDATE ".TABLE_PREFIX."_room SET room_name='".SecuChaine::ProtectDataSql($room_name)."' WHERE id=$room");
+	}
+	// image d'illustration
+	$cledDossier = hash('ripemd128', $room.Settings::get("tokenprivee"));
+	$dossier = '../personnalisation/'.$gcDossierImg.'/ressources/'.$room.'-'.$cledDossier.'/';
+	if (isset($_POST['sup_img']))
+	{
+		$droitDossier = Fichier::TestDroitsDossier($dossier);
+
+		if ($droitDossier != 1)
+		{
+			$msg .= "L\'image n\'a pas pu être supprimee : probleme d\'écriture sur le repertoire. Veuillez signaler ce probleme e l\'administrateur du serveur.\\n";
+			$ok = 'no';
+		}
+		else
+		{
+			Fichier::SupprimeDossier($room.'-'.$cledDossier,1);
+		}
+	}
+	if (!empty($_FILES['doc_file']['tmp_name']))
+	{
+		list($nomImage, $resultImport) = Import::Image($dossier, $room);
+
+		if($resultImport == ""){
+			$sql_picture = "UPDATE ".TABLE_PREFIX."_room SET picture_room='".SecuChaine::ProtectDataSql($nomImage)."' WHERE id=".SecuChaine::ProtectDataSql($room);
+			if (grr_sql_command($sql_picture) < 0)
+			{
+				fatal_error(0, get_vocab('update_room_failed') . grr_sql_error());
+			}
+		} else {
+			$msg .= $resultImport;
+			$ok = 'no';
+		}
+	}
+
+	$GLOBALS['suivi_demandes_edit_room_id'] = (int) $room;
+	Hook::Appel("hookEditRoomSave");
+
+	$msg .= get_vocab("message_records");
+}
+
+// Si pas de probleme, retour à la page d'accueil après enregistrement
+if ((isset($change_done)) && (!isset($ok)))
+{
+	if ($msg != '')
+	{
+		$_SESSION['displ_msg'] = 'yes';
+		if (strpos($retour_page, ".php?") == "")
+			$param = "?ok=1&msg=".$msg;
+		else
+			$param = "&ok=1&msg=".$msg;
+	}
+	else
+		$param = '';
+	Header("Location: ".$retour_page.$param);
+	exit();
+}
+
+// affichage du formulaire
+if (isset($room))
+{
+	// Il s'agit d'une modification d'une ressource
+	$res = grr_sql_query("SELECT * FROM ".TABLE_PREFIX."_room WHERE id=$room");
+	if (! $res)
+		fatal_error(0, get_vocab('error_room') . $room . get_vocab('not_found'));
+	$row = grr_sql_row_keyed($res, 0);
+	grr_sql_free($res);
+	$area_id = grr_sql_query1("select area_id from ".TABLE_PREFIX."_room where id='".$room."'");
+	$area_name = grr_sql_query1("select area_name from ".TABLE_PREFIX."_area where id='".$area_id."'");
+	
+	if ($action == "duplique_room")
+		$typeAction = get_vocab("duplique_ressource");
+	else
+		$typeAction = get_vocab("editroom");
+	
+	$cledDossier = hash('ripemd128', $room.Settings::get("tokenprivee"));
+	$dossier = '../personnalisation/'.$gcDossierImg.'/ressources/'.$room.'-'.$cledDossier.'/';
+
+	if (@file_exists($dossier.$row['picture_room']))
+		$trad['dLienImg'] = $dossier.$row['picture_room'];
+}
+else
+{
+	// Il s'agit de l'enregistrement d'une nouvelle ressource
+	$row['picture_room'] = '';
+	$row["id"] = '';
+	$row["room_name"]= '';
+	$row["description"] = '';
+	$row['comment_room'] = '';
+	$row['show_comment'] = 'n';
+	$row["capacity"]   = '';
+	$row["delais_max_resa_room"] = -1;
+	$row["delais_min_resa_room"] = 0;
+	$row["delais_option_reservation"] = 0;
+	$row["allow_action_in_past"] = 'n';
+	$row["dont_allow_modify"] = 'n';
+	$row["qui_peut_reserver_pour"] = 6;
+	$row["who_can_see"] = 0;
+	$row["who_can_book"] = 1;
+	$row["order_display"]  = 0;
+	$row["type_affichage_reser"]  = 0;
+	$row["max_booking"] = -1;
+	$row['statut_room'] = '1';
+	$row['moderate'] = '';
+	$row['show_fic_room'] = '';
+	$row['active_ressource_empruntee'] = 'n';
+	$row['active_cle'] = 'n';
+	$row['active_participant'] = 0;
+	$row['inscription_participant'] = 1;
+	$row['nb_participant_defaut'] = 0;
+	$area_name = grr_sql_query1("select area_name from ".TABLE_PREFIX."_area where id='".$area_id."'");
+
+	$typeAction = get_vocab("addroom");
+}
+/* Form*/
+
+
+if (isset($action))
+	$trad['dHidden1'] = "<input type=\"hidden\" name=\"action\" value=\"duplique_room\" />";
+if (isset($retour_page))
+	$trad['dHidden2'] = "<input type=\"hidden\" name=\"retour_page\" value=\"".$retour_page."\" />";
+if ($row["id"] != '')
+{
+	$d['idRessource'] = $row["id"];
+	$trad['dHidden3'] = "<input type=\"hidden\" name=\"room\" value=\"".$row["id"]."\" />\n";
+}
+
+get_vocab_admin("access");
+get_vocab_admin("miscellaneous");
+get_vocab_admin("name");
+get_vocab_admin("description");
+get_vocab_admin("match_area");
+get_vocab_admin("choose_an_area");
+get_vocab_admin("order_display");
+get_vocab_admin("qui_peut_voir_ressource");
+get_vocab_admin("visu_fiche_description0");
+get_vocab_admin("visu_fiche_description1");
+get_vocab_admin("visu_fiche_description2");
+get_vocab_admin("visu_fiche_description3");
+get_vocab_admin("visu_fiche_description4");
+get_vocab_admin("visu_fiche_description5");
+get_vocab_admin("visu_fiche_description6");
+get_vocab_admin("declarer_ressource_indisponible");
+get_vocab_admin("explain_max_booking");
+get_vocab_admin("montrer_fiche_presentation_ressource");
+get_vocab_admin("choisir_image_ressource");
+get_vocab_admin("supprimer_image_ressource");
+get_vocab_admin("Pas_image_disponible");
+get_vocab_admin("Afficher_description_complete_dans_titre_plannings");
+get_vocab_admin("description_complete");
+
+get_vocab_admin("configuration_ressource");
+get_vocab_admin("type_affichage_reservation");
+get_vocab_admin("affichage_reservation_duree");
+get_vocab_admin("affichage_reservation_date_heure");
+get_vocab_admin("capacity");
+get_vocab_admin("msg_max_booking");
+get_vocab_admin("delais_max_resa_room");
+get_vocab_admin("delais_min_resa_room");
+get_vocab_admin("msg_option_de_reservation");
+get_vocab_admin("msg_moderation_reservation");
+get_vocab_admin("allow_action_in_past");
+get_vocab_admin("allow_action_in_past_explain");
+get_vocab_admin("dont_allow_modify");
+get_vocab_admin("qui_peut_reserver_pour_autre_utilisateur");
+get_vocab_admin("personne");
+get_vocab_admin("les_administrateurs_restreints");
+get_vocab_admin("les_gestionnaires_de_la_ressource");
+get_vocab_admin("tous_les_utilisateurs");
+get_vocab_admin("activer_fonctionalite_ressource_empruntee_restituee");
+get_vocab_admin("activer_fonctionalite_gestion_cle");
+get_vocab_admin("activer_fonctionalite_participant");
+get_vocab_admin("visu_fiche_description1");
+get_vocab_admin("visu_fiche_description2");
+get_vocab_admin("visu_fiche_description3");
+get_vocab_admin("who_can_book_explain");
+
+get_vocab_admin("back");
+get_vocab_admin("save");
+get_vocab_admin("save_and_back");
+
+$trad['dTitrePage'] = get_vocab("match_area").get_vocab('deux_points')." ".$area_name." <span class=\"fa fa-arrow-right\"></span> ".$typeAction;
+$trad['dDroitsDomaine'] = SecuAccess::UserLevel($user_id,$area_id,"area");
+$trad['dDroitsRessource'] = SecuAccess::UserLevel($user_id,$room);
+$trad['dIdDomaine'] = $area_id;
+
+// Domaines
+$trad['dEnablePeriods'] = grr_sql_query1("select enable_periods from ".TABLE_PREFIX."_area where id='".$area_id."'");
+$domaines = array();
+
+if (((SecuAccess::UserLevel($user_id,$area_id,"area") >=4 ) || (SecuAccess::UserLevel($user_id,$room) >= 4)) && ($trad['dEnablePeriods'] == 'n'))
+{
+	// les creneaux sont bases sur le temps : on ne peut pas changer une ressource de domaine
+	if(SecuAccess::UserLevel($user_id,-1,'area') >= 6)
+		$sql = "SELECT id,area_name
+	FROM ".TABLE_PREFIX."_area where enable_periods='n'
+	ORDER BY area_name ASC";
+	else if (SecuAccess::UserLevel($user_id,$area_id,'area') == 5)
+		$sql = "SELECT distinct a.id, a.area_name
+	FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j, ".TABLE_PREFIX."_site s,  ".TABLE_PREFIX."_j_useradmin_site u
+	WHERE a.id=j.id_area and u.id_site=j.id_site  and s.id=u.id_site and u.login='".$user_id."'  and  enable_periods='n'
+	ORDER BY a.area_name ASC";
+	else
+		$sql = "SELECT id,area_name
+	FROM ".TABLE_PREFIX."_area a,  ".TABLE_PREFIX."_j_useradmin_area u
+	WHERE a.id=u.id_area and u.login='".$user_id."' and  a.enable_periods='n'
+	ORDER BY a.area_name ASC";
+	$res = grr_sql_query($sql);
+	$nb_area = grr_sql_count($res);
+	for ($enr = 0; ($row1 = grr_sql_row($res, $enr)); $enr++)
+		$domaines[] = array('id' => $row1[0], 'nom' => $row1[1]);
+
+	grr_sql_free($res);
+}
+
+// Hook pour module externe
+$GLOBALS['suivi_demandes_edit_room_id'] = isset($row["id"]) && $row["id"] !== '' ? (int) $row["id"] : 0;
+$resulHook = Hook::Appel("hookEditRoom1");
+$d['hookEditRoom1'] = $resulHook['hookEditRoom1'];
+
+echo $twig->render('admin_edit_ressource.twig', array('liensMenu' => $menuAdminT, 'liensMenuN2' => $menuAdminTN2, 'd' => $d, 'trad' => $trad, 'settings' => $AllSettings, 'ressource' => $row, 'domaines' => $domaines));
+?>
