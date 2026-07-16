@@ -8,7 +8,7 @@ Document de reference pour le developpement progressif du module local GRR
   MariaDB 10 et phpMyAdmin
 - Creation du document : 25 juin 2026
 - Derniere mise a jour : 16 juillet 2026
-- Etat global : version 1.3.8 implementee, version BDD 9, evolutions post-MVP de 1.0.0 a 1.3.8 en attente de recette NAS
+- Etat global : version 1.3.9 implementee, version BDD 9, evolutions post-MVP de 1.0.0 a 1.3.9 en attente de recette NAS
 
 ## Regles de developpement
 
@@ -441,6 +441,7 @@ deploiement.
 | 25. Colonnes alertes prets | A tester sur NAS | 1.3.6 | - | Numero du pret et commentaire visibles dans les tableaux d'alertes |
 | 26. Libelle numero de pret | A tester sur NAS | 1.3.7 | - | En-tete commun des prets renomme `Numero du pret` |
 | 27. Commentaire liste prets | A tester sur NAS | 1.3.8 | - | Colonne commentaire ajoutee dans `Prets et restitutions` |
+| 28. Edition fiche pret | A tester sur NAS | 1.3.9 | - | Bouton `Modifier` reserve aux gestionnaires et administrateurs |
 
 ## Journal des decisions
 
@@ -472,6 +473,7 @@ deploiement.
 | 29/06/2026 | Ajouter une version 1.2.6 sans migration SQL pour le bandeau conflits et les couleurs d alertes | Rendre les conflits visibles partout et clarifier les actions de resolution |
 | 29/06/2026 | Ajouter une version 1.2.7 sans migration SQL pour harmoniser les popups | Rendre l'administration et l'import plus coherents avec les autres modules |
 | 16/07/2026 | Aligner la roadmap sur les versions 1.3.1 a 1.3.8 deja documentees dans le README | Retablir la coherence entre etat global, suivi d'avancement et version applicative |
+| 16/07/2026 | Ajouter une version 1.3.9 sans migration SQL pour modifier les fiches de pret | Corriger les prets sans suppression ni recreation manuelle |
 
 ## Historique du document
 
@@ -528,3 +530,5 @@ deploiement.
 - Ajout des lignes de suivi pour les versions 1.3.1 a 1.3.8.
 - Ajout d'une decision documentaire pour aligner la roadmap avec `README.md` et `infos.php`.
 - Aucun changement de code.
+- Ajout de l'edition des fiches de pret en version 1.3.9 / BDD 9.
+- Passage de l'etape 28 a l'etat "A tester sur NAS".

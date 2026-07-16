@@ -244,6 +244,14 @@ class InformatiqueMaterielRenderer
             $view = 'loans';
             $result = InformatiqueMaterielRepository::closeLoan($_POST, $login);
             self::resultMessage($result, 'Pret restitue.', $messages, $errors);
+        } elseif ($action === 'edit_loan' && InformatiqueMaterielSecurity::canManage()) {
+            $view = 'loan';
+            $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+            $result = InformatiqueMaterielRepository::updateLoan($_POST, $login);
+            if (!empty($result['ok']) && isset($result['id'])) {
+                $id = (int) $result['id'];
+            }
+            self::resultMessage($result, 'Pret modifie.', $messages, $errors);
         } elseif ($action === 'transfer_loan' && InformatiqueMaterielSecurity::canOperate()) {
             $result = InformatiqueMaterielRepository::transferLoan($_POST, $login);
             self::resultMessage($result, 'Pret transfere.', $messages, $errors);
@@ -1149,6 +1157,8 @@ class InformatiqueMaterielRenderer
         }
 
         $transferPeople = InformatiqueMaterielSecurity::canOperate() ? InformatiqueMaterielRepository::people(false) : array();
+        $editPeople = InformatiqueMaterielSecurity::canManage() ? InformatiqueMaterielRepository::people(false) : array();
+        $editItems = InformatiqueMaterielSecurity::canManage() ? InformatiqueMaterielRepository::items(false) : array();
         $html .= '<h1>Fiche pret</h1>';
         $html .= '<div class="imat-actions"><a class="btn btn-default" href="'.self::url(array('view' => 'loans', 'closed' => '1')).'">Retour aux prets</a>';
         if ((string) $loan['statut'] === 'ouvert' && InformatiqueMaterielSecurity::canOperate()) {
@@ -1157,6 +1167,9 @@ class InformatiqueMaterielRenderer
             $html .= ' '.self::modalButton('imat-loan-transfer-page', 'Transferer', 'btn btn-primary');
         }
         if (InformatiqueMaterielSecurity::canManage()) {
+            if ((string) $loan['statut'] !== 'annule') {
+                $html .= ' '.self::modalButton('imat-loan-edit-page', 'Modifier');
+            }
             $html .= ' <form method="post" action="'.self::url(array('view' => 'loans')).'" style="display:inline" onsubmit="return confirm(\'Supprimer definitivement ce pret ?\')">';
             $html .= InformatiqueMaterielSecurity::field().'<input type="hidden" name="imat_action" value="delete_loan"><input type="hidden" name="id" value="'.(int) $loan['id'].'">';
             $html .= '<button class="btn btn-danger" type="submit">Supprimer</button></form>';
@@ -1173,6 +1186,16 @@ class InformatiqueMaterielRenderer
         $html .= self::detailRow('Date retour effective', $loan['date_fin_effective']);
         $html .= self::detailRow('Commentaire', $loan['commentaire']);
         $html .= '</tbody></table>';
+
+        if ((string) $loan['statut'] !== 'annule' && InformatiqueMaterielSecurity::canManage()) {
+            $html .= self::editLoanModal(
+                'imat-loan-edit-page',
+                $loan,
+                $editPeople,
+                $editItems,
+                array('view' => 'loan', 'id' => (int) $loan['id'])
+            );
+        }
 
         if ((string) $loan['statut'] === 'ouvert' && InformatiqueMaterielSecurity::canOperate()) {
             $form = '<form method="post" action="'.self::url(array('view' => 'loans')).'">';
@@ -1580,6 +1603,59 @@ class InformatiqueMaterielRenderer
         return self::modal('imat-person-loans-departure-'.$id, 'Fin des prets - date de depart', $form, false);
     }
 
+    private static function editLoanModal($id, $loan, $people, $items, $returnParams = array())
+    {
+        if (count($returnParams) === 0) {
+            $returnParams = array('view' => 'loan', 'id' => (int) $loan['id']);
+        }
+
+        $hasCurrentPerson = false;
+        foreach ($people as $person) {
+            if ((int) $person['id'] === (int) $loan['personne_id']) {
+                $hasCurrentPerson = true;
+                break;
+            }
+        }
+        if (!$hasCurrentPerson && (int) $loan['personne_id'] > 0) {
+            $people[] = array(
+                'id' => (int) $loan['personne_id'],
+                'prenom' => isset($loan['personne_prenom']) ? $loan['personne_prenom'] : '',
+                'nom' => isset($loan['personne_nom']) ? $loan['personne_nom'] : '',
+                'identifiant_legacy' => isset($loan['personne_identifiant']) ? $loan['personne_identifiant'] : ''
+            );
+        }
+
+        $hasCurrentItem = false;
+        foreach ($items as $item) {
+            if ((int) $item['id'] === (int) $loan['item_id']) {
+                $hasCurrentItem = true;
+                break;
+            }
+        }
+        if (!$hasCurrentItem && (int) $loan['item_id'] > 0) {
+            $items[] = array(
+                'id' => (int) $loan['item_id'],
+                'identifiant' => isset($loan['item_identifiant']) ? $loan['item_identifiant'] : '',
+                'designation' => isset($loan['item_designation']) ? $loan['item_designation'] : '',
+                'statut' => isset($loan['item_statut']) ? $loan['item_statut'] : ''
+            );
+        }
+
+        $form = '<form method="post" action="'.self::url($returnParams).'">';
+        $form .= InformatiqueMaterielSecurity::field().'<input type="hidden" name="imat_action" value="edit_loan"><input type="hidden" name="id" value="'.(int) $loan['id'].'">';
+        $form .= '<div class="row"><div class="col-md-4 form-group"><label>Materiel</label><select class="form-control" name="item_id" required>'.self::itemOptions($items, (int) $loan['item_id']).'</select></div>';
+        $form .= '<div class="col-md-4 form-group"><label>Personne</label><select class="form-control" name="personne_id" required>'.self::personOptions($people, (int) $loan['personne_id']).'</select></div>';
+        $form .= '<div class="col-md-4 form-group"><label>Localisation</label><input class="form-control" name="localisation" maxlength="190" value="'.self::html($loan['localisation']).'"></div></div>';
+        $form .= '<div class="row"><div class="col-md-4 form-group"><label>Date debut</label><input class="form-control" type="date" name="date_debut" required value="'.self::html($loan['date_debut']).'"></div>';
+        $form .= '<div class="col-md-4 form-group"><label>Date fin prevue</label><input class="form-control" type="date" name="date_fin_prevue" value="'.self::html($loan['date_fin_prevue']).'"></div>';
+        $form .= '<div class="col-md-4 form-group"><label>Date retour effective</label><input class="form-control" type="date" name="date_fin_effective" value="'.self::html($loan['date_fin_effective']).'"></div></div>';
+        $form .= '<div class="form-group"><label>Commentaire</label><textarea class="form-control" name="commentaire" rows="3" maxlength="2000">'.self::html($loan['commentaire']).'</textarea></div>';
+        $form .= '<p class="help-block">Une date de retour effective renseignee cloture le pret. Une date vide conserve ou rouvre le pret.</p>';
+        $form .= '<button class="btn btn-primary" type="submit">Enregistrer</button></form>';
+
+        return self::modal($id, 'Modifier le pret #'.(int) $loan['id'], $form, false);
+    }
+
     private static function transferLoanModal($id, $title, $loans, $people, $returnParams = array())
     {
         if (count($loans) === 0) {
@@ -1643,6 +1719,9 @@ class InformatiqueMaterielRenderer
     {
         $showTransfer = $showTransfer && InformatiqueMaterielSecurity::canOperate();
         $people = $showTransfer ? InformatiqueMaterielRepository::people(false) : array();
+        $showEdit = $showActions && InformatiqueMaterielSecurity::canManage();
+        $editPeople = $showEdit ? InformatiqueMaterielRepository::people(false) : array();
+        $editItems = $showEdit ? InformatiqueMaterielRepository::items(false) : array();
         $modals = '';
         $html = '<div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr>';
         $html .= '<th>N&deg; du pret</th><th>Materiel</th><th>Personne</th><th>Localisation</th><th>Debut</th><th>Fin prevue</th><th>Retour</th>';
@@ -1692,6 +1771,11 @@ class InformatiqueMaterielRenderer
                         $html .= ' '.self::modalButton($transferId, 'Transferer', 'btn btn-primary btn-xs');
                         $modals .= self::transferLoanModal($transferId, 'Transferer le pret #'.(int) $loan['id'], array($loan), $people, $returnParams);
                     }
+                }
+                if ($showEdit && (string) $loan['statut'] !== 'annule') {
+                    $editId = 'imat-edit-loan-'.(int) $loan['id'];
+                    $html .= ' '.self::modalButton($editId, 'Modifier', 'btn btn-default btn-xs');
+                    $modals .= self::editLoanModal($editId, $loan, $editPeople, $editItems, $returnParams);
                 }
                 if ($showActions && (string) $loan['statut'] !== 'annule' && InformatiqueMaterielSecurity::canManage()) {
                     $cancelId = 'imat-cancel-loan-'.(int) $loan['id'];

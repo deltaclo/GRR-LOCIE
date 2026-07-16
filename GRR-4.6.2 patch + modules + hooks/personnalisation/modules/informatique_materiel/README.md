@@ -2,8 +2,15 @@
 
 Module local pour GRR 4.6.2.
 
-Version applicative : 1.3.8  
+Version applicative : 1.3.9
 Version BDD : 9
+
+## Version 1.3.9
+
+- Ajout d'un bouton `Modifier` sur les fiches de pret et dans le tableau des
+  prets pour corriger la fiche de pret.
+- L'action est reservee aux gestionnaires et administrateurs du module.
+- Aucun changement de schema SQL : la version BDD reste `9`.
 
 ## Version 1.3.8
 

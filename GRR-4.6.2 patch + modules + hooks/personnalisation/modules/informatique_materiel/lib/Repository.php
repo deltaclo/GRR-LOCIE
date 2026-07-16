@@ -1648,6 +1648,104 @@ class InformatiqueMaterielRepository
         }
     }
 
+    public static function updateLoan($source, $login)
+    {
+        self::ensureTables();
+        $values = self::normalizeLoanValues($source);
+        $errors = self::validateLoanUpdateValues($values);
+        if (count($errors) > 0) {
+            return array('ok' => false, 'errors' => $errors);
+        }
+
+        $login = self::limit($login, 190);
+        $now = time();
+        $newStatus = $values['date_fin_effective'] === null ? 'ouvert' : 'clos';
+        $transaction = self::beginTransaction();
+
+        try {
+            $loan = self::loanForUpdate((int) $values['id']);
+            if (!$loan) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Pret introuvable.'));
+            }
+            if ((string) $loan['statut'] === 'annule') {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Un pret annule ne peut pas etre modifie.'));
+            }
+
+            $person = self::personForUpdate((int) $values['personne_id']);
+            if (!$person || (int) $person['actif'] !== 1) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('La personne du pret est obligatoire et doit etre active.'));
+            }
+
+            $item = self::itemForUpdate((int) $values['item_id']);
+            if (!$item || !isset($item['id'])) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Materiel introuvable.'));
+            }
+            if ((int) $item['actif'] !== 1) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Un materiel archive ne peut pas etre associe au pret.'));
+            }
+            if (in_array((string) $item['statut'], array('archive', 'maintenance', 'a_reformer'), true)) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Ce materiel ne peut pas etre associe a un pret.'));
+            }
+            if ($newStatus === 'ouvert'
+                && !self::isMultipleLoanItem($item)
+                && self::openLoanForItem((int) $values['item_id'], (int) $values['id'], true)) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Ce materiel a deja un pret ouvert.'));
+            }
+
+            $ok = self::commandOk(grr_sql_command(
+                "UPDATE ".self::table(self::TABLE_LOAN)."
+                SET personne_id = ?, item_id = ?, localisation = ?, date_debut = ?,
+                    date_fin_prevue = ?, date_fin_effective = ?, commentaire = ?,
+                    statut = ?, updated_by = ?, updated_at = ?
+                WHERE id = ?",
+                "iisssssssii",
+                array(
+                    (int) $values['personne_id'],
+                    (int) $values['item_id'],
+                    $values['localisation'],
+                    $values['date_debut'],
+                    $values['date_fin_prevue'],
+                    $values['date_fin_effective'],
+                    $values['commentaire'],
+                    $newStatus,
+                    $login,
+                    $now,
+                    (int) $values['id']
+                )
+            ));
+
+            $oldItemId = (int) $loan['item_id'];
+            $newItemId = (int) $values['item_id'];
+            $wasOpen = (string) $loan['statut'] === 'ouvert';
+            if ($ok && $wasOpen && $oldItemId !== $newItemId) {
+                $ok = self::syncItemLoanStatus($oldItemId, $login, $now);
+            }
+            if ($ok && ($wasOpen || $newStatus === 'ouvert')) {
+                $ok = self::syncItemLoanStatus($newItemId, $login, $now);
+            }
+
+            if (!$ok) {
+                self::rollbackTransaction($transaction);
+                return array('ok' => false, 'errors' => array('Modification du pret impossible.'));
+            }
+
+            self::log('pret_modifie', 'pret', (int) $loan['id'], 'Pret #'.(int) $loan['id'], $login);
+            self::commitTransaction($transaction);
+
+            return array('ok' => true, 'id' => (int) $loan['id'], 'errors' => array());
+        } catch (Throwable $exception) {
+            self::rollbackTransaction($transaction);
+            return array('ok' => false, 'errors' => array('Modification du pret impossible.'));
+        }
+    }
+
     public static function cancelLoan($source, $login)
     {
         self::ensureTables();
@@ -3705,6 +3803,39 @@ class InformatiqueMaterielRepository
         if (is_string($values['date_debut']) && is_string($values['date_fin_prevue'])
             && $values['date_fin_prevue'] < $values['date_debut']) {
             $errors[] = 'La date de fin prevue ne peut pas preceder la date de debut.';
+        }
+
+        return $errors;
+    }
+
+    private static function validateLoanUpdateValues($values)
+    {
+        $errors = array();
+        if ((int) $values['id'] <= 0) {
+            $errors[] = 'Le pret est obligatoire.';
+        }
+        if ((int) $values['personne_id'] <= 0 || !self::activePersonExists((int) $values['personne_id'])) {
+            $errors[] = 'La personne du pret est obligatoire et doit etre active.';
+        }
+        if ((int) $values['item_id'] <= 0) {
+            $errors[] = 'Le materiel du pret est obligatoire.';
+        }
+        if ($values['date_debut'] === null || $values['date_debut'] === false) {
+            $errors[] = 'La date de debut est obligatoire au format AAAA-MM-JJ.';
+        }
+        if ($values['date_fin_prevue'] === false) {
+            $errors[] = 'La date de fin prevue doit etre au format AAAA-MM-JJ.';
+        }
+        if ($values['date_fin_effective'] === false) {
+            $errors[] = 'La date de retour effective doit etre au format AAAA-MM-JJ.';
+        }
+        if (is_string($values['date_debut']) && is_string($values['date_fin_prevue'])
+            && $values['date_fin_prevue'] < $values['date_debut']) {
+            $errors[] = 'La date de fin prevue ne peut pas preceder la date de debut.';
+        }
+        if (is_string($values['date_debut']) && is_string($values['date_fin_effective'])
+            && $values['date_fin_effective'] < $values['date_debut']) {
+            $errors[] = 'La date de retour ne peut pas preceder la date de debut.';
         }
 
         return $errors;
