@@ -27,6 +27,38 @@ class FormulairesDynamiquesRights
         return self::isAdmin($login) || FormulairesDynamiquesConfig::isManager($login);
     }
 
+    public static function canCreateForms($login = null)
+    {
+        return self::canManageModule($login);
+    }
+
+    public static function canManageForm($login = null, $formId = 0)
+    {
+        $login = $login === null ? self::currentLogin() : (string) $login;
+        $formId = (int) $formId;
+        if ($login === '' || $formId <= 0) {
+            return false;
+        }
+
+        if (self::canManageModule($login)) {
+            return true;
+        }
+
+        return class_exists('FormulairesDynamiquesRepository')
+            && FormulairesDynamiquesRepository::userCanManageForm($login, $formId);
+    }
+
+    public static function hasManagedForms($login = null)
+    {
+        $login = $login === null ? self::currentLogin() : (string) $login;
+        if ($login === '') {
+            return false;
+        }
+
+        return class_exists('FormulairesDynamiquesRepository')
+            && FormulairesDynamiquesRepository::userManagesAnyForm($login);
+    }
+
     public static function canAccessModule($login = null)
     {
         $login = $login === null ? self::currentLogin() : (string) $login;
@@ -40,6 +72,6 @@ class FormulairesDynamiquesRights
     public static function canAccessAccountPage($login = null)
     {
         return FormulairesDynamiquesConfig::accountEnabled()
-            && self::canAccessModule($login);
+            && (self::canManageModule($login) || self::hasManagedForms($login));
     }
 }

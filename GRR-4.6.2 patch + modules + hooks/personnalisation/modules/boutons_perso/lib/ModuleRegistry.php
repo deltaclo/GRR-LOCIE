@@ -105,6 +105,11 @@ class BoutonsPersoModuleRegistry
                 'class' => 'SuiviDemandesNavigation',
                 'label' => 'Suivi des demandes',
             ),
+            'module:formulaires_dynamiques' => array(
+                'module' => 'formulaires_dynamiques',
+                'class' => 'FormulairesDynamiquesNavigation',
+                'label' => 'Formulaires dynamiques',
+            ),
             'module:informatique_materiel' => array(
                 'module' => 'informatique_materiel',
                 'class' => 'InformatiqueMaterielNavigation',
