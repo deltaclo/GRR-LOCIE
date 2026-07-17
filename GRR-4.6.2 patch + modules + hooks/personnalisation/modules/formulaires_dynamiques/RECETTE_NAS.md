@@ -112,6 +112,7 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
    - choix unique avec trois options, affiche en cases a cocher ;
    - cases a cocher avec trois options ;
    - piece jointe facultative ;
+   - signature electronique obligatoire ;
    - image avec une URL ou un chemin relatif valide et une taille d'affichage ;
    - separateur sans libelle avec `2 colonnes` ou `3 colonnes` pour les
      champs suivants ;
@@ -140,6 +141,7 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
 | Modification champ | | |
 | Desactivation champ | | |
 | Piece jointe | | |
+| Signature electronique | | |
 | Image dans formulaire | | |
 | Taille affichage image | | |
 | Editeur dynamique par type de champ | | |
@@ -181,19 +183,22 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
 5. Ouvrir le QR code autonome.
 6. Recharger la page et verifier que les liens des nouveaux jetons restent affiches.
 7. Verifier que le tableau des jetons affiche actifs, contraintes et usage.
-8. Soumettre une reponse avec le jeton limite puis verifier qu'une deuxieme
+8. Cliquer sur `Ouvrir formulaire` puis `Ouvrir resultats` dans la colonne
+   `Actions` du tableau des jetons.
+9. Soumettre une reponse avec le jeton limite puis verifier qu'une deuxieme
    soumission est refusee.
-9. Attendre ou modifier l'expiration puis verifier que le lien expire est refuse.
-10. Desactiver un jeton de test.
-11. Verifier que le lien correspondant devient invalide.
-12. Supprimer un jeton de test.
-13. Regenerer un nouveau jeton.
+10. Attendre ou modifier l'expiration puis verifier que le lien expire est refuse.
+11. Desactiver un jeton de test.
+12. Verifier que le lien correspondant devient invalide.
+13. Supprimer un jeton de test.
+14. Regenerer un nouveau jeton.
 
 | Test | Etat | Observation |
 |---|---|---|
 | Generation lien formulaire | | |
 | Generation lien resultats | | |
 | Copie lien / token | | |
+| Boutons ouvrir depuis actions jetons | | |
 | QR code autonome | | |
 | Expiration jeton | | |
 | Limite reponses jeton | | |
@@ -206,28 +211,56 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
 ## 9. Soumission des reponses
 
 1. Ouvrir le formulaire via `app.php?p=formulairesdynamiques`.
-2. Soumettre une reponse complete.
-3. Verifier la confirmation et la reference.
-4. Ouvrir le formulaire autonome dans une session non connectee.
-5. Soumettre une deuxieme reponse.
-6. Tester les validations obligatoires.
-7. Ajouter une piece jointe autorisee puis verifier son lien dans les resultats.
-8. Tester un fichier avec extension refusee.
-9. Configurer une notification conditionnelle sur une liste, un choix unique ou une
-   case a cocher.
-10. Configurer un modele d'objet et de message de notification.
-11. Soumettre une reponse qui respecte la condition.
-12. Soumettre une reponse qui ne respecte pas la condition.
-13. Si les notifications sont activees, verifier la reception mail uniquement
+2. Cliquer sur `Imprimer le formulaire` et verifier l'apercu navigateur.
+3. Soumettre une reponse complete.
+4. Verifier la confirmation et la reference.
+5. Activer l'option `Autoriser l utilisateur connecte a modifier sa reponse`
+   dans la configuration du formulaire.
+6. Activer l'option `Envoyer un mail de confirmation au declarant`.
+7. Soumettre une reponse connectee via `app.php`, cliquer sur `Modifier ma
+   reponse`, modifier une valeur puis enregistrer.
+8. Verifier que le declarant recoit un mail de confirmation.
+9. Verifier que le mail contient le lien de modification si l'option de
+   modification est activee.
+10. Verifier que le message `Votre reponse a ete modifiee` apparait et que les
+   resultats affichent la valeur modifiee.
+11. Se connecter avec un autre utilisateur et verifier que le lien de
+   modification de la reponse du premier utilisateur est refuse.
+12. Ouvrir le formulaire autonome dans une session non connectee et verifier que
+   le bouton `Modifier ma reponse` n'est pas propose apres soumission.
+13. Depuis le detail de la reponse, cliquer sur `Renvoyer le lien de
+   modification` avec un gestionnaire et verifier la reception du mail.
+14. Soumettre une deuxieme reponse.
+15. Tester les validations obligatoires.
+16. Ajouter une piece jointe autorisee puis verifier son lien dans les resultats.
+17. Dessiner une signature electronique, effacer puis signer a nouveau.
+18. Tester la validation obligatoire de la signature.
+19. Tester un fichier avec extension refusee.
+20. Configurer une notification conditionnelle sur une liste, un choix unique ou une
+    case a cocher.
+21. Configurer un modele d'objet et de message de notification avec le
+    placeholder `{lien_modification}`.
+22. Soumettre une reponse qui respecte la condition.
+23. Soumettre une reponse qui ne respecte pas la condition.
+24. Si les notifications sont activees, verifier la reception mail uniquement
     pour la reponse conforme et l'historique.
 
 | Test | Etat | Observation |
 |---|---|---|
 | Soumission integree GRR | | |
 | Soumission autonome | | |
+| Impression formulaire | | |
+| Mail confirmation declarant | | |
+| Lien modification dans mail | | |
+| Modification reponse par declarant | | |
+| Modification refusee autre utilisateur | | |
+| Modification non proposee en autonome | | |
+| Renvoi lien par gestionnaire | | |
 | Validation champ obligatoire | | |
 | Piece jointe autorisee | | |
 | Piece jointe refusee | | |
+| Signature saisie et affichee | | |
+| Validation signature obligatoire | | |
 | Notification conditionnelle envoyee | | |
 | Notification conditionnelle ignoree | | |
 | Modele notification | | |
@@ -240,25 +273,30 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
    formulaire actif existe et qu'il ouvre le formulaire via `app.php`.
 4. Ouvrir la page de resultats autonome et verifier que le bouton ouvre le
    formulaire autonome.
-5. Tester la recherche texte.
-6. Tester le filtre source `Integre GRR`.
-7. Tester le filtre source `Autonome`.
-8. Tester les filtres date.
-9. Tester la pagination avec `25`, `50`, `100`, `200`.
-10. Ouvrir le detail d'une reponse et verifier aussi le bouton
+5. Cliquer sur `Imprimer les resultats` et verifier que la liste s'imprime
+   sans les filtres ni les boutons d'action.
+6. Tester la recherche texte.
+7. Tester le filtre source `Integre GRR`.
+8. Tester le filtre source `Autonome`.
+9. Tester les filtres date.
+10. Tester la pagination avec `25`, `50`, `100`, `200`.
+11. Ouvrir le detail d'une reponse et verifier aussi le bouton
     `Ouvrir le formulaire`.
-11. Revenir a la liste.
-12. Configurer un modele de resultats global et verifier l'affichage.
-13. Configurer un modele individuel et verifier le detail d'une reponse.
-14. Choisir seulement certaines colonnes dans `Mise en page` et verifier la
+12. Cliquer sur `Imprimer la reponse` et verifier que le detail s'imprime
+    sans les boutons d'action.
+13. Revenir a la liste.
+14. Configurer un modele de resultats global et verifier l'affichage.
+15. Configurer un modele individuel et verifier le detail d'une reponse.
+16. Choisir seulement certaines colonnes dans `Mise en page` et verifier la
     liste.
-15. Modifier une reponse avec un gestionnaire connecte.
-16. Ouvrir l'onglet `Statistiques`.
+17. Modifier une reponse avec un gestionnaire connecte.
+18. Ouvrir l'onglet `Statistiques`.
 
 | Test | Etat | Observation |
 |---|---|---|
 | Liste resultats integree | | |
 | Liste resultats autonome | | |
+| Impression resultats | | |
 | Bouton ouvrir formulaire depuis resultats integres | | |
 | Bouton ouvrir formulaire depuis resultats autonomes | | |
 | Recherche | | |
@@ -266,6 +304,7 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
 | Filtre date | | |
 | Pagination | | |
 | Detail reponse | | |
+| Impression reponse | | |
 | Modele resultats global | | |
 | Modele resultats individuel | | |
 | Colonnes resultats personnalisees | | |
@@ -310,6 +349,7 @@ Depuis le detail d'une reponse :
 | CSV global | | |
 | XLSX global | | |
 | PDF global | | |
+| Signature exportee sous forme lisible | | |
 | CSV individuel | | |
 | XLSX individuel | | |
 | PDF individuel | | |
@@ -352,12 +392,17 @@ SELECT COUNT(*) FROM grr_formulaire_dyn_gestionnaire;
 SELECT COUNT(*) FROM grr_formulaire_dyn_notification;
 SELECT COUNT(*) FROM grr_formulaire_dyn_token;
 SELECT COUNT(*) FROM grr_formulaire_dyn_historique;
+SHOW COLUMNS FROM grr_formulaire_dyn_formulaire LIKE 'allow_user_edit';
+SHOW COLUMNS FROM grr_formulaire_dyn_formulaire LIKE 'confirmation_email_enabled';
 ```
 
 Verifier que :
 
 - les reponses ont bien une ligne dans `*_formulaire_dyn_reponse` ;
 - les valeurs sont stockees dans `*_formulaire_dyn_valeur` ;
+- la colonne `allow_user_edit` existe dans `*_formulaire_dyn_formulaire` ;
+- la colonne `confirmation_email_enabled` existe dans
+  `*_formulaire_dyn_formulaire` ;
 - les jetons ont toujours un hash, et les nouveaux jetons ont aussi une
   valeur publique pour pouvoir reafficher les liens ;
 - les exports et notifications sont traces dans l'historique ;

@@ -18,6 +18,8 @@ class FormulairesDynamiquesRepository
             `titre` varchar(190) NOT NULL,
             `description` text NULL,
             `form_columns` tinyint(1) NOT NULL DEFAULT 1,
+            `allow_user_edit` tinyint(1) NOT NULL DEFAULT 0,
+            `confirmation_email_enabled` tinyint(1) NOT NULL DEFAULT 0,
             `result_list_template` text NULL,
             `result_detail_template` text NULL,
             `result_columns` text NULL,
@@ -148,6 +150,8 @@ class FormulairesDynamiquesRepository
         self::ensureColumn(self::TABLE_FORM, 'result_detail_template', 'text NULL');
         self::ensureColumn(self::TABLE_FORM, 'result_columns', 'text NULL');
         self::ensureColumn(self::TABLE_FORM, 'form_columns', 'tinyint(1) NOT NULL DEFAULT 1');
+        self::ensureColumn(self::TABLE_FORM, 'allow_user_edit', 'tinyint(1) NOT NULL DEFAULT 0');
+        self::ensureColumn(self::TABLE_FORM, 'confirmation_email_enabled', 'tinyint(1) NOT NULL DEFAULT 0');
         self::ensureColumn(self::TABLE_FORM, 'notification_subject_template', 'text NULL');
         self::ensureColumn(self::TABLE_FORM, 'notification_body_template', 'text NULL');
         self::ensureColumn(self::TABLE_FIELD, 'page_titre', "varchar(190) NOT NULL DEFAULT ''");
@@ -868,7 +872,7 @@ class FormulairesDynamiquesRepository
         $whereArchived = $includeArchived ? '' : " AND f.statut <> 'archive'";
 
         return self::rows(
-            "SELECT f.id, f.titre, f.description, f.form_columns, f.result_list_template, f.result_detail_template, f.result_columns,
+            "SELECT f.id, f.titre, f.description, f.form_columns, f.allow_user_edit, f.confirmation_email_enabled, f.result_list_template, f.result_detail_template, f.result_columns,
                 f.notification_subject_template, f.notification_body_template, f.statut, f.created_by, f.created_at, f.updated_at,
                 f.published_at, f.archived_at,
                 (SELECT COUNT(*) FROM ".self::table(self::TABLE_FIELD)." c WHERE c.formulaire_id = f.id AND c.actif = 1) AS field_count,
@@ -1071,6 +1075,8 @@ class FormulairesDynamiquesRepository
             'titre' => self::limit(isset($values['titre']) ? $values['titre'] : '', 190),
             'description' => trim((string) (isset($values['description']) ? $values['description'] : '')),
             'form_columns' => self::normalizeFormColumns(isset($values['form_columns']) ? $values['form_columns'] : 1),
+            'allow_user_edit' => !empty($values['allow_user_edit']) ? 1 : 0,
+            'confirmation_email_enabled' => !empty($values['confirmation_email_enabled']) ? 1 : 0,
             'result_list_template' => trim((string) (isset($values['result_list_template']) ? $values['result_list_template'] : '')),
             'result_detail_template' => trim((string) (isset($values['result_detail_template']) ? $values['result_detail_template'] : '')),
             'result_columns' => self::normalizeIdListText(isset($values['result_columns']) ? $values['result_columns'] : ''),
@@ -1112,13 +1118,15 @@ class FormulairesDynamiquesRepository
 
         $insert = grr_sql_command(
             "INSERT INTO ".self::table(self::TABLE_FORM)."
-            (titre, description, form_columns, result_list_template, result_detail_template, result_columns, notification_subject_template, notification_body_template, statut, created_by, created_at, updated_at, published_at, archived_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            "ssisssssssiiii",
+            (titre, description, form_columns, allow_user_edit, confirmation_email_enabled, result_list_template, result_detail_template, result_columns, notification_subject_template, notification_body_template, statut, created_by, created_at, updated_at, published_at, archived_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "ssiiisssssssiiii",
             array(
                 $values['titre'],
                 $values['description'],
                 $values['form_columns'],
+                $values['allow_user_edit'],
+                $values['confirmation_email_enabled'],
                 $values['result_list_template'],
                 $values['result_detail_template'],
                 $values['result_columns'],
@@ -1178,13 +1186,15 @@ class FormulairesDynamiquesRepository
 
         $update = grr_sql_command(
             "UPDATE ".self::table(self::TABLE_FORM)."
-            SET titre = ?, description = ?, form_columns = ?, result_list_template = ?, result_detail_template = ?, result_columns = ?, notification_subject_template = ?, notification_body_template = ?, statut = ?, updated_at = ?, published_at = ?, archived_at = ?
+            SET titre = ?, description = ?, form_columns = ?, allow_user_edit = ?, confirmation_email_enabled = ?, result_list_template = ?, result_detail_template = ?, result_columns = ?, notification_subject_template = ?, notification_body_template = ?, statut = ?, updated_at = ?, published_at = ?, archived_at = ?
             WHERE id = ?",
-            "ssissssssiiii",
+            "ssiiissssssiiii",
             array(
                 $values['titre'],
                 $values['description'],
                 $values['form_columns'],
+                $values['allow_user_edit'],
+                $values['confirmation_email_enabled'],
                 $values['result_list_template'],
                 $values['result_detail_template'],
                 $values['result_columns'],
@@ -1263,7 +1273,7 @@ class FormulairesDynamiquesRepository
         }
 
         $rows = self::rows(
-            "SELECT f.id, f.titre, f.description, f.form_columns, f.result_list_template, f.result_detail_template, f.result_columns,
+            "SELECT f.id, f.titre, f.description, f.form_columns, f.allow_user_edit, f.confirmation_email_enabled, f.result_list_template, f.result_detail_template, f.result_columns,
                 f.notification_subject_template, f.notification_body_template, f.statut, f.created_by, f.created_at, f.updated_at,
                 f.published_at, f.archived_at,
                 (SELECT COUNT(*) FROM ".self::table(self::TABLE_FIELD)." c WHERE c.formulaire_id = f.id AND c.actif = 1) AS field_count,
@@ -1284,7 +1294,7 @@ class FormulairesDynamiquesRepository
         $where = $includeArchived ? '' : " WHERE f.statut <> 'archive'";
 
         return self::rows(
-            "SELECT f.id, f.titre, f.description, f.form_columns, f.result_list_template, f.result_detail_template, f.result_columns,
+            "SELECT f.id, f.titre, f.description, f.form_columns, f.allow_user_edit, f.confirmation_email_enabled, f.result_list_template, f.result_detail_template, f.result_columns,
                 f.notification_subject_template, f.notification_body_template, f.statut, f.created_by, f.created_at, f.updated_at,
                 f.published_at, f.archived_at,
                 (SELECT COUNT(*) FROM ".self::table(self::TABLE_FIELD)." c WHERE c.formulaire_id = f.id AND c.actif = 1) AS field_count,
@@ -1314,6 +1324,7 @@ class FormulairesDynamiquesRepository
             'radio' => 'Choix unique (case a cocher)',
             'checkboxes' => 'Choix multiples',
             'file' => 'Piece jointe',
+            'signature' => 'Signature electronique',
             'image' => 'Image',
             'separator' => 'Separateur',
             'empty' => 'Vide',
@@ -1359,6 +1370,10 @@ class FormulairesDynamiquesRepository
         $help = trim((string) (isset($values['aide']) ? $values['aide'] : ''));
         $defaultValue = trim((string) (isset($values['valeur_defaut']) ? $values['valeur_defaut'] : ''));
         $required = self::flag(isset($values['obligatoire']) ? $values['obligatoire'] : 0);
+        if ($type === 'signature') {
+            $options = '';
+            $defaultValue = '';
+        }
         if ($type === 'empty') {
             $help = '';
             $defaultValue = '';
@@ -1819,6 +1834,13 @@ class FormulairesDynamiquesRepository
                         break;
                     }
                 }
+            } elseif ($type === 'signature') {
+                $value = trim((string) $value);
+                if ($required && $value === '') {
+                    $fieldErrors[] = 'Le champ "'.$label.'" est obligatoire.';
+                } elseif ($value !== '' && !self::signatureValueValid($value)) {
+                    $fieldErrors[] = 'Le champ "'.$label.'" contient une signature invalide.';
+                }
             } else {
                 $value = (string) $value;
                 if ($required && $value === '') {
@@ -2208,7 +2230,7 @@ class FormulairesDynamiquesRepository
         return true;
     }
 
-    public static function formByToken($token, $type)
+    public static function formByToken($token, $type, $allowResponseLimitReached = false)
     {
         self::ensureTables();
 
@@ -2218,7 +2240,7 @@ class FormulairesDynamiquesRepository
         }
 
         $rows = self::rows(
-            "SELECT f.id, f.titre, f.description, f.form_columns, f.result_list_template, f.result_detail_template, f.result_columns,
+            "SELECT f.id, f.titre, f.description, f.form_columns, f.allow_user_edit, f.confirmation_email_enabled, f.result_list_template, f.result_detail_template, f.result_columns,
                 f.notification_subject_template, f.notification_body_template, f.statut, f.created_by, f.created_at, f.updated_at,
                 f.published_at, f.archived_at, t.id AS token_id, t.expires_at, t.max_responses,
                 (SELECT COUNT(*) FROM ".self::table(self::TABLE_FIELD)." c WHERE c.formulaire_id = f.id AND c.actif = 1) AS field_count,
@@ -2240,6 +2262,7 @@ class FormulairesDynamiquesRepository
             return array();
         }
         if (self::normalizeTokenType($type) === 'formulaire'
+            && !$allowResponseLimitReached
             && (int) (isset($row['max_responses']) ? $row['max_responses'] : 0) > 0
             && self::tokenUsageCount((int) $row['token_id']) >= (int) $row['max_responses']) {
             return array();
@@ -2648,8 +2671,31 @@ class FormulairesDynamiquesRepository
 
             return implode("\n", $clean);
         }
+        if ($type === 'signature') {
+            $value = self::normalizeResponseScalar($value);
+            return self::signatureValueValid($value) ? $value : '';
+        }
 
         return self::normalizeResponseScalar($value);
+    }
+
+    public static function signatureValueValid($value)
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return false;
+        }
+        if (strlen($value) > 65535 || !preg_match('/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/', $value)) {
+            return false;
+        }
+
+        $payload = substr($value, strlen('data:image/png;base64,'));
+        $decoded = base64_decode($payload, true);
+        if ($decoded === false || strlen($decoded) < 50) {
+            return false;
+        }
+
+        return substr($decoded, 0, 8) === "\x89PNG\r\n\x1a\n";
     }
 
     private static function uploadedFilePresent($file)

@@ -18,7 +18,8 @@ et consulter/exporter les resultats.
 - Creation et modification de formulaires.
 - Statuts `brouillon`, `publie`, `archive`.
 - Champs dynamiques : texte, zone de texte, email, nombre, date, liste, choix
-  unique par case a cocher, cases a cocher, piece jointe, image et separateur.
+  unique par case a cocher, cases a cocher, piece jointe, signature
+  electronique, image et separateur.
 - Champ vide de mise en page, sans libelle ni reponse stockee, utilisable pour
   occuper une cellule ou changer le nombre de colonnes.
 - Editeur de champs dynamique affichant uniquement les reglages utiles au type
@@ -29,6 +30,9 @@ et consulter/exporter les resultats.
   champs selon une liste, un choix unique ou une case cochee.
 - Reorganisation des champs par glisser-deposer dans la gestion.
 - Apercu du formulaire avant publication.
+- Option par formulaire pour autoriser un utilisateur GRR connecte a modifier
+  sa propre reponse depuis le formulaire integre.
+- Option par formulaire pour envoyer un mail de confirmation au declarant.
 - Duplication d'un formulaire en brouillon.
 - Suppression definitive d'un formulaire et de ses reponses par un
   administrateur, par un gestionnaire affecte au formulaire ou par le
@@ -37,7 +41,7 @@ et consulter/exporter les resultats.
 - Liens par jetons pour formulaires et pages de resultats, avec expiration,
   limite de reponses, copie rapide et QR code autonome.
 - Affichage des liens existants pour les nouveaux jetons, avec desactivation
-  ou suppression.
+  ou suppression, et ouverture directe depuis la colonne d'actions.
 - Bouton `Ouvrir le formulaire` sur les pages de resultats integrees ou
   autonomes lorsqu'un lien formulaire actif et reaffichable existe.
 - Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs avec
@@ -46,6 +50,8 @@ et consulter/exporter les resultats.
 - Destinataires de notification par formulaire, avec conditions sur liste,
   choix unique ou cases a cocher.
 - Notification mail a la creation d'une reponse si les mails GRR sont actifs.
+- Le lien de modification de la reponse est ajoute aux notifications lorsque
+  l'option de modification par declarant est activee.
 - Modeles d'objet et de contenu de notification par formulaire.
 - Consultation des reponses avec recherche, filtre source, filtre date et
   pagination.
@@ -80,6 +86,8 @@ Les exports utilisent le lien de resultats actif.
 - Le CSV est genere en UTF-8 avec BOM et separateur `;`.
 - Le XLSX necessite l'extension PHP `ZipArchive`.
 - Le PDF est genere sans dependance externe, avec une mise en page simple.
+- Les formulaires, listes de resultats et details de reponse peuvent etre
+  imprimes depuis un bouton dedie.
 
 ## Modeles de resultats
 
@@ -95,6 +103,7 @@ Les modeles sont des textes avec placeholders :
 Si le modele est vide, l'affichage tableau standard est utilise.
 
 Les memes placeholders peuvent etre utilises dans les modeles de notification.
+Les modeles de notification acceptent aussi `{lien_modification}`.
 
 ## Pieces jointes
 
@@ -135,4 +144,8 @@ Les tables sont creees automatiquement par `FormulairesDynamiquesRepository::ens
   externe.
 - Une page de resultats par jeton donne acces aux reponses et aux exports.
 - Les pages autonomes peuvent etre desactivees dans la configuration du module.
+- La colonne `allow_user_edit` est ajoutee automatiquement aux formulaires
+  existants pour l'option de modification par le declarant connecte.
+- La colonne `confirmation_email_enabled` est ajoutee automatiquement pour
+  l'option de confirmation mail au declarant.
 - Les notifications dependent de la configuration mail GRR existante.
