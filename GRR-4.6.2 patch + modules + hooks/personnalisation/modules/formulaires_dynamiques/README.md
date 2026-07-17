@@ -38,6 +38,8 @@ et consulter/exporter les resultats.
   limite de reponses, copie rapide et QR code autonome.
 - Affichage des liens existants pour les nouveaux jetons, avec desactivation
   ou suppression.
+- Bouton `Ouvrir le formulaire` sur les pages de resultats integrees ou
+  autonomes lorsqu'un lien formulaire actif et reaffichable existe.
 - Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs avec
   une double liste disponible/selectionne.
 - Gestionnaires par formulaire selectionnes depuis les utilisateurs GRR actifs.

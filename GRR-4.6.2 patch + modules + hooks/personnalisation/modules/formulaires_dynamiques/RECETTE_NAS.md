@@ -236,24 +236,31 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
 
 1. Ouvrir la page de resultats integree.
 2. Verifier que la liste affiche les deux reponses.
-3. Tester la recherche texte.
-4. Tester le filtre source `Integre GRR`.
-5. Tester le filtre source `Autonome`.
-6. Tester les filtres date.
-7. Tester la pagination avec `25`, `50`, `100`, `200`.
-8. Ouvrir le detail d'une reponse.
-9. Revenir a la liste.
-10. Configurer un modele de resultats global et verifier l'affichage.
-11. Configurer un modele individuel et verifier le detail d'une reponse.
-12. Choisir seulement certaines colonnes dans `Mise en page` et verifier la
+3. Verifier que le bouton `Ouvrir le formulaire` est visible si un lien
+   formulaire actif existe et qu'il ouvre le formulaire via `app.php`.
+4. Ouvrir la page de resultats autonome et verifier que le bouton ouvre le
+   formulaire autonome.
+5. Tester la recherche texte.
+6. Tester le filtre source `Integre GRR`.
+7. Tester le filtre source `Autonome`.
+8. Tester les filtres date.
+9. Tester la pagination avec `25`, `50`, `100`, `200`.
+10. Ouvrir le detail d'une reponse et verifier aussi le bouton
+    `Ouvrir le formulaire`.
+11. Revenir a la liste.
+12. Configurer un modele de resultats global et verifier l'affichage.
+13. Configurer un modele individuel et verifier le detail d'une reponse.
+14. Choisir seulement certaines colonnes dans `Mise en page` et verifier la
     liste.
-13. Modifier une reponse avec un gestionnaire connecte.
-14. Ouvrir l'onglet `Statistiques`.
+15. Modifier une reponse avec un gestionnaire connecte.
+16. Ouvrir l'onglet `Statistiques`.
 
 | Test | Etat | Observation |
 |---|---|---|
 | Liste resultats integree | | |
 | Liste resultats autonome | | |
+| Bouton ouvrir formulaire depuis resultats integres | | |
+| Bouton ouvrir formulaire depuis resultats autonomes | | |
 | Recherche | | |
 | Filtre source | | |
 | Filtre date | | |
