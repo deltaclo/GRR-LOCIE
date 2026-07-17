@@ -32,6 +32,10 @@ class FormulairesDynamiquesRenderer
             return self::renderEmbeddedAdminPage();
         }
 
+        if (self::managementSection() === 'resultats' && self::requestedDisplayView() === 'export') {
+            return self::renderManagementExportDisplay($login);
+        }
+
         $postResult = self::handleManagementPost($login);
 
         return self::renderManagementHome(
@@ -72,6 +76,14 @@ class FormulairesDynamiquesRenderer
         $canManage = FormulairesDynamiquesRights::canManageModule($login);
         $adminUrl = 'compte.php?pc='.rawurlencode(FormulairesDynamiquesConfig::MODULE).'&admin=1';
         $messages = array_merge(self::managementMessagesFromRequest(), $messages);
+        $section = self::managementSection();
+        $body = self::renderManagementSection(
+            $section,
+            $login,
+            $postedValues,
+            $postedFieldValues,
+            $postedNotificationValues
+        );
 
         $html = '<section id="formulaires-dynamiques">'
             .self::assets()
@@ -79,21 +91,96 @@ class FormulairesDynamiquesRenderer
             .'<div class="formdyn-actions">'
                 .($canManage ? '<a class="btn btn-primary" href="'.self::html($adminUrl).'">Configuration du module</a>' : '')
             .'</div>'
+            .self::renderManagementNavigation($section, $login)
             .self::renderAlerts($messages, 'success')
             .self::renderAlerts($errors, 'danger')
-            .self::renderCounters()
-            .self::renderFormEditor($postedValues, $login)
-            .self::renderFormLinksPanel($login)
-            .self::renderFormManagersPanel($login)
-            .self::renderNotificationPanel($postedNotificationValues, $login)
-            .self::renderFieldBuilder($postedFieldValues, $login)
-            .self::renderHistoryPanel($login)
-            .self::renderFormsTable($login)
-            .self::renderAccessSummary($login, $canManage)
-            .self::renderDisplayRouteSummary()
+            .$body
             .'</section>';
 
         return $html;
+    }
+
+    private static function renderManagementSection($section, $login, $postedValues, $postedFieldValues, $postedNotificationValues)
+    {
+        if ($section === 'edit') {
+            return self::renderFormEditor($postedValues, $login);
+        }
+        if ($section === 'fields') {
+            return self::renderFieldBuilder($postedFieldValues, $login);
+        }
+        if ($section === 'diffusion') {
+            return self::renderFormLinksPanel($login).self::renderFormManagersPanel($login);
+        }
+        if ($section === 'notifications') {
+            return self::renderNotificationPanel($postedNotificationValues, $login);
+        }
+        if ($section === 'layout') {
+            return self::renderLayoutPanel($login);
+        }
+        if ($section === 'preview') {
+            return self::renderPreviewPanel($login);
+        }
+        if ($section === 'resultats') {
+            return self::renderResultsPanel($login);
+        }
+        if ($section === 'stats') {
+            return self::renderStatsPanel($login);
+        }
+        if ($section === 'tools') {
+            return self::renderToolsPanel($login);
+        }
+        if ($section === 'history') {
+            return self::renderHistoryPanel($login);
+        }
+        if ($section === 'help') {
+            return self::renderAccessSummary($login, FormulairesDynamiquesRights::canManageModule($login))
+                .self::renderDisplayRouteSummary();
+        }
+
+        return self::renderCounters().self::renderFormsTable($login).self::renderGlobalImportPanel($login);
+    }
+
+    private static function renderManagementNavigation($section, $login)
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        $items = array(
+            'forms' => 'Formulaires',
+        );
+        if (FormulairesDynamiquesRights::canCreateForms($login) || $formId > 0) {
+            $items['edit'] = $formId > 0 ? 'Fiche' : 'Nouveau';
+        }
+        if ($formId > 0 && FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            $items['fields'] = 'Champs';
+            $items['diffusion'] = 'Diffusion';
+            $items['notifications'] = 'Notifications';
+            $items['layout'] = 'Mise en page';
+            $items['preview'] = 'Apercu';
+            $items['resultats'] = 'Resultats';
+            $items['stats'] = 'Statistiques';
+            $items['tools'] = 'Outils';
+            $items['history'] = 'Historique';
+        }
+        $items['help'] = 'Aide';
+
+        $html = '<nav class="formdyn-tabs">';
+        foreach ($items as $key => $label) {
+            $params = array('section' => $key);
+            if ($formId > 0 && $key !== 'forms') {
+                $params['form_id'] = $formId;
+            }
+            $class = $section === $key ? ' class="active"' : '';
+            $html .= '<a'.$class.' href="'.self::html(self::managementUrl($params)).'">'.self::html($label).'</a>';
+        }
+
+        return $html.'</nav>';
+    }
+
+    private static function managementSection()
+    {
+        $section = isset($_GET['section']) ? strtolower(trim((string) $_GET['section'])) : 'forms';
+        return in_array($section, array('forms', 'edit', 'fields', 'diffusion', 'notifications', 'layout', 'preview', 'resultats', 'stats', 'tools', 'history', 'help'), true)
+            ? $section
+            : 'forms';
     }
 
     private static function handleManagementPost($login)
@@ -114,6 +201,9 @@ class FormulairesDynamiquesRenderer
         if ($action === '') {
             return $result;
         }
+        if ($action === 'update_response') {
+            return $result;
+        }
 
         if (!self::canHandleManagementAction($action, $login)) {
             $result['errors'][] = 'Acces refuse.';
@@ -126,6 +216,10 @@ class FormulairesDynamiquesRenderer
 
         if ($action === 'disable_field') {
             return self::handleFieldDisable($login, $result);
+        }
+
+        if ($action === 'save_field_order') {
+            return self::handleFieldOrderSave($login, $result);
         }
 
         if ($action === 'generate_form_token') {
@@ -156,12 +250,37 @@ class FormulairesDynamiquesRenderer
             return self::handleTokenDisable($login, $result);
         }
 
+        if ($action === 'delete_token') {
+            return self::handleTokenDelete($login, $result);
+        }
+
+        if ($action === 'duplicate_form') {
+            return self::handleFormDuplicate($login, $result);
+        }
+
+        if ($action === 'delete_form') {
+            return self::handleFormDelete($login, $result);
+        }
+
+        if ($action === 'export_form_json') {
+            return self::handleFormJsonExport($login, $result);
+        }
+
+        if ($action === 'import_form_json') {
+            return self::handleFormJsonImport($login, $result);
+        }
+
+        if ($action === 'save_layout') {
+            return self::handleLayoutSave($login, $result);
+        }
+
         if ($action !== 'save_form') {
             return $result;
         }
 
         $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
-        $values = FormulairesDynamiquesRepository::normalizeFormValues($_POST);
+        $baseValues = $formId > 0 ? FormulairesDynamiquesRepository::form($formId) : array();
+        $values = FormulairesDynamiquesRepository::normalizeFormValues(array_merge($baseValues, $_POST));
         $values['id'] = $formId;
         $result['values'] = $values;
         $result['errors'] = FormulairesDynamiquesRepository::validateFormValues($values);
@@ -175,7 +294,7 @@ class FormulairesDynamiquesRenderer
                 return $result;
             }
 
-            self::redirectToManagement(array('form_id' => $formId, 'saved' => 1));
+            self::redirectToManagement(array('form_id' => $formId, 'section' => 'edit', 'saved' => 1));
         }
 
         $createdId = FormulairesDynamiquesRepository::createForm($values, $login);
@@ -184,7 +303,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $createdId, 'created' => 1));
+        self::redirectToManagement(array('form_id' => $createdId, 'section' => 'fields', 'created' => 1));
         return $result;
     }
 
@@ -214,7 +333,7 @@ class FormulairesDynamiquesRenderer
                 return $result;
             }
 
-            self::redirectToManagement(array('form_id' => $formId, 'field_id' => $fieldId, 'field_saved' => 1));
+            self::redirectToManagement(array('form_id' => $formId, 'field_id' => $fieldId, 'section' => 'fields', 'field_saved' => 1));
         }
 
         $createdId = FormulairesDynamiquesRepository::createField($formId, $values, $login);
@@ -223,7 +342,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'field_id' => $createdId, 'field_created' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'field_id' => $createdId, 'section' => 'fields', 'field_created' => 1));
         return $result;
     }
 
@@ -241,7 +360,25 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'field_disabled' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'fields', 'field_disabled' => 1));
+        return $result;
+    }
+
+    private static function handleFieldOrderSave($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        $fieldIds = self::postedIdList('field_order');
+        if ($formId <= 0 || count($fieldIds) === 0) {
+            $result['errors'][] = 'Aucun ordre de champ a enregistrer.';
+            return $result;
+        }
+
+        if (!FormulairesDynamiquesRepository::updateFieldOrder($formId, $fieldIds, $login)) {
+            $result['errors'][] = 'L ordre des champs n a pas pu etre enregistre.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'fields', 'field_order_saved' => 1));
         return $result;
     }
 
@@ -253,13 +390,13 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        $token = FormulairesDynamiquesRepository::createToken($formId, 'formulaire', $login);
+        $token = FormulairesDynamiquesRepository::createToken($formId, 'formulaire', $login, self::postedTokenOptions());
         if ($token === '') {
             $result['errors'][] = 'Le lien formulaire n a pas pu etre genere.';
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'form_token' => $token, 'token_created' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'form_token' => $token, 'token_created' => 1));
         return $result;
     }
 
@@ -271,13 +408,13 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        $token = FormulairesDynamiquesRepository::createToken($formId, 'resultats', $login);
+        $token = FormulairesDynamiquesRepository::createToken($formId, 'resultats', $login, self::postedTokenOptions());
         if ($token === '') {
             $result['errors'][] = 'Le lien resultats n a pas pu etre genere.';
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'results_token' => $token, 'results_token_created' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'results_token' => $token, 'results_token_created' => 1));
         return $result;
     }
 
@@ -299,7 +436,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'notification_created' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'notifications', 'notification_created' => 1));
         return $result;
     }
 
@@ -317,7 +454,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'notification_disabled' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'notifications', 'notification_disabled' => 1));
         return $result;
     }
 
@@ -339,7 +476,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'manager_added' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'manager_added' => 1));
         return $result;
     }
 
@@ -357,7 +494,7 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'manager_removed' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'manager_removed' => 1));
         return $result;
     }
 
@@ -374,8 +511,144 @@ class FormulairesDynamiquesRenderer
             return $result;
         }
 
-        self::redirectToManagement(array('form_id' => $formId, 'token_disabled' => 1));
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'token_disabled' => 1));
         return $result;
+    }
+
+    private static function handleTokenDelete($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        $tokenId = isset($_POST['token_id']) ? (int) $_POST['token_id'] : 0;
+        if (!self::tokenBelongsToForm($tokenId, $formId)) {
+            $result['errors'][] = 'Le jeton est introuvable pour ce formulaire.';
+            return $result;
+        }
+        if (!FormulairesDynamiquesRepository::deleteToken($tokenId, $login)) {
+            $result['errors'][] = 'Le jeton n a pas pu etre supprime.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'diffusion', 'token_deleted' => 1));
+        return $result;
+    }
+
+    private static function handleFormDuplicate($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        if ($formId <= 0) {
+            $result['errors'][] = 'Le formulaire est introuvable.';
+            return $result;
+        }
+
+        $newFormId = FormulairesDynamiquesRepository::duplicateForm($formId, $login);
+        if ($newFormId <= 0) {
+            $result['errors'][] = 'Le formulaire n a pas pu etre duplique.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('form_id' => $newFormId, 'section' => 'edit', 'duplicated' => 1));
+        return $result;
+    }
+
+    private static function handleFormDelete($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        $form = FormulairesDynamiquesRepository::form($formId);
+        if (!self::canDeleteForm($login, $form)) {
+            $result['errors'][] = 'Suppression refusee pour ce formulaire.';
+            return $result;
+        }
+
+        if (!FormulairesDynamiquesRepository::deleteForm($formId)) {
+            $result['errors'][] = 'Le formulaire n a pas pu etre supprime.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('section' => 'forms', 'form_deleted' => 1));
+        return $result;
+    }
+
+    private static function handleFormJsonExport($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        $payload = FormulairesDynamiquesRepository::exportFormDefinition($formId);
+        if (!$payload) {
+            $result['errors'][] = 'Le formulaire n a pas pu etre exporte.';
+            return $result;
+        }
+
+        $form = isset($payload['form']) && is_array($payload['form']) ? $payload['form'] : array();
+        $title = isset($form['titre']) ? (string) $form['titre'] : 'formulaire';
+        $filename = self::safeFilename($title).'-formulaire.json';
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Disposition: attachment; filename="'.$filename.'"');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+        }
+        echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    private static function handleFormJsonImport($login, $result)
+    {
+        if (!isset($_FILES['formdyn_json']) || !is_array($_FILES['formdyn_json'])) {
+            $result['errors'][] = 'Selectionnez un fichier JSON.';
+            return $result;
+        }
+
+        $file = $_FILES['formdyn_json'];
+        if (!isset($file['error']) || (int) $file['error'] !== UPLOAD_ERR_OK || !isset($file['tmp_name'])) {
+            $result['errors'][] = 'Le fichier JSON n a pas pu etre recu.';
+            return $result;
+        }
+
+        $import = FormulairesDynamiquesRepository::importFormDefinition($file['tmp_name'], $login);
+        $errors = isset($import['errors']) && is_array($import['errors']) ? $import['errors'] : array();
+        if (count($errors) > 0) {
+            $result['errors'] = array_merge($result['errors'], $errors);
+        }
+
+        $formId = isset($import['form_id']) ? (int) $import['form_id'] : 0;
+        if ($formId <= 0) {
+            $result['errors'][] = 'Le formulaire importe n a pas pu etre cree.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'edit', 'json_imported' => 1));
+        return $result;
+    }
+
+    private static function handleLayoutSave($login, $result)
+    {
+        $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
+        $form = FormulairesDynamiquesRepository::form($formId);
+        if (!$form) {
+            $result['errors'][] = 'Le formulaire est introuvable.';
+            return $result;
+        }
+
+        $values = array_merge($form, array(
+            'result_list_template' => isset($_POST['result_list_template']) ? $_POST['result_list_template'] : '',
+            'result_detail_template' => isset($_POST['result_detail_template']) ? $_POST['result_detail_template'] : '',
+            'result_columns' => isset($_POST['result_columns']) ? $_POST['result_columns'] : array(),
+            'notification_subject_template' => isset($_POST['notification_subject_template']) ? $_POST['notification_subject_template'] : '',
+            'notification_body_template' => isset($_POST['notification_body_template']) ? $_POST['notification_body_template'] : '',
+        ));
+        if (!FormulairesDynamiquesRepository::updateForm($formId, $values, $login)) {
+            $result['errors'][] = 'La mise en page n a pas pu etre enregistree.';
+            return $result;
+        }
+
+        self::redirectToManagement(array('form_id' => $formId, 'section' => 'layout', 'layout_saved' => 1));
+        return $result;
+    }
+
+    private static function postedTokenOptions()
+    {
+        return array(
+            'expires_at' => isset($_POST['expires_at']) ? (string) $_POST['expires_at'] : '',
+            'max_responses' => isset($_POST['max_responses']) ? (int) $_POST['max_responses'] : 0,
+        );
     }
 
     private static function canHandleManagementAction($action, $login)
@@ -388,10 +661,20 @@ class FormulairesDynamiquesRenderer
                 ? FormulairesDynamiquesRights::canManageForm($login, $formId)
                 : FormulairesDynamiquesRights::canCreateForms($login);
         }
+        if ($action === 'import_form_json') {
+            return FormulairesDynamiquesRights::canCreateForms($login);
+        }
+        if (in_array($action, array('duplicate_form', 'export_form_json'), true)) {
+            return $formId > 0 && FormulairesDynamiquesRights::canManageForm($login, $formId);
+        }
+        if ($action === 'delete_form') {
+            return self::canDeleteForm($login, FormulairesDynamiquesRepository::form($formId));
+        }
 
         if (in_array($action, array(
             'save_field',
             'disable_field',
+            'save_field_order',
             'generate_form_token',
             'generate_results_token',
             'save_notification',
@@ -399,11 +682,35 @@ class FormulairesDynamiquesRenderer
             'add_form_manager',
             'remove_form_manager',
             'disable_token',
+            'delete_token',
+            'save_layout',
         ), true)) {
             return $formId > 0 && FormulairesDynamiquesRights::canManageForm($login, $formId);
         }
 
         return false;
+    }
+
+    private static function canDeleteForm($login, $form)
+    {
+        $login = trim((string) $login);
+        if ($login === '' || !is_array($form) || empty($form)) {
+            return false;
+        }
+
+        $formId = (int) (isset($form['id']) ? $form['id'] : 0);
+        if ($formId <= 0) {
+            return false;
+        }
+
+        if (FormulairesDynamiquesRights::isAdmin($login)) {
+            return true;
+        }
+
+        $creator = isset($form['created_by']) ? trim((string) $form['created_by']) : '';
+        return $creator !== ''
+            && $creator === $login
+            && FormulairesDynamiquesRights::canManageForm($login, $formId);
     }
 
     private static function tokenBelongsToForm($tokenId, $formId)
@@ -415,6 +722,21 @@ class FormulairesDynamiquesRenderer
         }
 
         return false;
+    }
+
+    private static function postedIdList($key)
+    {
+        $raw = isset($_POST[$key]) ? (string) $_POST[$key] : '';
+        $parts = preg_split('/[,;]+/', $raw);
+        $ids = array();
+        foreach ($parts as $part) {
+            $id = (int) trim((string) $part);
+            if ($id > 0) {
+                $ids[$id] = $id;
+            }
+        }
+
+        return array_values($ids);
     }
 
     private static function managementMessagesFromRequest()
@@ -434,6 +756,9 @@ class FormulairesDynamiquesRenderer
         }
         if (isset($_GET['field_disabled']) && $_GET['field_disabled'] === '1') {
             $messages[] = 'Champ desactive.';
+        }
+        if (isset($_GET['field_order_saved']) && $_GET['field_order_saved'] === '1') {
+            $messages[] = 'Ordre des champs enregistre.';
         }
         if (isset($_GET['token_created']) && $_GET['token_created'] === '1') {
             $messages[] = 'Lien formulaire genere.';
@@ -455,6 +780,21 @@ class FormulairesDynamiquesRenderer
         }
         if (isset($_GET['token_disabled']) && $_GET['token_disabled'] === '1') {
             $messages[] = 'Jeton desactive.';
+        }
+        if (isset($_GET['token_deleted']) && $_GET['token_deleted'] === '1') {
+            $messages[] = 'Jeton supprime.';
+        }
+        if (isset($_GET['layout_saved']) && $_GET['layout_saved'] === '1') {
+            $messages[] = 'Mise en page enregistree.';
+        }
+        if (isset($_GET['duplicated']) && $_GET['duplicated'] === '1') {
+            $messages[] = 'Formulaire duplique en brouillon.';
+        }
+        if (isset($_GET['form_deleted']) && $_GET['form_deleted'] === '1') {
+            $messages[] = 'Formulaire supprime avec ses reponses.';
+        }
+        if (isset($_GET['json_imported']) && $_GET['json_imported'] === '1') {
+            $messages[] = 'Formulaire importe depuis le JSON.';
         }
 
         return $messages;
@@ -490,7 +830,7 @@ class FormulairesDynamiquesRenderer
 
         $html = '<section class="formdyn-panel">'
             .'<h3>'.self::html($title).'</h3>'
-            .'<form method="post" action="'.self::html(self::managementUrl()).'">'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => (int) $values['id'], 'section' => 'edit'))).'">'
             .'<input type="hidden" name="formdyn_action" value="save_form">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $values['id']).'">'
             .'<div class="formdyn-form-grid">'
@@ -500,7 +840,7 @@ class FormulairesDynamiquesRenderer
             .'<label>Description<br><textarea class="form-control" name="description" rows="4">'.self::html($values['description']).'</textarea></label>'
             .'<p class="formdyn-actions">'
                 .'<button class="btn btn-primary" type="submit">'.($editing ? 'Enregistrer' : 'Creer le formulaire').'</button>'
-                .($editing ? ' <a class="btn btn-default" href="'.self::html(self::managementUrl()).'">Nouveau formulaire</a>' : '')
+                .($editing ? ' <a class="btn btn-default" href="'.self::html(self::managementUrl(array('section' => 'edit'))).'">Nouveau formulaire</a>' : '')
             .'</p>'
             .'</form>'
             .'</section>';
@@ -543,7 +883,7 @@ class FormulairesDynamiquesRenderer
         if ($newFormToken !== '') {
             $integratedUrl = self::formDisplayUrl($newFormToken, true);
             $standaloneUrl = self::formDisplayUrl($newFormToken, false);
-            $html .= '<div class="alert alert-info">Copiez ces liens maintenant. Pour des raisons de securite, le jeton complet ne sera pas reaffiche ensuite.</div>'
+            $html .= '<div class="alert alert-info">Nouveau lien formulaire genere. Il restera affichable dans le tableau des jetons.</div>'
                 .'<label>Affichage integre GRR<br><input class="form-control" readonly value="'.self::html($integratedUrl).'"></label>'
                 .'<label>Affichage autonome<br><input class="form-control" readonly value="'.self::html($standaloneUrl).'"></label>';
         }
@@ -551,25 +891,39 @@ class FormulairesDynamiquesRenderer
         if ($newResultsToken !== '') {
             $integratedUrl = self::resultsDisplayUrl($newResultsToken, true);
             $standaloneUrl = self::resultsDisplayUrl($newResultsToken, false);
-            $html .= '<div class="alert alert-info">Copiez ces liens de resultats maintenant. Le jeton complet ne sera pas reaffiche ensuite.</div>'
+            $html .= '<div class="alert alert-info">Nouveau lien resultats genere. Il restera affichable dans le tableau des jetons.</div>'
                 .'<label>Resultats integres GRR<br><input class="form-control" readonly value="'.self::html($integratedUrl).'"></label>'
                 .'<label>Resultats autonomes<br><input class="form-control" readonly value="'.self::html($standaloneUrl).'"></label>';
         }
 
-        $html .= '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+        $html .= '<div class="formdyn-token-create-grid">'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
             .'<input type="hidden" name="formdyn_action" value="generate_form_token">'
             .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+            .'<h4>Lien formulaire</h4>'
+            .self::renderTokenOptionInputs(true)
             .'<button class="btn btn-primary" type="submit">Generer un lien formulaire</button>'
             .'</form>'
-            .'<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
             .'<input type="hidden" name="formdyn_action" value="generate_results_token">'
             .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+            .'<h4>Lien resultats</h4>'
+            .self::renderTokenOptionInputs(false)
             .'<button class="btn btn-default" type="submit">Generer un lien resultats</button>'
             .'</form>'
+            .'</div>'
             .self::renderTokensTable($formId)
             .'</section>';
 
         return $html;
+    }
+
+    private static function renderTokenOptionInputs($withLimit)
+    {
+        return '<div class="formdyn-token-options">'
+            .'<label>Expiration<br><input class="form-control" type="datetime-local" name="expires_at"></label>'
+            .($withLimit ? '<label>Limite de reponses<br><input class="form-control" type="number" min="0" name="max_responses" value="0"></label>' : '<input type="hidden" name="max_responses" value="0">')
+            .'</div>';
     }
 
     private static function renderTokensTable($formId)
@@ -581,29 +935,122 @@ class FormulairesDynamiquesRenderer
 
         $html = '<div class="formdyn-subpanel"><h4>Jetons</h4>'
             .'<div class="table-responsive"><table class="table table-striped">'
-            .'<thead><tr><th>Type</th><th>Cree le</th><th>Etat</th><th>Actions</th></tr></thead><tbody>';
+            .'<thead><tr><th>Type</th><th>Cree le</th><th>Etat</th><th>Contraintes</th><th>Liens</th><th>Actions</th></tr></thead><tbody>';
         foreach ($tokens as $token) {
             $active = isset($token['actif']) && (int) $token['actif'] === 1;
             $type = isset($token['type_token']) ? (string) $token['type_token'] : '';
             $html .= '<tr'.($active ? '' : ' class="text-muted"').'>'
                 .'<td>'.self::html($type === 'resultats' ? 'Resultats' : 'Formulaire').'</td>'
                 .'<td>'.self::html(self::formatDate(isset($token['created_at']) ? $token['created_at'] : 0)).'</td>'
-                .'<td>'.($active ? '<span class="label label-success">Actif</span>' : '<span class="label label-default">Inactif</span>').'</td>'
-                .'<td>'.($active ? self::disableTokenForm($formId, (int) $token['id']) : '').'</td>'
+                .'<td>'.self::tokenStatusLabel($token).'</td>'
+                .'<td>'.self::tokenConstraintLabel($token).'</td>'
+                .'<td>'.self::renderTokenLinks($token).'</td>'
+                .'<td>'.($active ? self::disableTokenForm($formId, (int) $token['id']) : '').self::deleteTokenForm($formId, (int) $token['id']).'</td>'
                 .'</tr>';
         }
 
         return $html.'</tbody></table></div></div>';
     }
 
+    private static function tokenStatusLabel($token)
+    {
+        $active = isset($token['actif']) && (int) $token['actif'] === 1;
+        if (!$active) {
+            return '<span class="label label-default">Inactif</span>';
+        }
+
+        $expiresAt = (int) (isset($token['expires_at']) ? $token['expires_at'] : 0);
+        if ($expiresAt > 0 && $expiresAt < time()) {
+            return '<span class="label label-warning">Expire</span>';
+        }
+
+        $max = (int) (isset($token['max_responses']) ? $token['max_responses'] : 0);
+        $used = (int) (isset($token['response_count']) ? $token['response_count'] : 0);
+        if ($max > 0 && $used >= $max) {
+            return '<span class="label label-warning">Limite atteinte</span>';
+        }
+
+        return '<span class="label label-success">Actif</span>';
+    }
+
+    private static function tokenConstraintLabel($token)
+    {
+        $parts = array();
+        $expiresAt = (int) (isset($token['expires_at']) ? $token['expires_at'] : 0);
+        if ($expiresAt > 0) {
+            $parts[] = 'Expire le '.self::formatDate($expiresAt);
+        }
+        $max = (int) (isset($token['max_responses']) ? $token['max_responses'] : 0);
+        $used = (int) (isset($token['response_count']) ? $token['response_count'] : 0);
+        if ($max > 0) {
+            $parts[] = $used.' / '.$max.' reponse(s)';
+        }
+
+        return count($parts) > 0 ? self::html(implode(' - ', $parts)) : '<span class="text-muted">Aucune</span>';
+    }
+
     private static function disableTokenForm($formId, $tokenId)
     {
-        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
             .'<input type="hidden" name="formdyn_action" value="disable_token">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
             .'<input type="hidden" name="token_id" value="'.self::html((int) $tokenId).'">'
             .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Desactiver ce jeton ?\');">Desactiver</button>'
             .'</form>';
+    }
+
+    private static function deleteTokenForm($formId, $tokenId)
+    {
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="delete_token">'
+            .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
+            .'<input type="hidden" name="token_id" value="'.self::html((int) $tokenId).'">'
+            .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Supprimer definitivement ce jeton ?\');">Supprimer</button>'
+            .'</form>';
+    }
+
+    private static function renderTokenLinks($token)
+    {
+        $tokenValue = isset($token['token_public']) ? trim((string) $token['token_public']) : '';
+        if ($tokenValue === '') {
+            return '<span class="text-muted">Ancien jeton : lien non reaffichable. Regenerer un lien si necessaire.</span>';
+        }
+
+        $type = isset($token['type_token']) ? (string) $token['type_token'] : 'formulaire';
+        $integrated = $type === 'resultats'
+            ? self::resultsDisplayUrl($tokenValue, true)
+            : self::formDisplayUrl($tokenValue, true);
+        $standalone = $type === 'resultats'
+            ? self::resultsDisplayUrl($tokenValue, false)
+            : self::formDisplayUrl($tokenValue, false);
+
+        return self::copyableValue('Jeton', $tokenValue)
+            .self::copyableValue('Integre GRR', $integrated)
+            .self::copyableValue('Autonome', $standalone)
+            .self::qrCodeBlock($standalone);
+    }
+
+    private static function copyableValue($label, $value)
+    {
+        return '<label>'.self::html($label).'<br>'
+            .'<span class="formdyn-copy-line">'
+                .'<input class="form-control" readonly value="'.self::html($value).'">'
+                .'<button class="btn btn-default btn-sm formdyn-copy-btn" type="button">Copier</button>'
+            .'</span>'
+            .'</label>';
+    }
+
+    private static function qrCodeBlock($value)
+    {
+        if (trim((string) $value) === '') {
+            return '';
+        }
+
+        $src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data='.rawurlencode((string) $value);
+        return '<details class="formdyn-qr"><summary>QR code autonome</summary>'
+            .'<img src="'.self::html($src).'" alt="QR code">'
+            .'<div class="formdyn-help">QR code genere par un service externe.</div>'
+            .'</details>';
     }
 
     private static function renderFormManagersPanel($login = '')
@@ -620,12 +1067,12 @@ class FormulairesDynamiquesRenderer
 
         $html = '<section class="formdyn-panel">'
             .'<h3>Gestionnaires du formulaire</h3>'
-            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
             .'<input type="hidden" name="formdyn_action" value="add_form_manager">'
             .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
             .'<div class="formdyn-notification-grid">'
-                .'<label>Login GRR<br><input class="form-control" type="text" name="manager_login" maxlength="190" required></label>'
-                .'<div class="formdyn-help">Le login doit correspondre a un utilisateur GRR existant.</div>'
+                .'<label>Utilisateur GRR<br><select class="form-control" name="manager_login" required>'.self::activeUserOptionsHtml('').'</select></label>'
+                .'<div class="formdyn-help">La liste contient les utilisateurs GRR actifs.</div>'
             .'</div>'
             .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Ajouter le gestionnaire</button></p>'
             .'</form>'
@@ -660,7 +1107,7 @@ class FormulairesDynamiquesRenderer
 
     private static function removeFormManagerForm($formId, $managerLogin)
     {
-        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">'
             .'<input type="hidden" name="formdyn_action" value="remove_form_manager">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
             .'<input type="hidden" name="manager_login" value="'.self::html($managerLogin).'">'
@@ -698,7 +1145,7 @@ class FormulairesDynamiquesRenderer
             .'<div class="alert '.($mailReady ? 'alert-success' : 'alert-warning').'">'
                 .($mailReady ? 'Les mails automatiques GRR sont actifs.' : 'Les mails automatiques GRR ne sont pas actifs ou les notifications du module sont desactivees.')
             .'</div>'
-            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'notifications'))).'">'
             .'<input type="hidden" name="formdyn_action" value="save_notification">'
             .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
             .'<input type="hidden" name="actif" value="1">'
@@ -706,6 +1153,7 @@ class FormulairesDynamiquesRenderer
                 .'<label>Nom<br><input class="form-control" type="text" name="nom" maxlength="190" value="'.self::html($values['nom']).'"></label>'
                 .'<label>Email<br><input class="form-control" type="email" name="email" maxlength="190" required value="'.self::html($values['email']).'"></label>'
             .'</div>'
+            .self::renderNotificationConditionControls($formId, $values)
             .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Ajouter le destinataire</button></p>'
             .'</form>'
             .self::renderNotificationRecipientsTable($formId)
@@ -721,6 +1169,9 @@ class FormulairesDynamiquesRenderer
             'formulaire_id' => (int) $formId,
             'email' => '',
             'nom' => '',
+            'condition_champ_id' => 0,
+            'condition_operateur' => '',
+            'condition_valeur' => '',
             'actif' => 1,
         );
 
@@ -729,6 +1180,73 @@ class FormulairesDynamiquesRenderer
         }
 
         return $defaults;
+    }
+
+    private static function renderNotificationConditionControls($formId, $values)
+    {
+        $fields = FormulairesDynamiquesRepository::conditionalFields($formId);
+        if (count($fields) === 0) {
+            return '<div class="formdyn-help">Ajoutez une liste, un choix unique ou des cases a cocher pour activer les notifications conditionnelles.</div>';
+        }
+
+        $html = '<div class="formdyn-notification-condition">'
+            .'<h4>Condition d envoi</h4>'
+            .'<div class="formdyn-notification-grid">'
+            .'<label>Champ<br><select class="form-control" name="condition_champ_id">'
+                .'<option value="0">Toujours envoyer</option>';
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            $html .= '<option value="'.self::html($fieldId).'"'.((int) $values['condition_champ_id'] === $fieldId ? ' selected' : '').'>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</option>';
+        }
+        $html .= '</select></label>'
+            .'<label>Operateur<br><select class="form-control" name="condition_operateur">';
+        foreach (FormulairesDynamiquesRepository::notificationConditionOperators() as $value => $label) {
+            $html .= '<option value="'.self::html($value).'"'.($values['condition_operateur'] === $value ? ' selected' : '').'>'.self::html($label).'</option>';
+        }
+        $html .= '</select></label>'
+            .'</div>'
+            .'<label>Valeur attendue<br><input class="form-control" type="text" name="condition_valeur" maxlength="190" value="'.self::html($values['condition_valeur']).'"></label>'
+            .'<div class="formdyn-help">Pour les cases a cocher, la condition "contient" verifie si le choix est coche.</div>'
+            .'</div>';
+
+        return $html;
+    }
+
+    private static function renderFieldVisibilityControls($formId, $currentFieldId, $values)
+    {
+        $fields = FormulairesDynamiquesRepository::conditionalFields($formId);
+        if (count($fields) === 0) {
+            return '<div class="formdyn-help">Ajoutez une liste, un choix unique ou des cases a cocher pour activer l affichage conditionnel.</div>';
+        }
+
+        $selectedField = (int) (isset($values['visibility_champ_id']) ? $values['visibility_champ_id'] : 0);
+        $selectedOperator = isset($values['visibility_operateur']) ? (string) $values['visibility_operateur'] : '';
+        $selectedValue = isset($values['visibility_valeur']) ? (string) $values['visibility_valeur'] : '';
+
+        $html = '<div class="formdyn-notification-condition">'
+            .'<h4>Affichage conditionnel</h4>'
+            .'<div class="formdyn-notification-grid">'
+            .'<label>Afficher si le champ<br><select class="form-control" name="visibility_champ_id">'
+                .'<option value="0">Toujours afficher</option>';
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            if ($fieldId <= 0 || $fieldId === (int) $currentFieldId) {
+                continue;
+            }
+            $html .= '<option value="'.self::html($fieldId).'"'.($selectedField === $fieldId ? ' selected' : '').'>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</option>';
+        }
+        $html .= '</select></label>'
+            .'<label>Operateur<br><select class="form-control" name="visibility_operateur">';
+        foreach (FormulairesDynamiquesRepository::notificationConditionOperators() as $value => $label) {
+            $html .= '<option value="'.self::html($value).'"'.($selectedOperator === $value ? ' selected' : '').'>'.self::html($label).'</option>';
+        }
+        $html .= '</select></label>'
+            .'</div>'
+            .'<label>Valeur attendue<br><input class="form-control" type="text" name="visibility_valeur" maxlength="190" value="'.self::html($selectedValue).'"></label>'
+            .'<div class="formdyn-help">Pour les cases a cocher, la condition "contient" verifie si le choix est coche.</div>'
+            .'</div>';
+
+        return $html;
     }
 
     private static function renderNotificationRecipientsTable($formId)
@@ -742,6 +1260,7 @@ class FormulairesDynamiquesRenderer
             .'<thead><tr>'
                 .'<th>Nom</th>'
                 .'<th>Email</th>'
+                .'<th>Condition</th>'
                 .'<th>Etat</th>'
                 .'<th>Actions</th>'
             .'</tr></thead><tbody>';
@@ -752,6 +1271,7 @@ class FormulairesDynamiquesRenderer
             $html .= '<tr'.($active ? '' : ' class="text-muted"').'>'
                 .'<td>'.self::html(isset($recipient['nom']) ? $recipient['nom'] : '').'</td>'
                 .'<td>'.self::html(isset($recipient['email']) ? $recipient['email'] : '').'</td>'
+                .'<td>'.self::html(self::notificationConditionLabel($recipient)).'</td>'
                 .'<td>'.($active ? '<span class="label label-success">Actif</span>' : '<span class="label label-default">Inactif</span>').'</td>'
                 .'<td>'.($active ? self::disableNotificationForm((int) $formId, $recipientId) : '').'</td>'
                 .'</tr>';
@@ -762,12 +1282,83 @@ class FormulairesDynamiquesRenderer
 
     private static function disableNotificationForm($formId, $notificationId)
     {
-        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'notifications'))).'">'
             .'<input type="hidden" name="formdyn_action" value="disable_notification">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
             .'<input type="hidden" name="notification_id" value="'.self::html((int) $notificationId).'">'
             .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Desactiver ce destinataire ?\');">Desactiver</button>'
             .'</form>';
+    }
+
+    private static function notificationConditionLabel($recipient)
+    {
+        $fieldId = (int) (isset($recipient['condition_champ_id']) ? $recipient['condition_champ_id'] : 0);
+        if ($fieldId <= 0) {
+            return 'Toujours';
+        }
+
+        $field = FormulairesDynamiquesRepository::field($fieldId);
+        $operators = FormulairesDynamiquesRepository::notificationConditionOperators();
+        $operator = isset($recipient['condition_operateur']) ? (string) $recipient['condition_operateur'] : '';
+        $label = isset($operators[$operator]) ? $operators[$operator] : $operator;
+        $value = isset($recipient['condition_valeur']) ? (string) $recipient['condition_valeur'] : '';
+
+        return (isset($field['libelle']) ? $field['libelle'] : 'Champ '.$fieldId).' '.$label.($value !== '' ? ' '.$value : '');
+    }
+
+    private static function renderLayoutPanel($login = '')
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return '';
+        }
+
+        $form = FormulairesDynamiquesRepository::form($formId);
+        if (!$form) {
+            return '';
+        }
+        $fields = self::resultFields(FormulairesDynamiquesRepository::fields($formId, true));
+
+        return '<section class="formdyn-panel">'
+            .'<h3>Mise en page des resultats</h3>'
+            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'layout'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="save_layout">'
+            .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+            .'<label>Modele liste globale<br><textarea class="form-control" name="result_list_template" rows="7">'.self::html(isset($form['result_list_template']) ? $form['result_list_template'] : '').'</textarea></label>'
+            .'<label>Modele detail individuel<br><textarea class="form-control" name="result_detail_template" rows="7">'.self::html(isset($form['result_detail_template']) ? $form['result_detail_template'] : '').'</textarea></label>'
+            .'<div class="formdyn-help">Placeholders : {reference}, {date}, {source}, {declarant}, {champ:Libelle exact}, {field:ID}. Si le modele est vide, l affichage tableau standard est utilise.</div>'
+            .'<h4>Colonnes de la liste des resultats</h4>'
+            .self::renderResultColumnChoices($form, $fields)
+            .'<h4>Notification e-mail</h4>'
+            .'<label>Modele objet<br><input class="form-control" type="text" name="notification_subject_template" maxlength="190" value="'.self::html(isset($form['notification_subject_template']) ? $form['notification_subject_template'] : '').'"></label>'
+            .'<label>Modele message<br><textarea class="form-control" name="notification_body_template" rows="8">'.self::html(isset($form['notification_body_template']) ? $form['notification_body_template'] : '').'</textarea></label>'
+            .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Enregistrer la mise en page</button></p>'
+            .'</form>'
+            .'</section>';
+    }
+
+    private static function renderResultColumnChoices($form, $fields)
+    {
+        $selected = array();
+        foreach (preg_split('/[,;\s]+/', (string) (isset($form['result_columns']) ? $form['result_columns'] : '')) as $part) {
+            $id = (int) $part;
+            if ($id > 0) {
+                $selected[$id] = true;
+            }
+        }
+        $useAll = count($selected) === 0;
+        if (count($fields) === 0) {
+            return '<div class="alert alert-info">Aucune colonne disponible.</div>';
+        }
+
+        $html = '<div class="formdyn-checks formdyn-column-choices">';
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            $checked = $useAll || isset($selected[$fieldId]) ? ' checked' : '';
+            $html .= '<label><input type="checkbox" name="result_columns[]" value="'.self::html($fieldId).'"'.$checked.'> '.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</label>';
+        }
+
+        return $html.'</div><div class="formdyn-help">Si toutes les cases sont decochees, toutes les colonnes sont affichees.</div>';
     }
 
     private static function renderFieldBuilder($postedFieldValues = array(), $login = '')
@@ -810,33 +1401,60 @@ class FormulairesDynamiquesRenderer
 
         $html = '<div class="formdyn-subpanel">'
             .'<h4>'.self::html($title).'</h4>'
-            .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => (int) $form['id']))).'">'
+            .'<form class="formdyn-field-editor" method="post" action="'.self::html(self::managementUrl(array('form_id' => (int) $form['id'], 'section' => 'fields'))).'">'
             .'<input type="hidden" name="formdyn_action" value="save_field">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $form['id']).'">'
             .'<input type="hidden" name="field_id" value="'.self::html((int) $values['id']).'">'
             .'<input type="hidden" name="obligatoire" value="0">'
             .'<input type="hidden" name="actif" value="0">'
             .'<div class="formdyn-field-grid">'
-                .'<label>Libelle<br><input class="form-control" type="text" name="libelle" maxlength="190" required value="'.self::html($values['libelle']).'"></label>'
+                .'<label data-field-config="label">Libelle<br><input class="form-control" type="text" name="libelle" maxlength="190" value="'.self::html($values['libelle']).'"></label>'
                 .'<label>Type<br><select class="form-control" name="type_champ">'.self::fieldTypeOptionsHtml($values['type_champ']).'</select></label>'
                 .'<label>Ordre<br><input class="form-control" type="number" min="0" name="ordre" value="'.self::html((int) $values['ordre']).'"></label>'
+                .'<label>Page / section<br><input class="form-control" type="text" name="page_titre" maxlength="190" value="'.self::html($values['page_titre']).'"></label>'
             .'</div>'
-            .'<label>Aide<br><textarea class="form-control" name="aide" rows="2">'.self::html($values['aide']).'</textarea></label>'
-            .'<label>Options<br><textarea class="form-control" name="options" rows="4">'.self::html($values['options']).'</textarea></label>'
-            .'<div class="formdyn-help">Une option par ligne pour liste deroulante, choix unique ou choix multiples.</div>'
-            .'<label>Valeur par defaut<br><input class="form-control" type="text" name="valeur_defaut" value="'.self::html($values['valeur_defaut']).'"></label>'
+            .'<div class="formdyn-help" data-field-config="separator-label-help">Le libelle peut rester vide pour un separateur.</div>'
+            .'<label data-field-config="help">Aide<br><textarea class="form-control" name="aide" rows="2">'.self::html($values['aide']).'</textarea></label>'
+            .'<label data-field-config="options">Options<br><textarea class="form-control" name="options" rows="4">'.self::html($values['options']).'</textarea></label>'
+            .'<div class="formdyn-help" data-field-config="options">Une option par ligne pour liste deroulante, choix unique ou choix multiples.</div>'
+            .'<label data-field-config="default"><span data-field-default-label>Valeur par defaut</span><br><input class="form-control" type="text" name="valeur_defaut" value="'.self::html($values['valeur_defaut']).'"></label>'
+            .'<div class="formdyn-help" data-field-config="default" data-field-default-help></div>'
+            .'<label data-field-config="image-size">Taille affichage image<br><input class="form-control" type="text" name="image_display_size" maxlength="20" placeholder="480px, 60%, small, medium, large, full" value="'.self::html(FormulairesDynamiquesRepository::imageDisplaySize($values)).'"></label>'
+            .'<div class="formdyn-help" data-field-config="image-size">Laissez vide pour une image responsive pleine largeur.</div>'
+            .'<label data-field-config="columns">Colonnes suivantes<br><select class="form-control" name="separator_columns">'.self::formColumnOptionsHtml(FormulairesDynamiquesRepository::layoutColumns($values)).'</select></label>'
+            .'<div class="formdyn-help" data-field-config="columns">Les champs suivants utilisent ce nombre de colonnes jusqu au prochain changement.</div>'
+            .self::renderFieldVisibilityControls((int) $form['id'], (int) $values['id'], $values)
             .'<div class="formdyn-checks">'
-                .'<label><input type="checkbox" name="obligatoire" value="1"'.((int) $values['obligatoire'] === 1 ? ' checked' : '').'> Obligatoire</label>'
+                .'<label data-field-config="required"><input type="checkbox" name="obligatoire" value="1"'.((int) $values['obligatoire'] === 1 ? ' checked' : '').'> Obligatoire</label>'
                 .'<label><input type="checkbox" name="actif" value="1"'.((int) $values['actif'] === 1 ? ' checked' : '').'> Actif</label>'
             .'</div>'
             .'<p class="formdyn-actions">'
                 .'<button class="btn btn-primary" type="submit">'.($editing ? 'Enregistrer le champ' : 'Ajouter le champ').'</button>'
-                .($editing ? ' <a class="btn btn-default" href="'.self::html(self::managementUrl(array('form_id' => (int) $form['id']))).'">Nouveau champ</a>' : '')
+                .($editing ? ' <a class="btn btn-default" href="'.self::html(self::managementUrl(array('form_id' => (int) $form['id'], 'section' => 'fields'))).'">Nouveau champ</a>' : '')
             .'</p>'
             .'</form>'
+            .self::fieldEditorBehaviorScript()
             .'</div>';
 
         return $html;
+    }
+
+    private static function fieldEditorBehaviorScript()
+    {
+        return '<script>'
+            .'(function(){'
+            .'function isChoice(type){return type==="select"||type==="radio"||type==="checkboxes";}'
+            .'function isResponseField(type){return type!=="separator"&&type!=="image"&&type!=="empty";}'
+            .'function hasDefault(type){return type==="text"||type==="textarea"||type==="email"||type==="number"||type==="date"||isChoice(type)||type==="image";}'
+            .'function hasHelp(type){return isResponseField(type)||type==="image";}'
+            .'function visible(config,type){if(config==="label"){return type!=="empty";}if(config==="separator-label-help"){return type==="separator";}if(config==="help"){return hasHelp(type);}if(config==="options"){return isChoice(type);}if(config==="default"){return hasDefault(type);}if(config==="image-size"){return type==="image";}if(config==="columns"){return type==="separator"||type==="empty";}if(config==="required"){return isResponseField(type);}return true;}'
+            .'function setDisabled(block,disabled){var controls=block.querySelectorAll("input,select,textarea");for(var i=0;i<controls.length;i++){controls[i].disabled=disabled;}}'
+            .'function defaultLabel(type){return type==="image"?"URL image":"Valeur par defaut";}'
+            .'function defaultHelp(type){if(type==="image"){return "Indiquez une URL http(s) ou un chemin relatif vers l image.";}if(type==="checkboxes"){return "Pour plusieurs valeurs cochees par defaut, indiquez une valeur par ligne.";}if(type==="radio"){return "Indiquez la valeur a cocher par defaut.";}if(type==="select"){return "Indiquez la valeur a selectionner par defaut.";}return "Utilise comme valeur pre-remplie dans le formulaire.";}'
+            .'function sync(form){var typeSelect=form.querySelector("[name=type_champ]");if(!typeSelect){return;}var type=typeSelect.value||"text";var blocks=form.querySelectorAll("[data-field-config]");for(var i=0;i<blocks.length;i++){var block=blocks[i];var show=visible(block.getAttribute("data-field-config")||"",type);block.hidden=!show;setDisabled(block,!show);}var label=form.querySelector("[data-field-default-label]");if(label){label.textContent=defaultLabel(type);}var help=form.querySelector("[data-field-default-help]");if(help){help.textContent=defaultHelp(type);}}'
+            .'var forms=document.querySelectorAll("#formulaires-dynamiques form.formdyn-field-editor");for(var f=0;f<forms.length;f++){(function(form){var typeSelect=form.querySelector("[name=type_champ]");if(typeSelect){typeSelect.addEventListener("change",function(){sync(form);});}sync(form);})(forms[f]);}'
+            .'})();'
+            .'</script>';
     }
 
     private static function currentFieldEditorValues($form, $postedFieldValues)
@@ -849,6 +1467,10 @@ class FormulairesDynamiquesRenderer
             'aide' => '',
             'options' => '',
             'valeur_defaut' => '',
+            'page_titre' => '',
+            'visibility_champ_id' => 0,
+            'visibility_operateur' => '',
+            'visibility_valeur' => '',
             'obligatoire' => 0,
             'ordre' => 0,
             'actif' => 1,
@@ -887,37 +1509,69 @@ class FormulairesDynamiquesRenderer
             return '<div class="alert alert-info">Aucun champ ajoute.</div>';
         }
 
-        $html = '<div class="table-responsive"><table class="table table-striped formdyn-fields-table">'
+        $formId = (int) $form['id'];
+        $fieldOrder = array();
+        foreach ($fields as $field) {
+            $fieldOrder[] = (int) (isset($field['id']) ? $field['id'] : 0);
+        }
+
+        $html = '<form id="formdyn-field-order-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'fields'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="save_field_order">'
+            .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+            .'<input type="hidden" id="formdyn-field-order-input" name="field_order" value="'.self::html(implode(',', $fieldOrder)).'">'
+            .'</form>'
+            .'<div class="table-responsive"><table class="table table-striped formdyn-fields-table">'
             .'<thead><tr>'
+                .'<th></th>'
                 .'<th>Ordre</th>'
                 .'<th>Libelle</th>'
                 .'<th>Type</th>'
+                .'<th>Page</th>'
+                .'<th>Condition</th>'
                 .'<th>Obligatoire</th>'
                 .'<th>Etat</th>'
                 .'<th>Actions</th>'
-            .'</tr></thead><tbody>';
+            .'</tr></thead><tbody id="formdyn-field-order">';
 
         foreach ($fields as $field) {
             $fieldId = isset($field['id']) ? (int) $field['id'] : 0;
             $active = isset($field['actif']) && (int) $field['actif'] === 1;
-            $html .= '<tr'.($active ? '' : ' class="text-muted"').'>'
+            $html .= '<tr draggable="true" data-field-id="'.self::html($fieldId).'"'.($active ? '' : ' class="text-muted"').'>'
+                .'<td class="formdyn-drag-handle" title="Glisser pour reordonner">::</td>'
                 .'<td>'.self::html((int) (isset($field['ordre']) ? $field['ordre'] : 0)).'</td>'
-                .'<td><strong>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</strong>'.self::fieldOptionsPreview($field).'</td>'
+                .'<td><strong>'.self::html(self::fieldListLabel($field)).'</strong>'.self::fieldOptionsPreview($field).'</td>'
                 .'<td>'.self::html(FormulairesDynamiquesRepository::fieldTypeLabel(isset($field['type_champ']) ? $field['type_champ'] : '')).'</td>'
+                .'<td>'.self::html(isset($field['page_titre']) && trim((string) $field['page_titre']) !== '' ? $field['page_titre'] : '-').'</td>'
+                .'<td>'.self::html(self::fieldVisibilityLabel($field)).'</td>'
                 .'<td>'.((isset($field['obligatoire']) && (int) $field['obligatoire'] === 1) ? 'Oui' : 'Non').'</td>'
                 .'<td>'.($active ? '<span class="label label-success">Actif</span>' : '<span class="label label-default">Inactif</span>').'</td>'
                 .'<td>'
-                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => (int) $form['id'], 'field_id' => $fieldId))).'">Editer</a>'
-                    .($active ? self::disableFieldForm((int) $form['id'], $fieldId) : '')
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'field_id' => $fieldId, 'section' => 'fields'))).'">Editer</a>'
+                    .($active ? self::disableFieldForm($formId, $fieldId) : '')
                 .'</td>'
             .'</tr>';
         }
 
-        return $html.'</tbody></table></div>';
+        return $html.'</tbody></table></div>'
+            .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit" form="formdyn-field-order-form">Enregistrer l ordre</button></p>'
+            .self::fieldOrderScript();
     }
 
     private static function fieldOptionsPreview($field)
     {
+        if (isset($field['type_champ']) && (string) $field['type_champ'] === 'image') {
+            $size = FormulairesDynamiquesRepository::imageDisplaySize($field);
+            return $size !== '' ? '<br><small>Taille image : '.self::html($size).'</small>' : '';
+        }
+        if (isset($field['type_champ']) && (string) $field['type_champ'] === 'separator') {
+            $columns = FormulairesDynamiquesRepository::layoutColumns($field);
+            return '<br><small>Colonnes suivantes : '.self::html($columns).'</small>';
+        }
+        if (isset($field['type_champ']) && (string) $field['type_champ'] === 'empty') {
+            $columns = FormulairesDynamiquesRepository::layoutColumns($field);
+            return '<br><small>Espace vide - colonnes suivantes : '.self::html($columns).'</small>';
+        }
+
         $options = FormulairesDynamiquesRepository::fieldOptionsArray($field);
         if (count($options) === 0) {
             return '';
@@ -926,14 +1580,65 @@ class FormulairesDynamiquesRenderer
         return '<br><small>'.self::html(implode(', ', $options)).'</small>';
     }
 
+    private static function fieldListLabel($field)
+    {
+        $label = isset($field['libelle']) ? trim((string) $field['libelle']) : '';
+        if ($label !== '') {
+            return $label;
+        }
+
+        if (isset($field['type_champ']) && (string) $field['type_champ'] === 'separator') {
+            return 'Separateur sans libelle';
+        }
+        if (isset($field['type_champ']) && (string) $field['type_champ'] === 'empty') {
+            return 'Champ vide';
+        }
+
+        return '';
+    }
+
+    private static function fieldVisibilityLabel($field)
+    {
+        $conditionFieldId = (int) (isset($field['visibility_champ_id']) ? $field['visibility_champ_id'] : 0);
+        if ($conditionFieldId <= 0) {
+            return '-';
+        }
+
+        $conditionField = FormulairesDynamiquesRepository::field($conditionFieldId);
+        $operators = FormulairesDynamiquesRepository::notificationConditionOperators();
+        $operator = isset($field['visibility_operateur']) ? (string) $field['visibility_operateur'] : '';
+        $label = isset($operators[$operator]) ? $operators[$operator] : $operator;
+        $value = isset($field['visibility_valeur']) ? (string) $field['visibility_valeur'] : '';
+
+        return (isset($conditionField['libelle']) ? $conditionField['libelle'] : 'Champ '.$conditionFieldId)
+            .' '.$label.($value !== '' ? ' '.$value : '');
+    }
+
     private static function disableFieldForm($formId, $fieldId)
     {
-        return ' <form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId))).'">'
+        return ' <form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'fields'))).'">'
             .'<input type="hidden" name="formdyn_action" value="disable_field">'
             .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
             .'<input type="hidden" name="field_id" value="'.self::html((int) $fieldId).'">'
             .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Desactiver ce champ ?\');">Desactiver</button>'
             .'</form>';
+    }
+
+    private static function fieldOrderScript()
+    {
+        return '<script>'
+            .'(function(){'
+            .'var body=document.getElementById("formdyn-field-order");'
+            .'var input=document.getElementById("formdyn-field-order-input");'
+            .'if(!body||!input){return;}'
+            .'var dragged=null;'
+            .'function sync(){var ids=[];var rows=body.querySelectorAll("tr[data-field-id]");for(var i=0;i<rows.length;i++){ids.push(rows[i].getAttribute("data-field-id"));}input.value=ids.join(",");}'
+            .'body.addEventListener("dragstart",function(e){var row=e.target.closest("tr[data-field-id]");if(!row){return;}dragged=row;e.dataTransfer.effectAllowed="move";row.classList.add("formdyn-dragging");});'
+            .'body.addEventListener("dragend",function(){if(dragged){dragged.classList.remove("formdyn-dragging");dragged=null;}sync();});'
+            .'body.addEventListener("dragover",function(e){e.preventDefault();var row=e.target.closest("tr[data-field-id]");if(!row||!dragged||row===dragged){return;}var rect=row.getBoundingClientRect();var after=(e.clientY-rect.top)>rect.height/2;body.insertBefore(dragged,after?row.nextSibling:row);});'
+            .'sync();'
+            .'})();'
+            .'</script>';
     }
 
     private static function currentFormEditorValues($postedValues)
@@ -942,6 +1647,12 @@ class FormulairesDynamiquesRenderer
             'id' => 0,
             'titre' => '',
             'description' => '',
+            'form_columns' => 1,
+            'result_list_template' => '',
+            'result_detail_template' => '',
+            'result_columns' => '',
+            'notification_subject_template' => '',
+            'notification_body_template' => '',
             'statut' => 'brouillon',
         );
 
@@ -970,6 +1681,31 @@ class FormulairesDynamiquesRenderer
         $html = '';
         foreach (FormulairesDynamiquesRepository::statusOptions() as $value => $label) {
             $html .= '<option value="'.self::html($value).'"'.($selected === $value ? ' selected' : '').'>'.self::html($label).'</option>';
+        }
+
+        return $html;
+    }
+
+    private static function formColumnOptionsHtml($selected)
+    {
+        $selected = FormulairesDynamiquesRepository::normalizeFormColumns($selected);
+        $html = '';
+        foreach (array(1, 2, 3, 4) as $value) {
+            $label = $value === 1 ? '1 colonne' : $value.' colonnes';
+            $html .= '<option value="'.self::html($value).'"'.($selected === $value ? ' selected' : '').'>'.self::html($label).'</option>';
+        }
+
+        return $html;
+    }
+
+    private static function activeUserOptionsHtml($selected)
+    {
+        $selected = (string) $selected;
+        $html = '<option value=""></option>';
+        foreach (FormulairesDynamiquesRepository::activeUsers() as $user) {
+            $login = isset($user['login']) ? (string) $user['login'] : '';
+            $label = isset($user['label']) ? (string) $user['label'] : $login;
+            $html .= '<option value="'.self::html($login).'"'.($selected === $login ? ' selected' : '').'>'.self::html($label).'</option>';
         }
 
         return $html;
@@ -1004,11 +1740,167 @@ class FormulairesDynamiquesRenderer
                 .'<td>'.self::html((int) (isset($form['field_count']) ? $form['field_count'] : 0)).'</td>'
                 .'<td>'.self::html((int) (isset($form['response_count']) ? $form['response_count'] : 0)).'</td>'
                 .'<td>'.self::html(self::formatDate(isset($form['updated_at']) ? $form['updated_at'] : 0)).'</td>'
-                .'<td><a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId))).'">Editer</a></td>'
+                .'<td>'
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'edit'))).'">Fiche</a> '
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'fields'))).'">Champs</a> '
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'diffusion'))).'">Diffusion</a> '
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'notifications'))).'">Notifications</a> '
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'preview'))).'">Apercu</a> '
+                    .self::formResultsButton($formId)
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'stats'))).'">Stats</a> '
+                    .'<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'tools'))).'">Outils</a> '
+                    .self::duplicateFormButton($formId)
+                    .self::deleteFormButton($login, $form)
+                .'</td>'
             .'</tr>';
         }
 
         return $html.'</tbody></table></div></section>';
+    }
+
+    private static function formResultsButton($formId)
+    {
+        return '<a class="btn btn-default btn-sm" href="'.self::html(self::managementUrl(array('form_id' => (int) $formId, 'section' => 'resultats'))).'">Resultats</a> ';
+    }
+
+    private static function duplicateFormButton($formId)
+    {
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('section' => 'forms'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="duplicate_form">'
+            .'<input type="hidden" name="form_id" value="'.self::html((int) $formId).'">'
+            .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Dupliquer ce formulaire en brouillon ?\');">Dupliquer</button>'
+            .'</form>';
+    }
+
+    private static function deleteFormButton($login, $form)
+    {
+        if (!self::canDeleteForm($login, $form)) {
+            return '';
+        }
+
+        $formId = (int) (isset($form['id']) ? $form['id'] : 0);
+        return '<form class="formdyn-inline-form" method="post" action="'.self::html(self::managementUrl(array('section' => 'forms'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="delete_form">'
+            .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+            .'<button class="btn btn-danger btn-sm" type="submit" onclick="return confirm(\'Supprimer definitivement ce formulaire, ses champs, ses jetons et toutes ses reponses ?\');">Supprimer</button>'
+            .'</form>';
+    }
+
+    private static function renderGlobalImportPanel($login = '')
+    {
+        if (!FormulairesDynamiquesRights::canCreateForms($login)) {
+            return '';
+        }
+
+        return '<section class="formdyn-panel"><h3>Importer un formulaire</h3>'
+            .'<form method="post" enctype="multipart/form-data" action="'.self::html(self::managementUrl(array('section' => 'forms'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="import_form_json">'
+            .'<label>Fichier JSON<br><input class="form-control" type="file" name="formdyn_json" accept=".json,application/json" required></label>'
+            .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Importer</button></p>'
+            .'</form>'
+            .'</section>';
+    }
+
+    private static function renderPreviewPanel($login = '')
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return '';
+        }
+
+        $form = FormulairesDynamiquesRepository::form($formId);
+        $fields = FormulairesDynamiquesRepository::fields($formId, false);
+        if (!$form) {
+            return '';
+        }
+
+        return '<section class="formdyn-panel">'
+            .'<h3>Apercu du formulaire</h3>'
+            .'<div class="alert alert-info">Cet apercu ne cree pas de reponse et ne necessite pas de jeton public.</div>'
+            .self::renderFormArticle($form, $fields, array(), array(), false, true)
+            .'</section>';
+    }
+
+    private static function renderResultsPanel($login = '')
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return '';
+        }
+
+        $form = FormulairesDynamiquesRepository::form($formId);
+        if (!$form) {
+            return '';
+        }
+
+        return '<section class="formdyn-panel">'
+            .'<div class="alert alert-info">Ces resultats sont affiches depuis Gerer mon compte et ne necessitent pas de jeton public.</div>'
+            .self::renderResultsForForm($form, 'management', $login)
+            .'</section>';
+    }
+
+    private static function renderStatsPanel($login = '')
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return '';
+        }
+
+        $stats = FormulairesDynamiquesRepository::responseStats($formId);
+        $html = '<section class="formdyn-panel"><h3>Statistiques</h3>'
+            .'<div class="formdyn-counter"><span class="formdyn-counter-value">'.self::html((int) $stats['total']).'</span><span class="formdyn-counter-label">Reponses</span></div>';
+
+        if (empty($stats['fields'])) {
+            return $html.'<div class="alert alert-info">Aucun champ a choix ne permet encore de calculer une repartition.</div></section>';
+        }
+
+        foreach ($stats['fields'] as $fieldStats) {
+            $html .= '<div class="formdyn-subpanel"><h4>'.self::html(isset($fieldStats['libelle']) ? $fieldStats['libelle'] : '').'</h4>'
+                .'<table class="table table-striped"><thead><tr><th>Valeur</th><th>Reponses</th></tr></thead><tbody>';
+            foreach ((array) (isset($fieldStats['counts']) ? $fieldStats['counts'] : array()) as $value => $count) {
+                $html .= '<tr><td>'.self::html($value).'</td><td>'.self::html((int) $count).'</td></tr>';
+            }
+            $html .= '</tbody></table></div>';
+        }
+
+        return $html.'</section>';
+    }
+
+    private static function renderToolsPanel($login = '')
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return '';
+        }
+
+        $importForm = FormulairesDynamiquesRights::canCreateForms($login)
+            ? '<form method="post" enctype="multipart/form-data" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'tools'))).'">'
+                    .'<input type="hidden" name="formdyn_action" value="import_form_json">'
+                    .'<h4>Import JSON</h4>'
+                    .'<label>Fichier JSON<br><input class="form-control" type="file" name="formdyn_json" accept=".json,application/json" required></label>'
+                    .'<button class="btn btn-default" type="submit">Importer un formulaire</button>'
+                .'</form>'
+            : '';
+
+        return '<section class="formdyn-panel"><h3>Outils formulaire</h3>'
+            .'<div class="formdyn-tool-grid">'
+                .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'tools'))).'">'
+                    .'<input type="hidden" name="formdyn_action" value="duplicate_form">'
+                    .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+                    .'<h4>Duplication</h4>'
+                    .'<p>Copie le formulaire en brouillon, avec champs, gestionnaires et notifications.</p>'
+                    .'<button class="btn btn-primary" type="submit">Dupliquer</button>'
+                .'</form>'
+                .'<form method="post" action="'.self::html(self::managementUrl(array('form_id' => $formId, 'section' => 'tools'))).'">'
+                    .'<input type="hidden" name="formdyn_action" value="export_form_json">'
+                    .'<input type="hidden" name="form_id" value="'.self::html($formId).'">'
+                    .'<h4>Export JSON</h4>'
+                    .'<p>Exporte la structure du formulaire sans reponses ni jetons.</p>'
+                    .'<button class="btn btn-default" type="submit">Exporter</button>'
+                .'</form>'
+                .$importForm
+            .'</div>'
+            .'</section>';
     }
 
     private static function renderHistoryPanel($login = '')
@@ -1018,8 +1910,13 @@ class FormulairesDynamiquesRenderer
             return '';
         }
 
-        $history = FormulairesDynamiquesRepository::history($formId, 50);
-        $html = '<section class="formdyn-panel"><h3>Historique recent</h3>';
+        $filters = array(
+            'action' => self::requestText('history_action'),
+            'q' => self::requestText('history_q'),
+        );
+        $history = FormulairesDynamiquesRepository::history($formId, 50, $filters);
+        $html = '<section class="formdyn-panel"><h3>Historique recent</h3>'
+            .self::renderHistoryFilters($filters);
         if (count($history) === 0) {
             return $html.'<div class="alert alert-info">Aucun evenement enregistre.</div></section>';
         }
@@ -1040,6 +1937,41 @@ class FormulairesDynamiquesRenderer
         return $html.'</tbody></table></div></section>';
     }
 
+    private static function renderHistoryFilters($filters)
+    {
+        $action = isset($filters['action']) ? (string) $filters['action'] : '';
+        $q = isset($filters['q']) ? (string) $filters['q'] : '';
+        $actions = array(
+            '' => '',
+            'creation_reponse' => 'Creation reponse',
+            'modification_reponse' => 'Modification reponse',
+            'export_reponses' => 'Export reponses',
+            'creation_champ' => 'Creation champ',
+            'modification_champ' => 'Modification champ',
+            'creation_notification' => 'Creation notification',
+            'desactivation_notification' => 'Desactivation notification',
+            'desactivation_jeton' => 'Desactivation jeton',
+            'suppression_jeton' => 'Suppression jeton',
+            'duplication_formulaire' => 'Duplication formulaire',
+            'import_formulaire_json' => 'Import JSON',
+        );
+
+        $html = '<form class="formdyn-results-filters" method="get" action="">'
+            .self::hiddenDisplayParams(array('history_action', 'history_q'))
+            .'<div class="formdyn-filter-grid">'
+            .'<label>Action<br><select class="form-control" name="history_action">';
+        foreach ($actions as $value => $label) {
+            $html .= '<option value="'.self::html($value).'"'.($action === $value ? ' selected' : '').'>'.self::html($label).'</option>';
+        }
+        $html .= '</select></label>'
+            .'<label>Recherche<br><input class="form-control" type="text" name="history_q" value="'.self::html($q).'"></label>'
+            .'</div>'
+            .'<p class="formdyn-actions"><button class="btn btn-default" type="submit">Filtrer</button></p>'
+            .'</form>';
+
+        return $html;
+    }
+
     private static function historyActionLabel($action)
     {
         $labels = array(
@@ -1054,8 +1986,13 @@ class FormulairesDynamiquesRenderer
             'export_reponses' => 'Export reponses',
             'modification_champ' => 'Modification champ',
             'modification_formulaire' => 'Modification formulaire',
+            'modification_reponse' => 'Modification reponse',
             'notification' => 'Notification',
             'retrait_gestionnaire' => 'Retrait gestionnaire',
+            'suppression_jeton' => 'Suppression jeton',
+            'duplication_formulaire' => 'Duplication formulaire',
+            'import_formulaire_json' => 'Import formulaire JSON',
+            'ordre_champs' => 'Ordre des champs',
         );
         $action = (string) $action;
         if (isset($labels[$action])) {
@@ -1102,6 +2039,15 @@ class FormulairesDynamiquesRenderer
         }
 
         return 'compte.php?'.implode('&', $query);
+    }
+
+    private static function safeFilename($value)
+    {
+        $value = strtolower(trim((string) $value));
+        $value = preg_replace('/[^a-z0-9_-]+/', '-', $value);
+        $value = trim($value, '-');
+
+        return $value !== '' ? substr($value, 0, 80) : 'formulaire';
     }
 
     private static function formDisplayUrl($token, $integrated)
@@ -1176,6 +2122,32 @@ class FormulairesDynamiquesRenderer
             );
         }
 
+        return self::renderExportForForm($form, $login);
+    }
+
+    private static function renderManagementExportDisplay($login)
+    {
+        $formId = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0;
+        if ($formId <= 0 || !FormulairesDynamiquesRights::canManageForm($login, $formId)) {
+            return self::displayShell(
+                '<h2>Export</h2>'
+                .'<div class="alert alert-warning">Acces refuse.</div>'
+            );
+        }
+
+        $form = FormulairesDynamiquesRepository::form($formId);
+        if (!$form) {
+            return self::displayShell(
+                '<h2>Export</h2>'
+                .'<div class="alert alert-warning">Le formulaire est introuvable.</div>'
+            );
+        }
+
+        return self::renderExportForForm($form, $login);
+    }
+
+    private static function renderExportForForm($form, $login)
+    {
         self::loadExportEngine();
         if (!class_exists('FormulairesDynamiquesExport')) {
             return self::displayShell(
@@ -1184,7 +2156,10 @@ class FormulairesDynamiquesRenderer
             );
         }
 
-        $fields = self::resultFields(FormulairesDynamiquesRepository::fields((int) $form['id'], true));
+        $fields = FormulairesDynamiquesRepository::resultFieldsForForm(
+            $form,
+            self::resultFields(FormulairesDynamiquesRepository::fields((int) $form['id'], true))
+        );
         $format = FormulairesDynamiquesExport::normalizeFormat(isset($_GET['format']) ? $_GET['format'] : 'csv');
         $scope = isset($_GET['scope']) && $_GET['scope'] === 'response' ? 'response' : 'all';
         $responseId = isset($_GET['response_id']) ? (int) $_GET['response_id'] : 0;
@@ -1234,10 +2209,16 @@ class FormulairesDynamiquesRenderer
                 .'<div class="alert alert-warning">Le lien de resultats est invalide ou desactive.</div>';
         }
 
-        $fields = self::resultFields(FormulairesDynamiquesRepository::fields((int) $form['id'], true));
+        return self::renderResultsForForm($form, $mode, $login);
+    }
+
+    private static function renderResultsForForm($form, $mode, $login)
+    {
+        $allFields = self::resultFields(FormulairesDynamiquesRepository::fields((int) $form['id'], true));
+        $fields = FormulairesDynamiquesRepository::resultFieldsForForm($form, $allFields);
         $responseId = isset($_GET['response_id']) ? (int) $_GET['response_id'] : 0;
         if ($responseId > 0) {
-            return self::renderResponseDetail($form, $fields, $responseId);
+            return self::renderResponseDetail($form, $allFields, $responseId, $login);
         }
 
         $filters = self::responseFiltersFromRequest();
@@ -1259,6 +2240,10 @@ class FormulairesDynamiquesRenderer
 
         if (count($responses) === 0) {
             return $html.'<div class="alert alert-info">Aucune reponse enregistree pour ce formulaire.</div></article>';
+        }
+
+        if (isset($form['result_list_template']) && trim((string) $form['result_list_template']) !== '') {
+            return $html.self::renderTemplateResultsList($form, $fields, $responses).self::renderPagination($page, $perPage, $total).'</article>';
         }
 
         $html .= '<div class="table-responsive"><table class="table table-striped formdyn-results-table">'
@@ -1293,8 +2278,15 @@ class FormulairesDynamiquesRenderer
 
     private static function renderResultsSummary($form, $shownCount, $mode, $login, $total)
     {
+        $modeLabel = 'Integre GRR';
+        if ($mode === 'autonomous') {
+            $modeLabel = 'Autonome';
+        } elseif ($mode === 'management') {
+            $modeLabel = 'Gerer mon compte';
+        }
+
         $rows = array(
-            'Mode' => $mode === 'autonomous' ? 'Autonome' : 'Integre GRR',
+            'Mode' => $modeLabel,
             'Reponses affichees' => (int) $shownCount,
             'Reponses filtrees' => (int) $total,
             'Total formulaire' => (int) (isset($form['response_count']) ? $form['response_count'] : 0),
@@ -1311,7 +2303,7 @@ class FormulairesDynamiquesRenderer
         return $html.'</tbody></table>';
     }
 
-    private static function renderResponseDetail($form, $fields, $responseId)
+    private static function renderResponseDetail($form, $fields, $responseId, $login = '')
     {
         $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
         if (!$response || (int) $response['formulaire_id'] !== (int) (isset($form['id']) ? $form['id'] : 0)) {
@@ -1322,31 +2314,142 @@ class FormulairesDynamiquesRenderer
                 .'</article>';
         }
 
+        $editResult = self::handleResponseEditPost($form, $fields, $response, $login);
+        if ($editResult['saved']) {
+            $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
+        }
+
         $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
         $html = '<article class="formdyn-results">'
             .'<h2>Reponse #'.self::html((int) $responseId).' - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
             .'<p><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
+            .($editResult['saved'] ? '<div class="alert alert-success">Reponse modifiee.</div>' : '')
+            .self::renderAlerts($editResult['errors'], 'danger')
             .self::renderResponseExportActions($responseId)
             .'<table class="table table-striped"><tbody>'
                 .'<tr><th>Date</th><td>'.self::html(self::formatDate(isset($response['created_at']) ? $response['created_at'] : 0)).'</td></tr>'
                 .'<tr><th>Source</th><td>'.self::html(self::sourceLabel(isset($response['source']) ? $response['source'] : '')).'</td></tr>'
                 .'<tr><th>Declarant</th><td>'.self::html(self::submitterLabel($response)).'</td></tr>'
+                .(((int) (isset($response['updated_at']) ? $response['updated_at'] : 0) > (int) (isset($response['created_at']) ? $response['created_at'] : 0))
+                    ? '<tr><th>Derniere modification</th><td>'.self::html(self::formatDate($response['updated_at'])).' par '.self::html(isset($response['updated_by']) && $response['updated_by'] !== '' ? $response['updated_by'] : '-').'</td></tr>'
+                    : '')
             .'</tbody></table>';
 
         if (count($fields) === 0) {
             return $html.'<div class="alert alert-info">Aucun champ a afficher.</div></article>';
         }
 
-        $html .= '<table class="table table-striped formdyn-response-detail"><thead><tr><th>Champ</th><th>Valeur</th></tr></thead><tbody>';
-        foreach ($fields as $field) {
-            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
-            $html .= '<tr>'
-                .'<th>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</th>'
-                .'<td>'.self::responseValueHtml(isset($values[$fieldId]) ? $values[$fieldId] : '').'</td>'
-                .'</tr>';
+        if (isset($form['result_detail_template']) && trim((string) $form['result_detail_template']) !== '') {
+            $html .= '<div class="formdyn-result-card">'
+                .self::applyResponseTemplate($form['result_detail_template'], $fields, $response)
+                .'</div>';
+        } else {
+            $html .= '<table class="table table-striped formdyn-response-detail"><thead><tr><th>Champ</th><th>Valeur</th></tr></thead><tbody>';
+            foreach ($fields as $field) {
+                $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+                $html .= '<tr>'
+                    .'<th>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</th>'
+                    .'<td>'.self::responseValueHtml(isset($values[$fieldId]) ? $values[$fieldId] : '').'</td>'
+                    .'</tr>';
+            }
+
+            $html .= '</tbody></table>';
         }
 
-        return $html.'</tbody></table></article>';
+        if (FormulairesDynamiquesRights::canManageForm($login, (int) $form['id'])) {
+            $html .= self::renderResponseEditForm($form, $fields, $response);
+        }
+
+        return $html.'</article>';
+    }
+
+    private static function handleResponseEditPost($form, $fields, $response, $login)
+    {
+        $result = array('saved' => false, 'errors' => array());
+        if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $result;
+        }
+        if (!isset($_POST['formdyn_action']) || $_POST['formdyn_action'] !== 'update_response') {
+            return $result;
+        }
+        if (!FormulairesDynamiquesRights::canManageForm($login, (int) $form['id'])) {
+            $result['errors'][] = 'Acces refuse.';
+            return $result;
+        }
+
+        $values = FormulairesDynamiquesRepository::normalizeResponseValues($fields, $_POST, isset($_FILES) ? $_FILES : array());
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            if ((isset($field['type_champ']) ? (string) $field['type_champ'] : '') === 'file'
+                && isset($values[$fieldId]) && is_array($values[$fieldId])
+                && (!isset($values[$fieldId]['error']) || (int) $values[$fieldId]['error'] === UPLOAD_ERR_NO_FILE)) {
+                unset($values[$fieldId]);
+            }
+        }
+
+        if (!FormulairesDynamiquesRepository::updateResponse((int) $response['id'], $fields, $values, $login)) {
+            $result['errors'][] = 'La reponse n a pas pu etre modifiee.';
+            return $result;
+        }
+
+        $result['saved'] = true;
+        return $result;
+    }
+
+    private static function renderResponseEditForm($form, $fields, $response)
+    {
+        $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
+        return '<section class="formdyn-subpanel"><h3>Modifier la reponse</h3>'
+            .'<form method="post" enctype="multipart/form-data" action="'.self::html(self::displayUrl()).'">'
+            .'<input type="hidden" name="formdyn_action" value="update_response">'
+            .self::renderDisplayFields($form, $fields, $values, array(), true)
+            .'<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Enregistrer la reponse</button></p>'
+            .'</form>'
+            .self::displayBehaviorScript()
+            .'</section>';
+    }
+
+    private static function renderTemplateResultsList($form, $fields, $responses)
+    {
+        $template = isset($form['result_list_template']) ? (string) $form['result_list_template'] : '';
+        $html = '<div class="formdyn-result-cards">';
+        foreach ($responses as $response) {
+            $responseId = (int) (isset($response['id']) ? $response['id'] : 0);
+            $html .= '<article class="formdyn-result-card">'
+                .self::applyResponseTemplate($template, $fields, $response)
+                .'<p class="formdyn-actions"><a class="btn btn-default btn-sm" href="'.self::html(self::displayUrl(array('response_id' => $responseId))).'">Voir</a></p>'
+                .'</article>';
+        }
+
+        return $html.'</div>';
+    }
+
+    private static function applyResponseTemplate($template, $fields, $response)
+    {
+        $template = self::html((string) $template);
+        $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
+        $replacements = array(
+            '{reference}' => '#'.(int) (isset($response['id']) ? $response['id'] : 0),
+            '{date}' => self::formatDate(isset($response['created_at']) ? $response['created_at'] : 0),
+            '{source}' => self::sourceLabel(isset($response['source']) ? $response['source'] : ''),
+            '{declarant}' => self::submitterLabel($response),
+        );
+
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            $label = isset($field['libelle']) ? (string) $field['libelle'] : '';
+            $value = isset($values[$fieldId]) ? (string) $values[$fieldId] : '';
+            $replacements['{field:'.$fieldId.'}'] = $value;
+            if ($label !== '') {
+                $replacements['{champ:'.$label.'}'] = $value;
+            }
+        }
+
+        foreach ($replacements as $key => $value) {
+            $template = str_replace(self::html($key), self::html($value), $template);
+        }
+
+        return nl2br($template);
     }
 
     private static function renderResultsFilters($filters)
@@ -1498,6 +2601,16 @@ class FormulairesDynamiquesRenderer
             return self::renderResponseConfirmation($form, $responseResult['response_id']);
         }
 
+        $errors = array_merge(
+            $responseResult['errors'],
+            self::flattenResponseErrors($responseResult['field_errors'])
+        );
+        return self::renderAlerts($errors, 'danger')
+            .self::renderFormArticle($form, $fields, $responseResult['values'], $responseResult['field_errors'], $responseResult['submitted'], false);
+    }
+
+    private static function renderFormArticle($form, $fields, $values = array(), $fieldErrors = array(), $submitted = false, $preview = false)
+    {
         $html = '<article class="formdyn-public-form">'
             .'<h2>'.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>';
         if (isset($form['description']) && trim((string) $form['description']) !== '') {
@@ -1508,26 +2621,98 @@ class FormulairesDynamiquesRenderer
             return $html.'<div class="alert alert-info">Ce formulaire ne contient encore aucun champ actif.</div></article>';
         }
 
-        $errors = array_merge(
-            $responseResult['errors'],
-            self::flattenResponseErrors($responseResult['field_errors'])
-        );
-        $html .= self::renderAlerts($errors, 'danger')
-            .'<form method="post" action="">'
-            .'<input type="hidden" name="formdyn_action" value="submit_response">';
-        foreach ($fields as $field) {
-            $html .= self::renderDisplayField(
-                $field,
-                $responseResult['values'],
-                $responseResult['field_errors'],
-                $responseResult['submitted']
-            );
-        }
-        $html .= '<p class="formdyn-actions"><button class="btn btn-primary" type="submit">Envoyer</button></p>'
+        $html .= '<form method="post" action="" enctype="multipart/form-data"'.($preview ? ' onsubmit="return false;"' : '').'>'
+            .'<input type="hidden" name="formdyn_action" value="submit_response">'
+            .self::renderDisplayFields($form, $fields, $values, $fieldErrors, $submitted)
+            .'<p class="formdyn-actions">'
+                .($preview ? '<button class="btn btn-default" type="button" disabled>Envoyer</button>' : '<button class="btn btn-primary" type="submit">Envoyer</button>')
+            .'</p>'
             .'</form>'
+            .self::displayBehaviorScript()
             .'</article>';
 
         return $html;
+    }
+
+    private static function renderDisplayFields($form, $fields, $values, $fieldErrors, $submitted)
+    {
+        $defaultColumns = FormulairesDynamiquesRepository::normalizeFormColumns(isset($form['form_columns']) ? $form['form_columns'] : 1);
+        $pages = array();
+        foreach ($fields as $field) {
+            $pageTitle = isset($field['page_titre']) ? trim((string) $field['page_titre']) : '';
+            if ($pageTitle === '') {
+                $pageTitle = 'Formulaire';
+            }
+            if (!isset($pages[$pageTitle])) {
+                $pages[$pageTitle] = array();
+            }
+            $pages[$pageTitle][] = $field;
+        }
+
+        if (count($pages) <= 1) {
+            return self::renderDisplayBlocks($fields, $defaultColumns, $values, $fieldErrors, $submitted);
+        }
+
+        $html = '<div class="formdyn-page-flow">';
+        $index = 0;
+        $total = count($pages);
+        foreach ($pages as $title => $pageFields) {
+            $html .= '<fieldset class="formdyn-form-page" data-page-index="'.self::html($index).'"'.($index === 0 ? '' : ' hidden').'>'
+                .'<legend>'.self::html($title).'</legend>'
+                .self::renderDisplayBlocks($pageFields, $defaultColumns, $values, $fieldErrors, $submitted)
+                .'<div class="formdyn-page-actions">'
+                .($index > 0 ? '<button class="btn btn-default formdyn-page-prev" type="button">Precedent</button> ' : '')
+                .($index < $total - 1 ? '<button class="btn btn-default formdyn-page-next" type="button">Suivant</button>' : '')
+                .'</div>'
+                .'</fieldset>';
+            $index++;
+        }
+
+        return $html.'</div>';
+    }
+
+    private static function renderDisplayBlocks($fields, $defaultColumns, $values, $fieldErrors, $submitted)
+    {
+        $columns = FormulairesDynamiquesRepository::normalizeFormColumns($defaultColumns);
+        $buffer = array();
+        $html = '';
+
+        foreach ($fields as $field) {
+            $type = isset($field['type_champ']) ? (string) $field['type_champ'] : 'text';
+            if ($type === 'separator') {
+                $html .= self::renderDisplayGrid($buffer, $columns, $values, $fieldErrors, $submitted)
+                    .self::renderDisplayField($field, $values, $fieldErrors, $submitted);
+                $buffer = array();
+                $columns = FormulairesDynamiquesRepository::layoutColumns($field);
+                continue;
+            }
+            if ($type === 'empty') {
+                $buffer[] = $field;
+                $html .= self::renderDisplayGrid($buffer, $columns, $values, $fieldErrors, $submitted);
+                $buffer = array();
+                $columns = FormulairesDynamiquesRepository::layoutColumns($field);
+                continue;
+            }
+
+            $buffer[] = $field;
+        }
+
+        return $html.self::renderDisplayGrid($buffer, $columns, $values, $fieldErrors, $submitted);
+    }
+
+    private static function renderDisplayGrid($fields, $columns, $values, $fieldErrors, $submitted)
+    {
+        if (count($fields) === 0) {
+            return '';
+        }
+
+        $columns = FormulairesDynamiquesRepository::normalizeFormColumns($columns);
+        $html = '<div class="formdyn-display-grid formdyn-display-grid-'.$columns.'">';
+        foreach ($fields as $field) {
+            $html .= self::renderDisplayField($field, $values, $fieldErrors, $submitted);
+        }
+
+        return $html.'</div>';
     }
 
     private static function handleResponsePost($form, $fields, $mode, $login)
@@ -1551,7 +2736,7 @@ class FormulairesDynamiquesRenderer
         }
 
         $result['submitted'] = true;
-        $result['values'] = FormulairesDynamiquesRepository::normalizeResponseValues($fields, $_POST);
+        $result['values'] = FormulairesDynamiquesRepository::normalizeResponseValues($fields, $_POST, isset($_FILES) ? $_FILES : array());
         $result['field_errors'] = FormulairesDynamiquesRepository::validateResponseValues($fields, $result['values']);
         if (count($result['field_errors']) > 0) {
             return $result;
@@ -1561,7 +2746,7 @@ class FormulairesDynamiquesRenderer
             (int) (isset($form['id']) ? $form['id'] : 0),
             $fields,
             $result['values'],
-            self::responseMeta($mode, $login)
+            self::responseMeta($mode, $login, $form)
         );
         if ($responseId <= 0) {
             $result['errors'][] = 'La reponse n a pas pu etre enregistree.';
@@ -1592,8 +2777,29 @@ class FormulairesDynamiquesRenderer
     private static function renderDisplayField($field, $values = array(), $fieldErrors = array(), $submitted = false)
     {
         $type = isset($field['type_champ']) ? (string) $field['type_champ'] : 'text';
+        $attributes = self::fieldConditionAttributes($field);
         if ($type === 'separator') {
-            return '<div class="formdyn-display-separator"><h3>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</h3></div>';
+            $label = isset($field['libelle']) ? trim((string) $field['libelle']) : '';
+            return '<div class="formdyn-display-separator formdyn-display-full"'.$attributes.'>'
+                .($label !== '' ? '<h3>'.self::html($label).'</h3>' : '')
+                .'</div>';
+        }
+        if ($type === 'empty') {
+            return '<div class="formdyn-display-empty"'.$attributes.' aria-hidden="true"></div>';
+        }
+        if ($type === 'image') {
+            $src = isset($field['valeur_defaut']) ? trim((string) $field['valeur_defaut']) : '';
+            $caption = isset($field['aide']) ? trim((string) $field['aide']) : '';
+            $displaySize = FormulairesDynamiquesRepository::imageDisplaySize($field);
+            $style = $displaySize !== '' ? ' style="width:100%;max-width:'.self::html($displaySize).';"' : '';
+            if ($src === '') {
+                return '';
+            }
+
+            return '<figure class="formdyn-display-image"'.$attributes.'>'
+                .'<img src="'.self::html($src).'" alt="'.self::html(isset($field['libelle']) ? $field['libelle'] : 'Image').'"'.$style.'>'
+                .($caption !== '' ? '<figcaption>'.self::html($caption).'</figcaption>' : '')
+                .'</figure>';
         }
 
         $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
@@ -1601,13 +2807,16 @@ class FormulairesDynamiquesRenderer
         $name = 'field_'.$fieldId;
         $label = isset($field['libelle']) ? (string) $field['libelle'] : '';
         $required = isset($field['obligatoire']) && (int) $field['obligatoire'] === 1;
-        $requiredAttr = $required ? ' required' : '';
+        $requiredAttr = '';
         $default = isset($field['valeur_defaut']) ? (string) $field['valeur_defaut'] : '';
         $value = $submitted && array_key_exists($fieldId, $values) ? $values[$fieldId] : $default;
         $error = self::firstFieldError($fieldId, $fieldErrors);
-        $html = '<div class="formdyn-display-field">'
+        $html = '<div class="formdyn-display-field"'.$attributes.'>'
             .'<label for="'.self::html($id).'">'.self::html($label).($required ? ' <span class="formdyn-required">*</span>' : '').'</label>'
             .self::renderDisplayControl($type, $id, $name, $field, $value, $requiredAttr);
+        if ($type === 'file' && !is_array($value) && trim((string) $value) !== '') {
+            $html .= '<div class="formdyn-help">Fichier actuel : '.self::responseValueHtml($value).'</div>';
+        }
 
         if (isset($field['aide']) && trim((string) $field['aide']) !== '') {
             $html .= '<div class="formdyn-help">'.self::html($field['aide']).'</div>';
@@ -1617,6 +2826,20 @@ class FormulairesDynamiquesRenderer
         }
 
         return $html.'</div>';
+    }
+
+    private static function fieldConditionAttributes($field)
+    {
+        $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+        $conditionFieldId = (int) (isset($field['visibility_champ_id']) ? $field['visibility_champ_id'] : 0);
+        $attrs = ' data-field-id="'.self::html($fieldId).'"';
+        if ($conditionFieldId > 0) {
+            $attrs .= ' data-condition-field="'.self::html($conditionFieldId).'"'
+                .' data-condition-operator="'.self::html(isset($field['visibility_operateur']) ? $field['visibility_operateur'] : '').'"'
+                .' data-condition-value="'.self::html(isset($field['visibility_valeur']) ? $field['visibility_valeur'] : '').'"';
+        }
+
+        return $attrs;
     }
 
     private static function renderDisplayControl($type, $id, $name, $field, $value, $required)
@@ -1640,7 +2863,7 @@ class FormulairesDynamiquesRenderer
             $value = self::scalarDisplayValue($value);
             $html = '<div class="formdyn-choice-group" id="'.self::html($id).'">';
             foreach (FormulairesDynamiquesRepository::fieldOptionsArray($field) as $option) {
-                $html .= '<label><input type="radio" name="'.self::html($name).'" value="'.self::html($option).'"'.($value === $option ? ' checked' : '').$required.'> '.self::html($option).'</label>';
+                $html .= '<label><input class="formdyn-single-choice" type="checkbox" name="'.self::html($name).'" value="'.self::html($option).'"'.($value === $option ? ' checked' : '').$required.'> '.self::html($option).'</label>';
             }
 
             return $html.'</div>';
@@ -1656,8 +2879,28 @@ class FormulairesDynamiquesRenderer
             return $html.'</div>';
         }
 
+        if ($type === 'file') {
+            return '<input class="form-control" id="'.self::html($id).'" type="file" name="'.self::html($name).'"'.$required.'>';
+        }
+
         $inputType = in_array($type, array('email', 'number', 'date'), true) ? $type : 'text';
         return '<input class="form-control" id="'.self::html($id).'" type="'.self::html($inputType).'" name="'.self::html($name).'" value="'.self::html(self::scalarDisplayValue($value)).'"'.$required.'>';
+    }
+
+    private static function displayBehaviorScript()
+    {
+        return '<script>'
+            .'(function(){'
+            .'function valuesFor(id){var nodes=document.querySelectorAll("[name=\'field_"+id+"\'],[name=\'field_"+id+"[]\']");var values=[];for(var i=0;i<nodes.length;i++){var n=nodes[i];if((n.type==="checkbox"||n.type==="radio")&&!n.checked){continue;}values.push(n.value||"");}return values;}'
+            .'function matches(values,op,expected){var joined=values.join("\\n");if(op==="empty"){return joined==="";}if(op==="not_empty"){return joined!=="";}if(op==="not_equals"){return values.indexOf(expected)<0&&joined!==expected;}if(op==="contains"){return values.indexOf(expected)>=0||joined.indexOf(expected)>=0;}if(op==="not_contains"){return values.indexOf(expected)<0&&joined.indexOf(expected)<0;}return values.indexOf(expected)>=0||joined===expected;}'
+            .'function syncConditions(){var blocks=document.querySelectorAll("[data-condition-field]");for(var i=0;i<blocks.length;i++){var b=blocks[i];var ok=matches(valuesFor(b.getAttribute("data-condition-field")),b.getAttribute("data-condition-operator")||"equals",b.getAttribute("data-condition-value")||"");b.hidden=!ok;var controls=b.querySelectorAll("input,select,textarea");for(var j=0;j<controls.length;j++){controls[j].disabled=!ok;}}}'
+            .'function syncSingleChoice(target){if(!target.classList||!target.classList.contains("formdyn-single-choice")||!target.checked){return;}var nodes=document.querySelectorAll("[name=\'"+target.name+"\']");for(var i=0;i<nodes.length;i++){if(nodes[i]!==target){nodes[i].checked=false;}}}'
+            .'document.addEventListener("change",function(e){syncSingleChoice(e.target);syncConditions();});syncConditions();'
+            .'var pages=document.querySelectorAll(".formdyn-form-page");var current=0;function showPage(i){if(!pages.length){return;}current=Math.max(0,Math.min(i,pages.length-1));for(var p=0;p<pages.length;p++){pages[p].hidden=p!==current;}}'
+            .'document.addEventListener("click",function(e){if(e.target.classList.contains("formdyn-page-next")){showPage(current+1);}if(e.target.classList.contains("formdyn-page-prev")){showPage(current-1);}if(e.target.classList.contains("formdyn-copy-btn")){var input=e.target.parentNode.querySelector("input");if(input){input.select();try{document.execCommand("copy");e.target.textContent="Copie";}catch(err){}}}});'
+            .'showPage(0);'
+            .'})();'
+            .'</script>';
     }
 
     private static function displayShell($content)
@@ -1805,8 +3048,7 @@ class FormulairesDynamiquesRenderer
 
         $resultFields = array();
         foreach ($fields as $field) {
-            $type = isset($field['type_champ']) ? (string) $field['type_champ'] : 'text';
-            if ($type !== 'separator') {
+            if (FormulairesDynamiquesRepository::fieldStoresResponse($field)) {
                 $resultFields[] = $field;
             }
         }
@@ -1859,6 +3101,9 @@ class FormulairesDynamiquesRenderer
         if ($value === '') {
             return '-';
         }
+        if (strpos($value, 'uploads/form_') === 0) {
+            $value = basename($value);
+        }
 
         $value = preg_replace('/\s+/', ' ', $value);
         if (strlen($value) > 120) {
@@ -1874,16 +3119,31 @@ class FormulairesDynamiquesRenderer
         if ($value === '') {
             return '<span class="text-muted">-</span>';
         }
+        if (strpos($value, 'uploads/form_') === 0) {
+            return '<a href="'.self::html(self::uploadUrl($value)).'" target="_blank" rel="noopener">'.self::html(basename($value)).'</a>';
+        }
 
         return nl2br(self::html($value));
     }
 
-    private static function responseMeta($mode, $login)
+    private static function uploadUrl($path)
+    {
+        $path = ltrim((string) $path, '/');
+        $script = isset($_SERVER['SCRIPT_NAME']) ? (string) $_SERVER['SCRIPT_NAME'] : '';
+        if (strpos($script, '/personnalisation/modules/'.FormulairesDynamiquesConfig::MODULE.'/') !== false) {
+            return $path;
+        }
+
+        return 'personnalisation/modules/'.FormulairesDynamiquesConfig::MODULE.'/'.$path;
+    }
+
+    private static function responseMeta($mode, $login, $form = array())
     {
         $source = $mode === 'autonomous' ? 'autonomous' : 'grr';
         $login = $source === 'grr' ? trim((string) $login) : '';
 
         return array(
+            'token_id' => (int) (isset($form['token_id']) ? $form['token_id'] : 0),
             'submitter_login' => $login,
             'source' => $source,
             'ip_hash' => self::requestIpHash(),
@@ -2021,7 +3281,11 @@ class FormulairesDynamiquesRenderer
     {
         return '<style>'
             .'#formulaires-dynamiques{margin:0 auto;max-width:1200px;white-space:normal;}'
+            .'#formulaires-dynamiques [hidden]{display:none!important;}'
             .'#formulaires-dynamiques .formdyn-actions{margin:12px 0 18px;}'
+            .'#formulaires-dynamiques .formdyn-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 18px;border-bottom:1px solid #ddd;}'
+            .'#formulaires-dynamiques .formdyn-tabs a{display:inline-block;padding:8px 10px;border:1px solid #ddd;border-bottom:0;background:#f7f7f7;color:#222;text-decoration:none;}'
+            .'#formulaires-dynamiques .formdyn-tabs a.active{background:#fff;font-weight:bold;}'
             .'#formulaires-dynamiques .formdyn-counters{margin-bottom:18px;}'
             .'#formulaires-dynamiques .formdyn-counter{border:1px solid #ddd;background:#fff;padding:14px;margin-bottom:10px;}'
             .'#formulaires-dynamiques .formdyn-counter-value{display:block;font-size:28px;font-weight:bold;line-height:1.1;}'
@@ -2037,6 +3301,10 @@ class FormulairesDynamiquesRenderer
             .'#formulaires-dynamiques .formdyn-field-grid{display:grid;grid-template-columns:minmax(0,1fr) 220px 110px;gap:12px;}'
             .'#formulaires-dynamiques .formdyn-notification-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1fr);gap:12px;}'
             .'#formulaires-dynamiques .formdyn-filter-grid{display:grid;grid-template-columns:minmax(220px,2fr) minmax(140px,1fr) minmax(130px,1fr) minmax(130px,1fr) 110px;gap:12px;align-items:end;}'
+            .'#formulaires-dynamiques .formdyn-token-create-grid,#formulaires-dynamiques .formdyn-tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0;}'
+            .'#formulaires-dynamiques .formdyn-token-create-grid form,#formulaires-dynamiques .formdyn-tool-grid form{border:1px solid #ddd;padding:10px;background:#fafafa;}'
+            .'#formulaires-dynamiques .formdyn-token-options{display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:10px;}'
+            .'#formulaires-dynamiques .formdyn-notification-condition{border-top:1px solid #ddd;margin-top:10px;padding-top:10px;}'
             .'#formulaires-dynamiques .formdyn-subpanel{border-top:1px solid #ddd;margin-top:12px;padding-top:12px;}'
             .'#formulaires-dynamiques .formdyn-checks{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0;}'
             .'#formulaires-dynamiques .formdyn-help{color:#666;font-size:12px;margin:-3px 0 8px;}'
@@ -2048,29 +3316,51 @@ class FormulairesDynamiquesRenderer
             .'#formulaires-dynamiques .btn{display:inline-block;padding:6px 10px;border:1px solid #999;background:#eee;color:#222;text-decoration:none;cursor:pointer;}'
             .'#formulaires-dynamiques .btn-primary{background:#337ab7;border-color:#2e6da4;color:#fff;}'
             .'#formulaires-dynamiques .btn-default{background:#fff;border-color:#ccc;color:#333;}'
-            .'#formulaires-dynamiques .btn[disabled]{opacity:.65;cursor:not-allowed;}'
+            .'#formulaires-dynamiques .btn-danger{background:#d9534f;border-color:#d43f3a;color:#fff;}'
+            .'#formulaires-dynamiques .btn[disabled],#formulaires-dynamiques .btn.disabled{opacity:.65;cursor:not-allowed;pointer-events:none;}'
             .'#formulaires-dynamiques .label{display:inline-block;padding:3px 6px;color:#fff;background:#777;}'
             .'#formulaires-dynamiques .label-success{background:#5cb85c;}'
             .'#formulaires-dynamiques .label-warning{background:#f0ad4e;}'
             .'#formulaires-dynamiques .label-default{background:#777;}'
             .'#formulaires-dynamiques .formdyn-public-form{max-width:900px;margin:0 auto;}'
             .'#formulaires-dynamiques .formdyn-description{margin:8px 0 16px;color:#444;}'
+            .'#formulaires-dynamiques .formdyn-display-grid{display:grid;gap:12px 18px;align-items:start;}'
+            .'#formulaires-dynamiques .formdyn-display-grid-1{grid-template-columns:minmax(0,1fr);}'
+            .'#formulaires-dynamiques .formdyn-display-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}'
+            .'#formulaires-dynamiques .formdyn-display-grid-3{grid-template-columns:repeat(3,minmax(0,1fr));}'
+            .'#formulaires-dynamiques .formdyn-display-grid-4{grid-template-columns:repeat(4,minmax(0,1fr));}'
+            .'#formulaires-dynamiques .formdyn-display-full{grid-column:1/-1;}'
             .'#formulaires-dynamiques .formdyn-display-field{margin:14px 0;}'
+            .'#formulaires-dynamiques .formdyn-display-grid .formdyn-display-field{margin:0 0 10px;}'
             .'#formulaires-dynamiques .formdyn-display-field>label{font-weight:bold;}'
             .'#formulaires-dynamiques .formdyn-field-error{color:#a94442;font-size:12px;margin:4px 0 0;}'
             .'#formulaires-dynamiques .formdyn-choice-group label{font-weight:normal;margin:6px 0;}'
             .'#formulaires-dynamiques .formdyn-display-separator{border-top:1px solid #ddd;margin:22px 0 12px;padding-top:10px;}'
+            .'#formulaires-dynamiques .formdyn-display-empty{min-height:1px;}'
+            .'#formulaires-dynamiques .formdyn-display-image{margin:18px 0;text-align:center;}'
+            .'#formulaires-dynamiques .formdyn-display-image img{max-width:100%;height:auto;border:1px solid #ddd;background:#fff;}'
+            .'#formulaires-dynamiques .formdyn-display-image figcaption{color:#666;font-size:13px;margin-top:6px;}'
+            .'#formulaires-dynamiques .formdyn-copy-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;}'
+            .'#formulaires-dynamiques .formdyn-qr img{margin:8px 0;border:1px solid #ddd;background:#fff;}'
+            .'#formulaires-dynamiques .formdyn-form-page{border:0;margin:0;padding:0;}'
+            .'#formulaires-dynamiques .formdyn-form-page legend{font-size:18px;font-weight:bold;margin:12px 0;}'
+            .'#formulaires-dynamiques .formdyn-page-actions{margin:16px 0;}'
             .'#formulaires-dynamiques .formdyn-required{color:#a94442;}'
             .'#formulaires-dynamiques .formdyn-response-ref{color:#555;}'
             .'#formulaires-dynamiques .formdyn-results-table th,#formulaires-dynamiques .formdyn-results-table td{min-width:120px;}'
             .'#formulaires-dynamiques .formdyn-results-table th:first-child,#formulaires-dynamiques .formdyn-results-table td:first-child{min-width:80px;}'
             .'#formulaires-dynamiques .formdyn-response-detail th{width:240px;}'
+            .'#formulaires-dynamiques .formdyn-result-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}'
+            .'#formulaires-dynamiques .formdyn-result-card{border:1px solid #ddd;background:#fff;padding:12px;margin-bottom:12px;}'
             .'#formulaires-dynamiques .formdyn-pagination{display:flex;gap:10px;align-items:center;margin:14px 0;}'
+            .'#formulaires-dynamiques .formdyn-drag-handle{width:30px;text-align:center;cursor:move;color:#555;font-weight:bold;}'
+            .'#formulaires-dynamiques .formdyn-dragging{opacity:.55;}'
             .'#formulaires-dynamiques table{width:100%;border-collapse:collapse;}'
             .'#formulaires-dynamiques th,#formulaires-dynamiques td{border-top:1px solid #ddd;padding:7px;text-align:left;vertical-align:top;}'
             .'#formulaires-dynamiques code{white-space:normal;overflow-wrap:anywhere;}'
-            .'@media (max-width:767px){#formulaires-dynamiques .formdyn-form-grid,#formulaires-dynamiques .formdyn-field-grid,#formulaires-dynamiques .formdyn-notification-grid,#formulaires-dynamiques .formdyn-filter-grid{grid-template-columns:minmax(0,1fr);}}'
-            .'</style>';
+            .'@media (max-width:767px){#formulaires-dynamiques .formdyn-form-grid,#formulaires-dynamiques .formdyn-field-grid,#formulaires-dynamiques .formdyn-notification-grid,#formulaires-dynamiques .formdyn-filter-grid,#formulaires-dynamiques .formdyn-token-options,#formulaires-dynamiques .formdyn-display-grid{grid-template-columns:minmax(0,1fr);}}'
+            .'</style>'
+            .'<script>(function(){document.addEventListener("click",function(e){if(!e.target.classList.contains("formdyn-copy-btn")){return;}var input=e.target.parentNode.querySelector("input");if(!input){return;}input.select();try{document.execCommand("copy");e.target.textContent="Copie";}catch(err){}});})();</script>';
     }
 
     public static function html($value)

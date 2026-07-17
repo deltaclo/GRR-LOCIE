@@ -34,7 +34,17 @@ class FormulairesDynamiquesNotification
             return $result;
         }
 
-        $recipients = FormulairesDynamiquesRepository::notificationRecipients($formId, true);
+        $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
+        if (!$response) {
+            $response = array(
+                'id' => $responseId,
+                'created_at' => time(),
+                'source' => '',
+                'values' => array(),
+            );
+        }
+        $fields = FormulairesDynamiquesRepository::fields($formId, true);
+        $recipients = self::matchingRecipients($formId, isset($response['values']) ? $response['values'] : array());
         if (count($recipients) === 0) {
             $result['skipped']++;
             return $result;
@@ -60,17 +70,7 @@ class FormulairesDynamiquesNotification
             return $result;
         }
 
-        $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
-        if (!$response) {
-            $response = array(
-                'id' => $responseId,
-                'created_at' => time(),
-                'source' => '',
-                'values' => array(),
-            );
-        }
-        $fields = FormulairesDynamiquesRepository::fields($formId, true);
-        $subject = self::subject($form, $responseId);
+        $subject = self::subject($form, $response, $fields);
         $message = self::message($form, $response, $fields);
 
         foreach ($recipients as $recipient) {
@@ -102,17 +102,41 @@ class FormulairesDynamiquesNotification
         return $result;
     }
 
-    private static function subject($form, $responseId)
+    private static function matchingRecipients($formId, $values)
     {
+        $recipients = FormulairesDynamiquesRepository::notificationRecipients($formId, true);
+        $matching = array();
+        foreach ($recipients as $recipient) {
+            if (FormulairesDynamiquesRepository::notificationMatchesValues($recipient, $values)) {
+                $matching[] = $recipient;
+            }
+        }
+
+        return $matching;
+    }
+
+    private static function subject($form, $response, $fields)
+    {
+        $template = isset($form['notification_subject_template']) ? trim((string) $form['notification_subject_template']) : '';
+        if ($template !== '') {
+            return self::applyTemplate($template, $fields, $response);
+        }
+
         $title = isset($form['titre']) && trim((string) $form['titre']) !== ''
             ? trim((string) $form['titre'])
             : 'Formulaire';
+        $responseId = (int) (isset($response['id']) ? $response['id'] : 0);
 
         return '[GRR] Nouvelle reponse - '.$title.' #'.(int) $responseId;
     }
 
     private static function message($form, $response, $fields)
     {
+        $template = isset($form['notification_body_template']) ? trim((string) $form['notification_body_template']) : '';
+        if ($template !== '') {
+            return self::applyTemplate($template, $fields, $response);
+        }
+
         $title = isset($form['titre']) && trim((string) $form['titre']) !== ''
             ? trim((string) $form['titre'])
             : 'Formulaire';
@@ -129,8 +153,7 @@ class FormulairesDynamiquesNotification
 
         $fieldLines = array();
         foreach ((array) $fields as $field) {
-            $type = isset($field['type_champ']) ? (string) $field['type_champ'] : 'text';
-            if ($type === 'separator') {
+            if (!FormulairesDynamiquesRepository::fieldStoresResponse($field)) {
                 continue;
             }
 
@@ -150,6 +173,32 @@ class FormulairesDynamiquesNotification
             ."Message automatique emis par GRR.";
 
         return $message;
+    }
+
+    private static function applyTemplate($template, $fields, $response)
+    {
+        $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
+        $replacements = array(
+            '{reference}' => '#'.(int) (isset($response['id']) ? $response['id'] : 0),
+            '{date}' => self::formatDate(isset($response['created_at']) ? (int) $response['created_at'] : 0),
+            '{source}' => self::sourceLabel(isset($response['source']) ? $response['source'] : ''),
+            '{declarant}' => self::submitterLabel($response),
+        );
+
+        foreach ((array) $fields as $field) {
+            if (!FormulairesDynamiquesRepository::fieldStoresResponse($field)) {
+                continue;
+            }
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            $label = isset($field['libelle']) ? (string) $field['libelle'] : '';
+            $value = isset($values[$fieldId]) ? (string) $values[$fieldId] : '';
+            $replacements['{field:'.$fieldId.'}'] = $value;
+            if ($label !== '') {
+                $replacements['{champ:'.$label.'}'] = $value;
+            }
+        }
+
+        return str_replace(array_keys($replacements), array_values($replacements), (string) $template);
     }
 
     private static function sourceLabel($source)

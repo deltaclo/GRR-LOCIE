@@ -34,7 +34,7 @@ $errors = array();
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $displayName = isset($_POST['display_name']) ? trim((string) $_POST['display_name']) : '';
-    $managerLoginsRaw = isset($_POST['manager_logins']) ? (string) $_POST['manager_logins'] : '';
+    $managerLoginsRaw = isset($_POST['manager_logins']) ? $_POST['manager_logins'] : array();
     $managerLogins = formulaires_dynamiques_admin_logins_from_text($managerLoginsRaw);
 
     if ($displayName === '') {
@@ -79,12 +79,16 @@ function formulaires_dynamiques_admin_status($ok)
 
 function formulaires_dynamiques_admin_logins_from_text($text)
 {
-    $tokens = preg_split('/[\r\n,;]+/', (string) $text);
+    if (is_array($text)) {
+        $tokens = $text;
+    } else {
+        $tokens = preg_split('/[\r\n,;]+/', (string) $text);
+    }
     $logins = array();
 
     foreach ($tokens as $token) {
         $login = trim((string) $token);
-        if ($login !== '' && strlen($login) <= 190) {
+        if ($login !== '' && strlen($login) <= 190 && FormulairesDynamiquesRepository::userByLogin($login)) {
             $logins[$login] = $login;
         }
     }
@@ -95,6 +99,23 @@ function formulaires_dynamiques_admin_logins_from_text($text)
 function formulaires_dynamiques_admin_manager_text()
 {
     return implode("\n", FormulairesDynamiquesConfig::managerLogins());
+}
+
+function formulaires_dynamiques_admin_manager_options()
+{
+    $selected = array();
+    foreach (FormulairesDynamiquesConfig::managerLogins() as $login) {
+        $selected[$login] = true;
+    }
+
+    $html = '';
+    foreach (FormulairesDynamiquesRepository::activeUsers() as $user) {
+        $login = isset($user['login']) ? (string) $user['login'] : '';
+        $label = isset($user['label']) ? (string) $user['label'] : $login;
+        $html .= '<option value="'.formulaires_dynamiques_admin_html($login).'"'.(isset($selected[$login]) ? ' selected' : '').'>'.formulaires_dynamiques_admin_html($label).'</option>';
+    }
+
+    return $html;
 }
 
 function formulaires_dynamiques_admin_current_url()
@@ -136,8 +157,8 @@ echo '<label><input type="checkbox" name="autonomous_enabled" value="1"'.formula
 echo '<label><input type="checkbox" name="notifications_enabled" value="1"'.formulaires_dynamiques_admin_checked(FormulairesDynamiquesConfig::notificationsEnabled()).'> Activer les notifications e-mail du module</label>';
 
 echo '<h2>Gestionnaires globaux</h2>';
-echo '<p>Un login GRR par ligne. Les administrateurs generaux gardent toujours tous les droits.</p>';
-echo '<textarea class="form-control" name="manager_logins" rows="6">'.formulaires_dynamiques_admin_html(formulaires_dynamiques_admin_manager_text()).'</textarea>';
+echo '<p>Selectionner les utilisateurs GRR actifs. Les administrateurs generaux gardent toujours tous les droits.</p>';
+echo '<select class="form-control" name="manager_logins[]" multiple size="10">'.formulaires_dynamiques_admin_manager_options().'</select>';
 echo '<p><button class="btn btn-primary" type="submit">Enregistrer</button></p>';
 echo '</form>';
 

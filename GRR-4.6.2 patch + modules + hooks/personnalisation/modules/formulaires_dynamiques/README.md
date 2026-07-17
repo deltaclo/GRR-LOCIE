@@ -17,28 +17,53 @@ et consulter/exporter les resultats.
 
 - Creation et modification de formulaires.
 - Statuts `brouillon`, `publie`, `archive`.
-- Champs dynamiques : texte, zone de texte, email, nombre, date, liste, radio,
-  cases a cocher et separateur.
-- Liens par jetons pour formulaires et pages de resultats.
-- Desactivation des jetons existants et regeneration de nouveaux liens.
-- Gestionnaires globaux configures dans l'administration du module.
-- Gestionnaires par formulaire, limites aux formulaires affectes.
-- Destinataires de notification par formulaire.
+- Champs dynamiques : texte, zone de texte, email, nombre, date, liste, choix
+  unique par case a cocher, cases a cocher, piece jointe, image et separateur.
+- Champ vide de mise en page, sans libelle ni reponse stockee, utilisable pour
+  occuper une cellule ou changer le nombre de colonnes.
+- Editeur de champs dynamique affichant uniquement les reglages utiles au type
+  selectionne.
+- Affichage des champs en 1 a 4 colonnes par separateur ou champ vide, avec
+  retour en une colonne sur mobile.
+- Organisation des champs en pages/sections et affichage conditionnel de
+  champs selon une liste, un choix unique ou une case cochee.
+- Reorganisation des champs par glisser-deposer dans la gestion.
+- Apercu du formulaire avant publication.
+- Duplication d'un formulaire en brouillon.
+- Suppression definitive d'un formulaire et de ses reponses par un
+  administrateur ou par le gestionnaire createur du formulaire.
+- Import/export JSON d'un formulaire complet hors reponses et jetons.
+- Liens par jetons pour formulaires et pages de resultats, avec expiration,
+  limite de reponses, copie rapide et QR code autonome.
+- Affichage des liens existants pour les nouveaux jetons, avec desactivation
+  ou suppression.
+- Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs.
+- Gestionnaires par formulaire selectionnes depuis les utilisateurs GRR actifs.
+- Destinataires de notification par formulaire, avec conditions sur liste,
+  choix unique ou cases a cocher.
 - Notification mail a la creation d'une reponse si les mails GRR sont actifs.
+- Modeles d'objet et de contenu de notification par formulaire.
 - Consultation des reponses avec recherche, filtre source, filtre date et
   pagination.
-- Consultation detaillee d'une reponse.
+- Consultation detaillee et modification d'une reponse par un gestionnaire.
+- Statistiques simples sur les champs a choix.
+- Choix des colonnes affichees dans la liste des resultats.
+- Mise en page personnalisable des resultats globaux et individuels par
+  modeles texte.
 - Exports CSV, XLSX et PDF pour une reponse ou toutes les reponses filtrees.
 - Historique recent des actions du formulaire.
 - Integration avec `boutons_perso`.
 
 ## Droits
 
-- Administrateur GRR : configuration du module et acces a tous les formulaires.
+- Administrateur GRR : configuration du module, acces a tous les formulaires
+  et suppression de tous les formulaires.
 - Gestionnaire global : creation de formulaires et gestion complete du module
   fonctionnel.
 - Gestionnaire par formulaire : gestion du formulaire affecte, champs,
   notifications, jetons, resultats et exports.
+- Createur d'un formulaire : suppression du formulaire qu'il a cree, s'il en
+  conserve la gestion.
 - Repondant : acces uniquement via un lien formulaire actif.
 - Lecteur de resultats : acces uniquement via un lien resultats actif.
 
@@ -52,6 +77,38 @@ Les exports utilisent le lien de resultats actif.
 - Le CSV est genere en UTF-8 avec BOM et separateur `;`.
 - Le XLSX necessite l'extension PHP `ZipArchive`.
 - Le PDF est genere sans dependance externe, avec une mise en page simple.
+
+## Modeles de resultats
+
+Les modeles sont des textes avec placeholders :
+
+- `{reference}`
+- `{date}`
+- `{source}`
+- `{declarant}`
+- `{champ:Libelle exact}`
+- `{field:ID}`
+
+Si le modele est vide, l'affichage tableau standard est utilise.
+
+Les memes placeholders peuvent etre utilises dans les modeles de notification.
+
+## Pieces jointes
+
+Le type `piece jointe` accepte uniquement des extensions autorisees
+(`jpg`, `png`, `webp`, `pdf`, documents bureautiques, `csv`, `txt`, etc.) et
+limite chaque fichier a 10 Mo. Les fichiers sont stockes dans
+`personnalisation/modules/formulaires_dynamiques/uploads/`.
+
+## Import/export formulaire
+
+L'onglet `Outils` permet :
+
+- de dupliquer un formulaire en brouillon ;
+- d'exporter la structure au format JSON ;
+- d'importer un JSON pour creer un nouveau formulaire brouillon.
+
+Les reponses et jetons ne sont pas exportes.
 
 ## Tables SQL
 
@@ -68,7 +125,11 @@ Les tables sont creees automatiquement par `FormulairesDynamiquesRepository::ens
 
 ## Points d'attention
 
-- Les jetons complets ne sont affiches qu'au moment de leur creation.
+- Les nouveaux jetons sont stockes avec leur valeur publique pour reafficher
+  les liens. Les anciens jetons hashes avant cette evolution restent valides
+  mais ne sont pas reaffichables.
+- Les QR codes affiches pour les liens autonomes sont generes par un service
+  externe.
 - Une page de resultats par jeton donne acces aux reponses et aux exports.
 - Les pages autonomes peuvent etre desactivees dans la configuration du module.
 - Les notifications dependent de la configuration mail GRR existante.
