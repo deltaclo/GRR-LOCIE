@@ -44,13 +44,33 @@ class FormulairesDynamiquesExport
 
             foreach ((array) $fields as $field) {
                 $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
-                $row[] = isset($values[$fieldId]) ? (string) $values[$fieldId] : '';
+                $row[] = self::exportValue($field, isset($values[$fieldId]) ? $values[$fieldId] : '');
             }
 
             $rows[] = $row;
         }
 
         return $rows;
+    }
+
+    private static function exportValue($field, $value)
+    {
+        $type = isset($field['type_champ']) ? (string) $field['type_champ'] : '';
+        $value = is_array($value) ? implode("\n", $value) : (string) $value;
+        if ($type === 'signature') {
+            return self::signatureValueValid($value) ? 'Signature fournie' : '';
+        }
+
+        return $value;
+    }
+
+    private static function signatureValueValid($value)
+    {
+        if (class_exists('FormulairesDynamiquesRepository')) {
+            return FormulairesDynamiquesRepository::signatureValueValid($value);
+        }
+
+        return is_string($value) && strpos($value, 'data:image/png;base64,') === 0;
     }
 
     private static function sendCsv($filename, $rows)

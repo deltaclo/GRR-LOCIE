@@ -281,6 +281,8 @@ class FormulairesDynamiquesRenderer
         $formId = isset($_POST['form_id']) ? (int) $_POST['form_id'] : 0;
         $baseValues = $formId > 0 ? FormulairesDynamiquesRepository::form($formId) : array();
         $values = FormulairesDynamiquesRepository::normalizeFormValues(array_merge($baseValues, $_POST));
+        $values['allow_user_edit'] = isset($_POST['allow_user_edit']) ? 1 : 0;
+        $values['confirmation_email_enabled'] = isset($_POST['confirmation_email_enabled']) ? 1 : 0;
         $values['id'] = $formId;
         $result['values'] = $values;
         $result['errors'] = FormulairesDynamiquesRepository::validateFormValues($values);
@@ -842,6 +844,10 @@ class FormulairesDynamiquesRenderer
                 .'<label>Statut<br><select class="form-control" name="statut">'.self::statusOptionsHtml($values['statut']).'</select></label>'
             .'</div>'
             .'<label>Description<br><textarea class="form-control" name="description" rows="4">'.self::html($values['description']).'</textarea></label>'
+            .'<div class="formdyn-checks">'
+                .'<label><input type="checkbox" name="allow_user_edit" value="1"'.self::checked(!empty($values['allow_user_edit'])).'> Autoriser l utilisateur connecte a modifier sa reponse</label>'
+                .'<label><input type="checkbox" name="confirmation_email_enabled" value="1"'.self::checked(!empty($values['confirmation_email_enabled'])).'> Envoyer un mail de confirmation au declarant</label>'
+            .'</div>'
             .'<p class="formdyn-actions">'
                 .'<button class="btn btn-primary" type="submit">'.($editing ? 'Enregistrer' : 'Creer le formulaire').'</button>'
                 .($editing ? ' <a class="btn btn-default" href="'.self::html(self::managementUrl(array('section' => 'edit'))).'">Nouveau formulaire</a>' : '')
@@ -949,7 +955,7 @@ class FormulairesDynamiquesRenderer
                 .'<td>'.self::tokenStatusLabel($token).'</td>'
                 .'<td>'.self::tokenConstraintLabel($token).'</td>'
                 .'<td>'.self::renderTokenLinks($token).'</td>'
-                .'<td>'.($active ? self::disableTokenForm($formId, (int) $token['id']) : '').self::deleteTokenForm($formId, (int) $token['id']).'</td>'
+                .'<td>'.self::renderTokenOpenAction($token).($active ? self::disableTokenForm($formId, (int) $token['id']) : '').self::deleteTokenForm($formId, (int) $token['id']).'</td>'
                 .'</tr>';
         }
 
@@ -1011,6 +1017,23 @@ class FormulairesDynamiquesRenderer
             .'<input type="hidden" name="token_id" value="'.self::html((int) $tokenId).'">'
             .'<button class="btn btn-default btn-sm" type="submit" onclick="return confirm(\'Supprimer definitivement ce jeton ?\');">Supprimer</button>'
             .'</form>';
+    }
+
+    private static function renderTokenOpenAction($token)
+    {
+        $tokenValue = isset($token['token_public']) ? trim((string) $token['token_public']) : '';
+        $active = isset($token['actif']) && (int) $token['actif'] === 1;
+        if ($tokenValue === '' || !$active) {
+            return '';
+        }
+
+        $type = isset($token['type_token']) ? (string) $token['type_token'] : 'formulaire';
+        $url = $type === 'resultats'
+            ? self::resultsDisplayUrl($tokenValue, true)
+            : self::formDisplayUrl($tokenValue, true);
+        $label = $type === 'resultats' ? 'Ouvrir resultats' : 'Ouvrir formulaire';
+
+        return '<a class="btn btn-default btn-sm" href="'.self::html($url).'">'.self::html($label).'</a> ';
     }
 
     private static function renderTokenLinks($token)
@@ -1652,6 +1675,8 @@ class FormulairesDynamiquesRenderer
             'titre' => '',
             'description' => '',
             'form_columns' => 1,
+            'allow_user_edit' => 0,
+            'confirmation_email_enabled' => 0,
             'result_list_template' => '',
             'result_detail_template' => '',
             'result_columns' => '',
@@ -2260,7 +2285,7 @@ class FormulairesDynamiquesRenderer
         foreach ($fields as $field) {
             $html .= '<th>'.self::html(isset($field['libelle']) ? $field['libelle'] : '').'</th>';
         }
-        $html .= '<th>Actions</th></tr></thead><tbody>';
+        $html .= '<th class="formdyn-no-print">Actions</th></tr></thead><tbody>';
 
         foreach ($responses as $response) {
             $responseId = (int) (isset($response['id']) ? $response['id'] : 0);
@@ -2274,7 +2299,7 @@ class FormulairesDynamiquesRenderer
                 $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
                 $html .= '<td>'.self::html(self::responsePreview(isset($values[$fieldId]) ? $values[$fieldId] : '')).'</td>';
             }
-            $html .= '<td><a class="btn btn-default btn-sm" href="'.self::html(self::displayUrl(array('response_id' => $responseId))).'">Voir</a></td>'
+            $html .= '<td class="formdyn-no-print"><a class="btn btn-default btn-sm" href="'.self::html(self::displayUrl(array('response_id' => $responseId))).'">Voir</a></td>'
                 .'</tr>';
         }
 
@@ -2375,11 +2400,12 @@ class FormulairesDynamiquesRenderer
             return '<article class="formdyn-results">'
                 .'<h2>Resultats - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
                 .'<div class="alert alert-warning">Cette reponse est introuvable pour ce formulaire.</div>'
-                .'<p><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
+                .'<p class="formdyn-actions"><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
                 .self::renderOpenFormAction($form, $mode)
                 .'</article>';
         }
 
+        $linkResult = self::handleResponseEditLinkResend($form, $response, $login);
         $editResult = self::handleResponseEditPost($form, $fields, $response, $login);
         if ($editResult['saved']) {
             $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
@@ -2388,9 +2414,11 @@ class FormulairesDynamiquesRenderer
         $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
         $html = '<article class="formdyn-results">'
             .'<h2>Reponse #'.self::html((int) $responseId).' - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
-            .'<p><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
+            .'<p class="formdyn-actions"><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
             .self::renderOpenFormAction($form, $mode)
             .($editResult['saved'] ? '<div class="alert alert-success">Reponse modifiee.</div>' : '')
+            .self::renderAlerts($linkResult['messages'], 'success')
+            .self::renderAlerts($linkResult['errors'], 'danger')
             .self::renderAlerts($editResult['errors'], 'danger')
             .self::renderResponseExportActions($responseId)
             .'<table class="table table-striped"><tbody>'
@@ -2424,10 +2452,59 @@ class FormulairesDynamiquesRenderer
         }
 
         if (FormulairesDynamiquesRights::canManageForm($login, (int) $form['id'])) {
+            $html .= self::renderResponseEditLinkResendForm($form, $response);
             $html .= self::renderResponseEditForm($form, $fields, $response);
         }
 
         return $html.'</article>';
+    }
+
+    private static function handleResponseEditLinkResend($form, $response, $login)
+    {
+        $result = array('messages' => array(), 'errors' => array());
+        if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $result;
+        }
+        if (!isset($_POST['formdyn_action']) || $_POST['formdyn_action'] !== 'resend_edit_link') {
+            return $result;
+        }
+        if (!FormulairesDynamiquesRights::canManageForm($login, (int) (isset($form['id']) ? $form['id'] : 0))) {
+            $result['errors'][] = 'Acces refuse.';
+            return $result;
+        }
+
+        $send = FormulairesDynamiquesNotification::sendResponseEditLink(
+            $form,
+            (int) (isset($response['id']) ? $response['id'] : 0),
+            $login
+        );
+        if (isset($send['sent']) && (int) $send['sent'] > 0 && empty($send['errors'])) {
+            $result['messages'][] = 'Le lien de modification a ete renvoye au declarant.';
+            return $result;
+        }
+
+        $errors = isset($send['errors']) && is_array($send['errors']) ? $send['errors'] : array();
+        $result['errors'] = count($errors) > 0 ? $errors : array('Le lien de modification n a pas pu etre envoye.');
+
+        return $result;
+    }
+
+    private static function renderResponseEditLinkResendForm($form, $response)
+    {
+        if (empty($form['allow_user_edit'])) {
+            return '';
+        }
+        if (trim((string) (isset($response['submitter_login']) ? $response['submitter_login'] : '')) === '') {
+            return '';
+        }
+
+        return '<section class="formdyn-subpanel formdyn-no-print"><h3>Lien de modification</h3>'
+            .'<p class="formdyn-help">Envoie au declarant un lien lui permettant de modifier sa propre reponse apres connexion a GRR.</p>'
+            .'<form method="post" action="'.self::html(self::displayUrl()).'">'
+            .'<input type="hidden" name="formdyn_action" value="resend_edit_link">'
+            .'<p class="formdyn-actions"><button class="btn btn-default" type="submit" onclick="return confirm(\'Renvoyer le lien de modification au declarant ?\');">Renvoyer le lien de modification</button></p>'
+            .'</form>'
+            .'</section>';
     }
 
     private static function handleResponseEditPost($form, $fields, $response, $login)
@@ -2466,7 +2543,7 @@ class FormulairesDynamiquesRenderer
     private static function renderResponseEditForm($form, $fields, $response)
     {
         $values = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
-        return '<section class="formdyn-subpanel"><h3>Modifier la reponse</h3>'
+        return '<section class="formdyn-subpanel formdyn-no-print"><h3>Modifier la reponse</h3>'
             .'<form method="post" enctype="multipart/form-data" action="'.self::html(self::displayUrl()).'">'
             .'<input type="hidden" name="formdyn_action" value="update_response">'
             .self::renderDisplayFields($form, $fields, $values, array(), true)
@@ -2505,7 +2582,7 @@ class FormulairesDynamiquesRenderer
         foreach ($fields as $field) {
             $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
             $label = isset($field['libelle']) ? (string) $field['libelle'] : '';
-            $value = isset($values[$fieldId]) ? (string) $values[$fieldId] : '';
+            $value = self::responseTextValueForField($field, isset($values[$fieldId]) ? $values[$fieldId] : '');
             $replacements['{field:'.$fieldId.'}'] = $value;
             if ($label !== '') {
                 $replacements['{champ:'.$label.'}'] = $value;
@@ -2548,7 +2625,8 @@ class FormulairesDynamiquesRenderer
         return '<div class="formdyn-actions">'
             .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'csv', 'scope' => 'all'), array('response_id', 'page'))).'">CSV</a> '
             .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'xlsx', 'scope' => 'all'), array('response_id', 'page'))).'">XLSX</a> '
-            .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'pdf', 'scope' => 'all'), array('response_id', 'page'))).'">PDF</a>'
+            .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'pdf', 'scope' => 'all'), array('response_id', 'page'))).'">PDF</a> '
+            .self::renderPrintButton('Imprimer les resultats')
             .'</div>';
     }
 
@@ -2557,8 +2635,19 @@ class FormulairesDynamiquesRenderer
         return '<div class="formdyn-actions">'
             .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'csv', 'scope' => 'response', 'response_id' => (int) $responseId))).'">CSV</a> '
             .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'xlsx', 'scope' => 'response', 'response_id' => (int) $responseId))).'">XLSX</a> '
-            .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'pdf', 'scope' => 'response', 'response_id' => (int) $responseId))).'">PDF</a>'
+            .'<a class="btn btn-default" href="'.self::html(self::displayUrl(array('view' => 'export', 'format' => 'pdf', 'scope' => 'response', 'response_id' => (int) $responseId))).'">PDF</a> '
+            .self::renderPrintButton('Imprimer la reponse')
             .'</div>';
+    }
+
+    private static function renderPrintAction($label)
+    {
+        return '<p class="formdyn-actions">'.self::renderPrintButton($label).'</p>';
+    }
+
+    private static function renderPrintButton($label)
+    {
+        return '<button class="btn btn-default" type="button" onclick="window.print();">'.self::html($label).'</button>';
     }
 
     private static function renderPagination($page, $perPage, $total)
@@ -2646,7 +2735,8 @@ class FormulairesDynamiquesRenderer
 
     private static function renderFormDisplay($mode, $token, $login)
     {
-        $form = FormulairesDynamiquesRepository::formByToken($token, 'formulaire');
+        $editResponseId = self::requestedOwnEditResponseId();
+        $form = FormulairesDynamiquesRepository::formByToken($token, 'formulaire', $editResponseId > 0);
         if (!$form) {
             return '<h2>Formulaire</h2>'
                 .'<div class="alert alert-warning">Le lien de formulaire est invalide ou desactive.</div>';
@@ -2658,14 +2748,18 @@ class FormulairesDynamiquesRenderer
         }
 
         $fields = FormulairesDynamiquesRepository::fields((int) $form['id'], false);
+        if ($editResponseId > 0) {
+            return self::renderOwnResponseEdit($form, $fields, $editResponseId, $login, $mode);
+        }
+
         $savedResponseId = self::savedResponseIdForForm($form);
         if ($savedResponseId > 0) {
-            return self::renderResponseConfirmation($form, $savedResponseId);
+            return self::renderResponseConfirmation($form, $savedResponseId, $login, $mode);
         }
 
         $responseResult = self::handleResponsePost($form, $fields, $mode, $login);
         if ($responseResult['saved']) {
-            return self::renderResponseConfirmation($form, $responseResult['response_id']);
+            return self::renderResponseConfirmation($form, $responseResult['response_id'], $login, $mode);
         }
 
         $errors = array_merge(
@@ -2683,6 +2777,8 @@ class FormulairesDynamiquesRenderer
         if (isset($form['description']) && trim((string) $form['description']) !== '') {
             $html .= '<div class="formdyn-description">'.nl2br(self::html($form['description'])).'</div>';
         }
+
+        $html .= self::renderPrintAction('Imprimer le formulaire');
 
         if (count($fields) === 0) {
             return $html.'<div class="alert alert-info">Ce formulaire ne contient encore aucun champ actif.</div></article>';
@@ -2830,15 +2926,96 @@ class FormulairesDynamiquesRenderer
         return $result;
     }
 
-    private static function renderResponseConfirmation($form, $responseId)
+    private static function renderResponseConfirmation($form, $responseId, $login = '', $mode = 'grr')
     {
         $title = isset($form['titre']) && trim((string) $form['titre']) !== '' ? (string) $form['titre'] : 'Formulaire';
+        $response = FormulairesDynamiquesRepository::response($responseId);
+        $editable = self::canEditOwnResponse($form, $response, $login, $mode);
+        $message = isset($_GET['response_updated']) && $_GET['response_updated'] === '1'
+            ? 'Votre reponse a ete modifiee.'
+            : 'Votre reponse a ete enregistree.';
 
         return '<article class="formdyn-public-form">'
             .'<h2>'.self::html($title).'</h2>'
-            .'<div class="alert alert-success">Votre reponse a ete enregistree.</div>'
+            .'<div class="alert alert-success">'.self::html($message).'</div>'
             .'<p class="formdyn-response-ref">Reference : #'.self::html((int) $responseId).'</p>'
+            .($editable ? '<p class="formdyn-actions"><a class="btn btn-default" href="'.self::html(self::ownResponseEditUrl($responseId)).'">Modifier ma reponse</a></p>' : '')
             .'</article>';
+    }
+
+    private static function renderOwnResponseEdit($form, $fields, $responseId, $login, $mode)
+    {
+        $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
+        if (!self::canEditOwnResponse($form, $response, $login, $mode)) {
+            return '<article class="formdyn-public-form">'
+                .'<h2>'.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
+                .'<div class="alert alert-warning">Cette reponse ne peut pas etre modifiee.</div>'
+                .'</article>';
+        }
+
+        $editResult = self::handleOwnResponseEditPost($form, $fields, $response, $login, $mode);
+        $values = $editResult['submitted']
+            ? $editResult['values']
+            : (isset($response['values']) && is_array($response['values']) ? $response['values'] : array());
+
+        return '<article class="formdyn-public-form">'
+            .'<h2>Modifier ma reponse - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
+            .self::renderAlerts($editResult['errors'], 'danger')
+            .'<form method="post" enctype="multipart/form-data" action="'.self::html(self::displayUrl(array(), array('response_saved', 'response_updated'))).'">'
+            .'<input type="hidden" name="formdyn_action" value="update_own_response">'
+            .self::renderDisplayFields($form, $fields, $values, $editResult['field_errors'], true)
+            .'<p class="formdyn-actions">'
+                .'<button class="btn btn-primary" type="submit">Enregistrer les modifications</button> '
+                .'<a class="btn btn-default" href="'.self::html(self::responseConfirmationUrl($responseId)).'">Annuler</a>'
+            .'</p>'
+            .'</form>'
+            .self::displayBehaviorScript()
+            .'</article>';
+    }
+
+    private static function handleOwnResponseEditPost($form, $fields, $response, $login, $mode)
+    {
+        $result = array('submitted' => false, 'values' => array(), 'field_errors' => array(), 'errors' => array());
+        if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $result;
+        }
+        if (!isset($_POST['formdyn_action']) || $_POST['formdyn_action'] !== 'update_own_response') {
+            return $result;
+        }
+        if (!self::canEditOwnResponse($form, $response, $login, $mode)) {
+            $result['errors'][] = 'Acces refuse.';
+            return $result;
+        }
+
+        $result['submitted'] = true;
+        $values = FormulairesDynamiquesRepository::normalizeResponseValues($fields, $_POST, isset($_FILES) ? $_FILES : array());
+        $result['values'] = $values;
+        foreach ($fields as $field) {
+            $fieldId = (int) (isset($field['id']) ? $field['id'] : 0);
+            if ((isset($field['type_champ']) ? (string) $field['type_champ'] : '') === 'file'
+                && isset($values[$fieldId]) && is_array($values[$fieldId])
+                && (!isset($values[$fieldId]['error']) || (int) $values[$fieldId]['error'] === UPLOAD_ERR_NO_FILE)) {
+                unset($values[$fieldId]);
+            }
+        }
+
+        $mergedValues = isset($response['values']) && is_array($response['values']) ? $response['values'] : array();
+        foreach ($values as $fieldId => $value) {
+            $mergedValues[(int) $fieldId] = $value;
+        }
+        $result['values'] = $mergedValues;
+        $result['field_errors'] = FormulairesDynamiquesRepository::validateResponseValues($fields, $mergedValues);
+        if (count($result['field_errors']) > 0) {
+            return $result;
+        }
+
+        if (!FormulairesDynamiquesRepository::updateResponse((int) $response['id'], $fields, $values, $login)) {
+            $result['errors'][] = 'La reponse n a pas pu etre modifiee.';
+            return $result;
+        }
+
+        self::redirectToResponseConfirmation((int) $response['id'], array('response_updated' => '1'));
+        return $result;
     }
 
     private static function renderDisplayField($field, $values = array(), $fieldErrors = array(), $submitted = false)
@@ -2949,6 +3126,14 @@ class FormulairesDynamiquesRenderer
         if ($type === 'file') {
             return '<input class="form-control" id="'.self::html($id).'" type="file" name="'.self::html($name).'"'.$required.'>';
         }
+        if ($type === 'signature') {
+            $value = self::scalarDisplayValue($value);
+            return '<div class="formdyn-signature-pad" data-signature-pad>'
+                .'<canvas class="formdyn-signature-canvas" data-signature-canvas width="640" height="180"></canvas>'
+                .'<input type="hidden" id="'.self::html($id).'" name="'.self::html($name).'" value="'.self::html($value).'" data-signature-input>'
+                .'<p class="formdyn-actions"><button class="btn btn-default btn-sm" type="button" data-signature-clear>Effacer</button></p>'
+                .'</div>';
+        }
 
         $inputType = in_array($type, array('email', 'number', 'date'), true) ? $type : 'text';
         return '<input class="form-control" id="'.self::html($id).'" type="'.self::html($inputType).'" name="'.self::html($name).'" value="'.self::html(self::scalarDisplayValue($value)).'"'.$required.'>';
@@ -2962,7 +3147,8 @@ class FormulairesDynamiquesRenderer
             .'function matches(values,op,expected){var joined=values.join("\\n");if(op==="empty"){return joined==="";}if(op==="not_empty"){return joined!=="";}if(op==="not_equals"){return values.indexOf(expected)<0&&joined!==expected;}if(op==="contains"){return values.indexOf(expected)>=0||joined.indexOf(expected)>=0;}if(op==="not_contains"){return values.indexOf(expected)<0&&joined.indexOf(expected)<0;}return values.indexOf(expected)>=0||joined===expected;}'
             .'function syncConditions(){var blocks=document.querySelectorAll("[data-condition-field]");for(var i=0;i<blocks.length;i++){var b=blocks[i];var ok=matches(valuesFor(b.getAttribute("data-condition-field")),b.getAttribute("data-condition-operator")||"equals",b.getAttribute("data-condition-value")||"");b.hidden=!ok;var controls=b.querySelectorAll("input,select,textarea");for(var j=0;j<controls.length;j++){controls[j].disabled=!ok;}}}'
             .'function syncSingleChoice(target){if(!target.classList||!target.classList.contains("formdyn-single-choice")||!target.checked){return;}var nodes=document.querySelectorAll("[name=\'"+target.name+"\']");for(var i=0;i<nodes.length;i++){if(nodes[i]!==target){nodes[i].checked=false;}}}'
-            .'document.addEventListener("change",function(e){syncSingleChoice(e.target);syncConditions();});syncConditions();'
+            .'function initSignatures(){var pads=document.querySelectorAll("[data-signature-pad]");for(var i=0;i<pads.length;i++){(function(pad){if(pad.getAttribute("data-signature-ready")==="1"){return;}pad.setAttribute("data-signature-ready","1");var canvas=pad.querySelector("[data-signature-canvas]");var input=pad.querySelector("[data-signature-input]");var clear=pad.querySelector("[data-signature-clear]");if(!canvas||!input||!canvas.getContext){return;}var ctx=canvas.getContext("2d");ctx.lineWidth=2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#111";function point(event){var e=event.touches&&event.touches.length?event.touches[0]:event;var rect=canvas.getBoundingClientRect();return{x:(e.clientX-rect.left)*(canvas.width/rect.width),y:(e.clientY-rect.top)*(canvas.height/rect.height)};}function store(){input.value=canvas.toDataURL("image/png");input.dispatchEvent(new Event("change",{bubbles:true}));}function drawImage(value){if(!value||value.indexOf("data:image/png;base64,")!==0){return;}var img=new Image();img.onload=function(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);};img.src=value;}var drawing=false;var last=null;function start(event){if(input.disabled){return;}event.preventDefault();drawing=true;last=point(event);ctx.beginPath();ctx.arc(last.x,last.y,1,0,Math.PI*2);ctx.fill();store();}function move(event){if(!drawing){return;}event.preventDefault();var p=point(event);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;store();}function stop(){drawing=false;last=null;}canvas.addEventListener("mousedown",start);canvas.addEventListener("mousemove",move);document.addEventListener("mouseup",stop);canvas.addEventListener("touchstart",start,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});document.addEventListener("touchend",stop);if(clear){clear.addEventListener("click",function(){ctx.clearRect(0,0,canvas.width,canvas.height);input.value="";input.dispatchEvent(new Event("change",{bubbles:true}));});}drawImage(input.value);})(pads[i]);}}'
+            .'document.addEventListener("change",function(e){syncSingleChoice(e.target);syncConditions();});initSignatures();syncConditions();'
             .'var pages=document.querySelectorAll(".formdyn-form-page");var current=0;function showPage(i){if(!pages.length){return;}current=Math.max(0,Math.min(i,pages.length-1));for(var p=0;p<pages.length;p++){pages[p].hidden=p!==current;}}'
             .'document.addEventListener("click",function(e){if(e.target.classList.contains("formdyn-page-next")){showPage(current+1);}if(e.target.classList.contains("formdyn-page-prev")){showPage(current-1);}if(e.target.classList.contains("formdyn-copy-btn")){var input=e.target.parentNode.querySelector("input");if(input){input.select();try{document.execCommand("copy");e.target.textContent="Copie";}catch(err){}}}});'
             .'showPage(0);'
@@ -3168,6 +3354,9 @@ class FormulairesDynamiquesRenderer
         if ($value === '') {
             return '-';
         }
+        if (self::isSignatureValue($value)) {
+            return 'Signature fournie';
+        }
         if (strpos($value, 'uploads/form_') === 0) {
             $value = basename($value);
         }
@@ -3186,11 +3375,31 @@ class FormulairesDynamiquesRenderer
         if ($value === '') {
             return '<span class="text-muted">-</span>';
         }
+        if (self::isSignatureValue($value)) {
+            return '<img class="formdyn-signature-image" src="'.self::html($value).'" alt="Signature electronique">';
+        }
         if (strpos($value, 'uploads/form_') === 0) {
             return '<a href="'.self::html(self::uploadUrl($value)).'" target="_blank" rel="noopener">'.self::html(basename($value)).'</a>';
         }
 
         return nl2br(self::html($value));
+    }
+
+    private static function responseTextValueForField($field, $value)
+    {
+        $type = isset($field['type_champ']) ? (string) $field['type_champ'] : '';
+        $value = is_array($value) ? implode("\n", $value) : (string) $value;
+        if ($type === 'signature') {
+            return self::isSignatureValue($value) ? 'Signature fournie' : '';
+        }
+
+        return $value;
+    }
+
+    private static function isSignatureValue($value)
+    {
+        return class_exists('FormulairesDynamiquesRepository')
+            && FormulairesDynamiquesRepository::signatureValueValid($value);
     }
 
     private static function uploadUrl($path)
@@ -3236,16 +3445,60 @@ class FormulairesDynamiquesRenderer
         return $responseId;
     }
 
-    private static function redirectToResponseConfirmation($responseId)
+    private static function requestedOwnEditResponseId()
+    {
+        return isset($_GET['edit_response_id']) ? max(0, (int) $_GET['edit_response_id']) : 0;
+    }
+
+    private static function canEditOwnResponse($form, $response, $login, $mode)
+    {
+        if ((string) $mode !== 'grr' || empty($form) || empty($response)) {
+            return false;
+        }
+        if (empty($form['allow_user_edit'])) {
+            return false;
+        }
+
+        $login = trim((string) $login);
+        if ($login === '') {
+            return false;
+        }
+        if ((int) (isset($response['formulaire_id']) ? $response['formulaire_id'] : 0) !== (int) (isset($form['id']) ? $form['id'] : 0)) {
+            return false;
+        }
+
+        return trim((string) (isset($response['submitter_login']) ? $response['submitter_login'] : '')) === $login;
+    }
+
+    private static function ownResponseEditUrl($responseId)
+    {
+        $params = $_GET;
+        unset($params['response_saved'], $params['response_updated']);
+        $params['edit_response_id'] = (int) $responseId;
+
+        return self::currentDisplayUrl($params);
+    }
+
+    private static function responseConfirmationUrl($responseId, $extra = array())
+    {
+        $params = $_GET;
+        unset($params['edit_response_id']);
+        $params['response_saved'] = '1';
+        $params['response_id'] = (int) $responseId;
+        foreach ((array) $extra as $key => $value) {
+            $params[$key] = $value;
+        }
+
+        return self::currentDisplayUrl($params);
+    }
+
+    private static function redirectToResponseConfirmation($responseId, $extra = array())
     {
         if (headers_sent()) {
             return;
         }
 
-        $params = $_GET;
-        $params['response_saved'] = '1';
-        $params['response_id'] = (int) $responseId;
-        header('Location: '.self::currentDisplayUrl($params), true, 303);
+        header('Location: '.self::responseConfirmationUrl($responseId, $extra), true, 303);
         exit;
     }
 
@@ -3402,6 +3655,9 @@ class FormulairesDynamiquesRenderer
             .'#formulaires-dynamiques .formdyn-display-field>label{font-weight:bold;}'
             .'#formulaires-dynamiques .formdyn-field-error{color:#a94442;font-size:12px;margin:4px 0 0;}'
             .'#formulaires-dynamiques .formdyn-choice-group label{font-weight:normal;margin:6px 0;}'
+            .'#formulaires-dynamiques .formdyn-signature-pad{max-width:680px;}'
+            .'#formulaires-dynamiques .formdyn-signature-canvas{display:block;width:100%;height:180px;border:1px solid #bbb;background:#fff;touch-action:none;}'
+            .'#formulaires-dynamiques .formdyn-signature-image{display:block;max-width:420px;width:100%;height:auto;border:1px solid #ddd;background:#fff;}'
             .'#formulaires-dynamiques .formdyn-display-separator{border-top:1px solid #ddd;margin:22px 0 12px;padding-top:10px;}'
             .'#formulaires-dynamiques .formdyn-display-empty{min-height:1px;}'
             .'#formulaires-dynamiques .formdyn-display-image{margin:18px 0;text-align:center;}'
@@ -3426,6 +3682,7 @@ class FormulairesDynamiquesRenderer
             .'#formulaires-dynamiques th,#formulaires-dynamiques td{border-top:1px solid #ddd;padding:7px;text-align:left;vertical-align:top;}'
             .'#formulaires-dynamiques code{white-space:normal;overflow-wrap:anywhere;}'
             .'@media (max-width:767px){#formulaires-dynamiques .formdyn-form-grid,#formulaires-dynamiques .formdyn-field-grid,#formulaires-dynamiques .formdyn-notification-grid,#formulaires-dynamiques .formdyn-filter-grid,#formulaires-dynamiques .formdyn-token-options,#formulaires-dynamiques .formdyn-display-grid{grid-template-columns:minmax(0,1fr);}}'
+            .'@media print{body *{visibility:hidden!important;}#formulaires-dynamiques,#formulaires-dynamiques *{visibility:visible!important;}#formulaires-dynamiques{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important;}#formulaires-dynamiques>h2,#formulaires-dynamiques>.formdyn-actions,#formulaires-dynamiques .formdyn-tabs,#formulaires-dynamiques .formdyn-actions,#formulaires-dynamiques .formdyn-no-print,#formulaires-dynamiques .formdyn-results-filters,#formulaires-dynamiques .formdyn-pagination,#formulaires-dynamiques .formdyn-page-actions{display:none!important;}#formulaires-dynamiques .formdyn-form-page[hidden]{display:block!important;}#formulaires-dynamiques .formdyn-panel,#formulaires-dynamiques .formdyn-result-card{border:0!important;padding:0!important;background:#fff!important;}#formulaires-dynamiques .formdyn-public-form{max-width:none!important;}#formulaires-dynamiques .table-responsive{overflow:visible!important;}#formulaires-dynamiques table{page-break-inside:auto;}#formulaires-dynamiques tr{page-break-inside:avoid;page-break-after:auto;}}'
             .'</style>'
             .'<script>(function(){document.addEventListener("click",function(e){if(!e.target.classList.contains("formdyn-copy-btn")){return;}var input=e.target.parentNode.querySelector("input");if(!input){return;}input.select();try{document.execCommand("copy");e.target.textContent="Copie";}catch(err){}});})();</script>';
     }
@@ -3433,5 +3690,10 @@ class FormulairesDynamiquesRenderer
     public static function html($value)
     {
         return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    }
+
+    private static function checked($condition)
+    {
+        return $condition ? ' checked' : '';
     }
 }
