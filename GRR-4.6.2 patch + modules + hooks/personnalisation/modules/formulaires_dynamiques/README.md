@@ -37,7 +37,8 @@ et consulter/exporter les resultats.
   limite de reponses, copie rapide et QR code autonome.
 - Affichage des liens existants pour les nouveaux jetons, avec desactivation
   ou suppression.
-- Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs.
+- Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs avec
+  une double liste disponible/selectionne.
 - Gestionnaires par formulaire selectionnes depuis les utilisateurs GRR actifs.
 - Destinataires de notification par formulaire, avec conditions sur liste,
   choix unique ou cases a cocher.

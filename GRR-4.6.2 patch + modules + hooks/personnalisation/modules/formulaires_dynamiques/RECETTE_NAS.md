@@ -69,13 +69,17 @@ Resultat attendu : `No syntax errors detected` pour chaque fichier.
    - affichage dans Gerer mon compte ;
    - pages autonomes ;
    - notifications, si testees.
-6. Ajouter le login du gestionnaire global.
+6. Ajouter le gestionnaire global avec la double liste :
+   - selectionner un utilisateur dans `Utilisateurs disponibles` ;
+   - cliquer sur `Ajouter >` ;
+   - verifier qu'il passe dans `Gestionnaires globaux`.
 7. Enregistrer.
 8. Verifier le diagnostic SQL.
 
 | Test | Etat | Observation |
 |---|---|---|
 | Configuration ouverte depuis le bouton | | |
+| Selection gestionnaire global double liste | | |
 | Enregistrement configuration | | |
 | Tables SQL indiquees OK | | |
 
