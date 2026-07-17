@@ -712,6 +712,12 @@ class BoutonsPersoRepository
                 'tooltip' => 'Ouvrir Suivi des demandes',
             ),
             array(
+                'source_key' => 'module:formulaires_dynamiques',
+                'label' => 'Formulaires dynamiques',
+                'url' => 'compte/compte.php?pc=formulaires_dynamiques',
+                'tooltip' => 'Ouvrir Formulaires dynamiques',
+            ),
+            array(
                 'source_key' => 'module:informatique_materiel',
                 'label' => 'Informatique materiel',
                 'url' => 'compte/compte.php?pc=informatique_materiel',
