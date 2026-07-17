@@ -707,10 +707,14 @@ class FormulairesDynamiquesRenderer
             return true;
         }
 
+        if (FormulairesDynamiquesRepository::userCanManageForm($login, $formId)) {
+            return true;
+        }
+
         $creator = isset($form['created_by']) ? trim((string) $form['created_by']) : '';
         return $creator !== ''
             && $creator === $login
-            && FormulairesDynamiquesRights::canManageForm($login, $formId);
+            && FormulairesDynamiquesConfig::isManager($login);
     }
 
     private static function tokenBelongsToForm($tokenId, $formId)
@@ -2218,7 +2222,7 @@ class FormulairesDynamiquesRenderer
         $fields = FormulairesDynamiquesRepository::resultFieldsForForm($form, $allFields);
         $responseId = isset($_GET['response_id']) ? (int) $_GET['response_id'] : 0;
         if ($responseId > 0) {
-            return self::renderResponseDetail($form, $allFields, $responseId, $login);
+            return self::renderResponseDetail($form, $allFields, $responseId, $login, $mode);
         }
 
         $filters = self::responseFiltersFromRequest();
@@ -2235,6 +2239,7 @@ class FormulairesDynamiquesRenderer
         $html = '<article class="formdyn-results">'
             .'<h2>Resultats - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
             .self::renderResultsSummary($form, count($responses), $mode, $login, $total)
+            .self::renderOpenFormAction($form, $mode)
             .self::renderResultsFilters($filters)
             .self::renderResultsExportActions();
 
@@ -2303,7 +2308,67 @@ class FormulairesDynamiquesRenderer
         return $html.'</tbody></table>';
     }
 
-    private static function renderResponseDetail($form, $fields, $responseId, $login = '')
+    private static function renderOpenFormAction($form, $mode)
+    {
+        if (!in_array((string) $mode, array('grr', 'autonomous'), true)) {
+            return '';
+        }
+
+        $token = self::firstUsableFormToken($form);
+        if ($token === '') {
+            return '';
+        }
+
+        return '<p class="formdyn-actions"><a class="btn btn-primary" href="'.self::html(self::currentFormUrl($token)).'">Ouvrir le formulaire</a></p>';
+    }
+
+    private static function firstUsableFormToken($form)
+    {
+        $formId = (int) (isset($form['id']) ? $form['id'] : 0);
+        if ($formId <= 0) {
+            return '';
+        }
+
+        foreach (FormulairesDynamiquesRepository::tokens($formId, false) as $token) {
+            if ((isset($token['type_token']) ? (string) $token['type_token'] : '') !== 'formulaire') {
+                continue;
+            }
+
+            $tokenValue = isset($token['token_public']) ? trim((string) $token['token_public']) : '';
+            if ($tokenValue === '') {
+                continue;
+            }
+
+            $expiresAt = (int) (isset($token['expires_at']) ? $token['expires_at'] : 0);
+            if ($expiresAt > 0 && $expiresAt < time()) {
+                continue;
+            }
+
+            $max = (int) (isset($token['max_responses']) ? $token['max_responses'] : 0);
+            $used = (int) (isset($token['response_count']) ? $token['response_count'] : 0);
+            if ($max > 0 && $used >= $max) {
+                continue;
+            }
+
+            return $tokenValue;
+        }
+
+        return '';
+    }
+
+    private static function currentFormUrl($token)
+    {
+        $params = $_GET;
+        foreach (array('v', 't', 'response_id', 'response_saved', 'format', 'scope', 'q', 'source', 'date_from', 'date_to', 'page', 'per_page') as $key) {
+            unset($params[$key]);
+        }
+        $params['view'] = 'formulaire';
+        $params['token'] = (string) $token;
+
+        return self::currentDisplayUrl($params);
+    }
+
+    private static function renderResponseDetail($form, $fields, $responseId, $login = '', $mode = 'management')
     {
         $response = FormulairesDynamiquesRepository::responseWithValues($responseId);
         if (!$response || (int) $response['formulaire_id'] !== (int) (isset($form['id']) ? $form['id'] : 0)) {
@@ -2311,6 +2376,7 @@ class FormulairesDynamiquesRenderer
                 .'<h2>Resultats - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
                 .'<div class="alert alert-warning">Cette reponse est introuvable pour ce formulaire.</div>'
                 .'<p><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
+                .self::renderOpenFormAction($form, $mode)
                 .'</article>';
         }
 
@@ -2323,6 +2389,7 @@ class FormulairesDynamiquesRenderer
         $html = '<article class="formdyn-results">'
             .'<h2>Reponse #'.self::html((int) $responseId).' - '.self::html(isset($form['titre']) ? $form['titre'] : 'Formulaire').'</h2>'
             .'<p><a class="btn btn-default" href="'.self::html(self::displayUrl(array(), array('response_id'))).'">Retour aux resultats</a></p>'
+            .self::renderOpenFormAction($form, $mode)
             .($editResult['saved'] ? '<div class="alert alert-success">Reponse modifiee.</div>' : '')
             .self::renderAlerts($editResult['errors'], 'danger')
             .self::renderResponseExportActions($responseId)

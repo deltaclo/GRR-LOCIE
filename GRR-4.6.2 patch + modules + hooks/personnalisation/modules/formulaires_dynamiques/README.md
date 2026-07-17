@@ -31,13 +31,17 @@ et consulter/exporter les resultats.
 - Apercu du formulaire avant publication.
 - Duplication d'un formulaire en brouillon.
 - Suppression definitive d'un formulaire et de ses reponses par un
-  administrateur ou par le gestionnaire createur du formulaire.
+  administrateur, par un gestionnaire affecte au formulaire ou par le
+  gestionnaire global createur du formulaire.
 - Import/export JSON d'un formulaire complet hors reponses et jetons.
 - Liens par jetons pour formulaires et pages de resultats, avec expiration,
   limite de reponses, copie rapide et QR code autonome.
 - Affichage des liens existants pour les nouveaux jetons, avec desactivation
   ou suppression.
-- Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs.
+- Bouton `Ouvrir le formulaire` sur les pages de resultats integrees ou
+  autonomes lorsqu'un lien formulaire actif et reaffichable existe.
+- Gestionnaires globaux selectionnes depuis les utilisateurs GRR actifs avec
+  une double liste disponible/selectionne.
 - Gestionnaires par formulaire selectionnes depuis les utilisateurs GRR actifs.
 - Destinataires de notification par formulaire, avec conditions sur liste,
   choix unique ou cases a cocher.
@@ -59,11 +63,10 @@ et consulter/exporter les resultats.
 - Administrateur GRR : configuration du module, acces a tous les formulaires
   et suppression de tous les formulaires.
 - Gestionnaire global : creation de formulaires et gestion complete du module
-  fonctionnel.
+  fonctionnel ; suppression limitee aux formulaires qu'il a crees, sauf s'il
+  est aussi affecte comme gestionnaire du formulaire.
 - Gestionnaire par formulaire : gestion du formulaire affecte, champs,
-  notifications, jetons, resultats et exports.
-- Createur d'un formulaire : suppression du formulaire qu'il a cree, s'il en
-  conserve la gestion.
+  notifications, jetons, resultats, exports et suppression du formulaire.
 - Repondant : acces uniquement via un lien formulaire actif.
 - Lecteur de resultats : acces uniquement via un lien resultats actif.
 

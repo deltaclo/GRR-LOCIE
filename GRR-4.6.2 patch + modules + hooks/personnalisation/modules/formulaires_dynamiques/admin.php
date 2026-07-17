@@ -101,8 +101,17 @@ function formulaires_dynamiques_admin_manager_text()
     return implode("\n", FormulairesDynamiquesConfig::managerLogins());
 }
 
-function formulaires_dynamiques_admin_manager_options()
+function formulaires_dynamiques_admin_manager_option($user)
 {
+    $login = isset($user['login']) ? (string) $user['login'] : '';
+    $label = isset($user['label']) ? (string) $user['label'] : $login;
+
+    return '<option value="'.formulaires_dynamiques_admin_html($login).'">'.formulaires_dynamiques_admin_html($label).'</option>';
+}
+
+function formulaires_dynamiques_admin_manager_options($selectedOnly)
+{
+    $selectedOnly = (bool) $selectedOnly;
     $selected = array();
     foreach (FormulairesDynamiquesConfig::managerLogins() as $login) {
         $selected[$login] = true;
@@ -111,11 +120,34 @@ function formulaires_dynamiques_admin_manager_options()
     $html = '';
     foreach (FormulairesDynamiquesRepository::activeUsers() as $user) {
         $login = isset($user['login']) ? (string) $user['login'] : '';
-        $label = isset($user['label']) ? (string) $user['label'] : $login;
-        $html .= '<option value="'.formulaires_dynamiques_admin_html($login).'"'.(isset($selected[$login]) ? ' selected' : '').'>'.formulaires_dynamiques_admin_html($label).'</option>';
+        $isSelected = isset($selected[$login]);
+        if (($selectedOnly && $isSelected) || (!$selectedOnly && !$isSelected)) {
+            $html .= formulaires_dynamiques_admin_manager_option($user);
+        }
     }
 
     return $html;
+}
+
+function formulaires_dynamiques_admin_dual_select_assets()
+{
+    return '<style>'
+        .'.formdyn-manager-picker{display:grid;grid-template-columns:minmax(240px,1fr) auto minmax(240px,1fr);gap:12px;align-items:center;max-width:980px;margin:8px 0 14px;}'
+        .'.formdyn-manager-picker label{margin:0;}'
+        .'.formdyn-manager-picker select{width:100%;max-width:none;min-height:240px;}'
+        .'.formdyn-manager-buttons{display:flex;flex-direction:column;gap:8px;align-items:stretch;}'
+        .'.formdyn-manager-buttons .btn{min-width:130px;text-align:center;}'
+        .'@media (max-width:767px){.formdyn-manager-picker{grid-template-columns:minmax(0,1fr);}.formdyn-manager-buttons{flex-direction:row;flex-wrap:wrap;}.formdyn-manager-buttons .btn{min-width:0;flex:1 1 120px;}}'
+        .'</style>'
+        .'<script>'
+        .'(function(){'
+        .'function sortOptions(select){var options=Array.prototype.slice.call(select.options);options.sort(function(a,b){return a.text.localeCompare(b.text);});for(var i=0;i<options.length;i++){select.add(options[i]);}}'
+        .'function move(source,target,all){var moved=[];for(var i=source.options.length-1;i>=0;i--){var option=source.options[i];if(all||option.selected){option.selected=false;moved.unshift(option);}}for(var j=0;j<moved.length;j++){target.add(moved[j]);}sortOptions(target);}'
+        .'document.addEventListener("click",function(event){var button=event.target;if(!button.getAttribute||!button.getAttribute("data-manager-action")){return;}var picker=button.closest(".formdyn-manager-picker");if(!picker){return;}var available=picker.querySelector("[data-manager-list=available]");var selected=picker.querySelector("[data-manager-list=selected]");if(!available||!selected){return;}var action=button.getAttribute("data-manager-action");if(action==="add"){move(available,selected,false);}if(action==="add-all"){move(available,selected,true);}if(action==="remove"){move(selected,available,false);}if(action==="remove-all"){move(selected,available,true);}});'
+        .'document.addEventListener("dblclick",function(event){var select=event.target&&event.target.closest?event.target.closest("select[data-manager-list]"):null;if(!select){return;}var picker=select.closest(".formdyn-manager-picker");if(!picker){return;}var available=picker.querySelector("[data-manager-list=available]");var selected=picker.querySelector("[data-manager-list=selected]");if(select===available){move(available,selected,false);}else{move(selected,available,false);}});'
+        .'document.addEventListener("submit",function(event){var selected=event.target.querySelector("[data-manager-list=selected]");if(!selected){return;}for(var i=0;i<selected.options.length;i++){selected.options[i].selected=true;}});'
+        .'})();'
+        .'</script>';
 }
 
 function formulaires_dynamiques_admin_current_url()
@@ -148,6 +180,8 @@ if (count($errors) > 0) {
     echo '</ul></div>';
 }
 
+echo formulaires_dynamiques_admin_dual_select_assets();
+
 echo '<form method="post" action="'.formulaires_dynamiques_admin_html(formulaires_dynamiques_admin_current_url()).'">';
 echo '<h2>Configuration generale</h2>';
 echo '<label>Nom affiche<br><input class="form-control" type="text" name="display_name" maxlength="80" value="'.formulaires_dynamiques_admin_html(FormulairesDynamiquesConfig::displayName()).'"></label>';
@@ -158,7 +192,16 @@ echo '<label><input type="checkbox" name="notifications_enabled" value="1"'.form
 
 echo '<h2>Gestionnaires globaux</h2>';
 echo '<p>Selectionner les utilisateurs GRR actifs. Les administrateurs generaux gardent toujours tous les droits.</p>';
-echo '<select class="form-control" name="manager_logins[]" multiple size="10">'.formulaires_dynamiques_admin_manager_options().'</select>';
+echo '<div class="formdyn-manager-picker">';
+echo '<label>Utilisateurs disponibles<br><select class="form-control" data-manager-list="available" multiple size="12">'.formulaires_dynamiques_admin_manager_options(false).'</select></label>';
+echo '<div class="formdyn-manager-buttons">';
+echo '<button class="btn" type="button" data-manager-action="add">Ajouter &gt;</button>';
+echo '<button class="btn" type="button" data-manager-action="add-all">Tout ajouter &gt;&gt;</button>';
+echo '<button class="btn" type="button" data-manager-action="remove">&lt; Retirer</button>';
+echo '<button class="btn" type="button" data-manager-action="remove-all">&lt;&lt; Tout retirer</button>';
+echo '</div>';
+echo '<label>Gestionnaires globaux<br><select class="form-control" data-manager-list="selected" name="manager_logins[]" multiple size="12">'.formulaires_dynamiques_admin_manager_options(true).'</select></label>';
+echo '</div>';
 echo '<p><button class="btn btn-primary" type="submit">Enregistrer</button></p>';
 echo '</form>';
 
