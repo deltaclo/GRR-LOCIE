@@ -707,10 +707,14 @@ class FormulairesDynamiquesRenderer
             return true;
         }
 
+        if (FormulairesDynamiquesRepository::userCanManageForm($login, $formId)) {
+            return true;
+        }
+
         $creator = isset($form['created_by']) ? trim((string) $form['created_by']) : '';
         return $creator !== ''
             && $creator === $login
-            && FormulairesDynamiquesRights::canManageForm($login, $formId);
+            && FormulairesDynamiquesConfig::isManager($login);
     }
 
     private static function tokenBelongsToForm($tokenId, $formId)

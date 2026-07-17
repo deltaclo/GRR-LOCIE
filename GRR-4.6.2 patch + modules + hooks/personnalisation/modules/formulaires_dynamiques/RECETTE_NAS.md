@@ -376,22 +376,25 @@ Verifier que :
 Effectuer ce test sur un formulaire de test dedie.
 
 1. Creer ou dupliquer un formulaire, puis enregistrer au moins une reponse.
-2. Avec un gestionnaire non createur et non administrateur, verifier que
-   l'action `Supprimer` n'est pas disponible.
-3. Avec le createur du formulaire, cliquer sur `Supprimer` dans le tableau
-   `Formulaires` et confirmer.
-4. Verifier que le formulaire disparait de la liste.
-5. Verifier que ses reponses ne sont plus consultables dans les resultats.
-6. Verifier en SQL que les lignes liees au formulaire ont disparu des tables
+2. Avec un gestionnaire global qui n'a pas cree le formulaire et qui n'est pas
+   affecte au formulaire, verifier que l'action `Supprimer` n'est pas
+   disponible.
+3. Affecter un gestionnaire au formulaire.
+4. Avec ce gestionnaire affecte, verifier que l'action `Supprimer` est
+   disponible meme s'il n'est pas createur.
+5. Cliquer sur `Supprimer` dans le tableau `Formulaires` et confirmer.
+6. Verifier que le formulaire disparait de la liste.
+7. Verifier que ses reponses ne sont plus consultables dans les resultats.
+8. Verifier en SQL que les lignes liees au formulaire ont disparu des tables
    formulaire, champ, reponse, valeur, gestionnaire, notification, token et
    historique.
-7. Avec un administrateur GRR, verifier que l'action `Supprimer` est disponible
+9. Avec un administrateur GRR, verifier que l'action `Supprimer` est disponible
    sur un autre formulaire de test.
 
 | Test | Etat | Observation |
 |---|---|---|
-| Bouton absent pour non-createur | | |
-| Suppression par createur | | |
+| Bouton absent pour gestionnaire global non createur | | |
+| Suppression par gestionnaire affecte | | |
 | Suppression par administrateur | | |
 | Reponses et valeurs supprimees | | |
 
@@ -428,8 +431,9 @@ Le module est validable si :
   autonome ;
 - l'apercu, la duplication, l'import/export JSON et les statistiques
   fonctionnent ;
-- la suppression definitive est limitee a l'administrateur ou au createur du
-  formulaire et supprime aussi les reponses ;
+- la suppression definitive est autorisee pour l'administrateur, le
+  gestionnaire affecte au formulaire et le gestionnaire global createur, puis
+  supprime aussi les reponses ;
 - les notifications conditionnelles respectent la valeur du champ cible ;
 - les modeles de notification sont appliques ;
 - les mises en page de resultats globale et individuelle sont appliquees ;
